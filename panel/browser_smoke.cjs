@@ -44,7 +44,12 @@ async function main() {
   page.on("request", request => receipt.requests.push({ method: request.method(), url: request.url() }));
 
   try {
-    await page.goto(baseURL, { waitUntil: "networkidle" });
+    const localURL = new URL(baseURL);
+    localURL.searchParams.set("provider", "local");
+    await page.goto(localURL.toString(), { waitUntil: "domcontentloaded" });
+    await page.locator("#solver-provider").selectOption("local");
+    await page.waitForLoadState("networkidle");
+    assert.equal(await page.locator("#solver-provider").inputValue(), "local");
     await page.locator("#general-status").filter({ hasText: "已分解" }).waitFor({ timeout: 20000 });
     assert.equal(await page.locator("button.tab").count(), 2);
     assert.equal(await page.locator("button, a").filter({ hasText: /export|download|导出/i }).count(), 0);
@@ -58,6 +63,9 @@ async function main() {
     assert.match(pluginText, /几何插件/);
     assert.match(await page.locator("#objective-vector").innerText(), /非平凡性=未核验/);
     assert.match(await page.locator("#reaction-language").innerText(), /当前只列候选，不排名/);
+    assert.match(await page.locator("#recognition-domain-intent").innerText(), /识别域／意图/);
+    assert.match(await page.locator("#recognition-model").innerText(), /本地精确内核（无模型调用）/);
+    assert.match(await page.locator("#recognition-validation").innerText(), /通过：配平与 Aν=0/);
 
     const originalEquation = (await page.locator("#input-equation").innerText()).trim();
     const equation = (await page.locator("#normalized-equation").innerText()).trim();

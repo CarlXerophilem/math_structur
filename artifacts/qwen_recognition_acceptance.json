@@ -1,0 +1,81 @@
+{
+  "checked_at": "2026-08-17T03:52:17.705906+09:00",
+  "status": "passed",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.14.2",
+  "transport": "loopback panel plus loopback Ollama",
+  "external_network_requests": 0,
+  "elapsed_seconds": 14.395,
+  "model": "hf.co/mradermacher/Qwen3-8B-Jailbroken-GGUF:Q4_K_M",
+  "model_digest": "ca6da952658c16e9eafcf68cb6a1719dbdc67891c89cff06f0394a722508a5d8",
+  "model_size_bytes": 5027786509,
+  "input_sha256": "6016a6ab4a8a655a9086d8fdd19dbcdc2c8852fc4b18ca1e4331df3f4d2e000b",
+  "recognition": {
+    "domain": "reaction",
+    "intent": "catalyst_search",
+    "entities": [
+      "CO2gas",
+      "H2gas",
+      "CH3CH2OHgas"
+    ],
+    "constraints": [],
+    "missing_fields": [
+      "temperature",
+      "pressure",
+      "candidate_space",
+      "objective_measurements",
+      "baseline"
+    ],
+    "confidence": 0.95,
+    "runtime": {
+      "output_channel": "response",
+      "done_reason": "stop",
+      "prompt_eval_count": 155,
+      "eval_count": 75,
+      "total_duration_ms": 14011.531
+    }
+  },
+  "gate": {
+    "status": "passed",
+    "checks": {
+      "nonempty_input": true,
+      "domain_agrees_with_deterministic_hint": true,
+      "intent_agrees_with_deterministic_hint": true,
+      "no_scientific_result_fields": true
+    },
+    "expected_domain": "reaction",
+    "expected_intent": "catalyst_search",
+    "effect": "route metadata only; exact validators retain authority"
+  },
+  "exact_validation": {
+    "input_balance": "invalid",
+    "balanced_equation": "2 CO2(g) + 6 H2(g) -> C2H5OH(g) + 3 H2O(g)",
+    "stoichiometric_vector": [
+      -2,
+      -6,
+      1,
+      3
+    ],
+    "element_conservation": [
+      0,
+      0,
+      0
+    ],
+    "best_status": "abstain_until_conditions_candidate_space_and_measurements_are_fixed"
+  },
+  "assertions": {
+    "exact_model_selected": true,
+    "digest_recorded": true,
+    "domain_recognized": true,
+    "intent_recognized": true,
+    "recognition_gate_passed": true,
+    "recognition_only": true,
+    "one_model_call": true,
+    "unbalanced_input_detected": true,
+    "balanced_equation_exact": true,
+    "element_conservation": true,
+    "unconditional_ranking_rejected": true,
+    "no_scientific_answer_fields": true
+  },
+  "scientific_boundary": "The local model only recognized target metadata. It did not rank catalysts, simulate activity, predict a relaxed structure, or prove a theorem."
+}

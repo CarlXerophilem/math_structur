@@ -30,11 +30,14 @@ PANEL_ARTIFACTS = [
     "panel_desktop_general_3d.png",
     "panel_desktop_iterate.png",
     "panel_mobile_general.png",
+    "panel_desktop_qwen_recognition.png",
     "pytest.txt",
 ]
 
 VALIDATION_ARTIFACTS = [
     "quick_check.json",
+    "qwen_recognition_acceptance.json",
+    "qwen_recognition_browser_acceptance.json",
     "validation_summary.json",
     "word_validation.json",
 ]
@@ -124,6 +127,10 @@ def build() -> None:
 
     word_validation = json.loads((ROOT / "artifacts" / "word_validation.json").read_text("utf-8"))
     browser = json.loads((ROOT / "artifacts" / "panel" / "browser_acceptance.json").read_text("utf-8"))
+    qwen = json.loads((ROOT / "artifacts" / "qwen_recognition_acceptance.json").read_text("utf-8"))
+    qwen_browser = json.loads(
+        (ROOT / "artifacts" / "qwen_recognition_browser_acceptance.json").read_text("utf-8")
+    )
     pytest_text = (ROOT / "artifacts" / "panel" / "pytest.txt").read_text("utf-8").strip()
     pytest_summary = next(
         (line.strip() for line in reversed(pytest_text.splitlines()) if " passed" in line),
@@ -138,6 +145,34 @@ def build() -> None:
         raise RuntimeError("Word validation does not contain the required clickable references")
     if browser.get("status") != "passed":
         raise RuntimeError("browser acceptance did not pass")
+    if qwen.get("status") != "passed":
+        raise RuntimeError("Qwen recognition acceptance did not pass")
+    if qwen_browser.get("status") != "passed":
+        raise RuntimeError("Qwen browser acceptance did not pass")
+    expected_model = "hf.co/mradermacher/Qwen3-8B-Jailbroken-GGUF:Q4_K_M"
+    if qwen.get("model") != expected_model:
+        raise RuntimeError("Qwen receipt does not identify the exact required model")
+    expected_digest = "ca6da952658c16e9eafcf68cb6a1719dbdc67891c89cff06f0394a722508a5d8"
+    if qwen.get("model_digest") != expected_digest:
+        raise RuntimeError("Qwen receipt model digest does not match the accepted checkpoint")
+    qwen_assertions = qwen.get("assertions", {})
+    required_qwen_assertions = {
+        "exact_model_selected",
+        "digest_recorded",
+        "recognition_gate_passed",
+        "recognition_only",
+        "one_model_call",
+        "element_conservation",
+        "unconditional_ranking_rejected",
+        "no_scientific_answer_fields",
+    }
+    failed_qwen_assertions = sorted(
+        name for name in required_qwen_assertions if qwen_assertions.get(name) is not True
+    )
+    if failed_qwen_assertions:
+        raise RuntimeError(f"Qwen acceptance assertions failed: {failed_qwen_assertions}")
+    if qwen_browser.get("provider") != "qwen":
+        raise RuntimeError("Qwen browser receipt did not use the Qwen provider")
     if not pytest_summary:
         raise RuntimeError("pytest receipt has no passing summary")
 
@@ -161,6 +196,11 @@ def build() -> None:
             "python": pytest_summary,
             "quick_check": "passed; loopback only; model calls 0; external requests 0",
             "browser": "passed; desktop and 390px; 2D/3D; model calls 0; external requests 0",
+            "qwen_recognition": (
+                "passed; exact checkpoint and digest; one recognition-only call; deterministic gate passed; "
+                "unconditional catalyst ranking rejected"
+            ),
+            "qwen_browser": "passed; isolated Chrome; provider qwen; browser external requests 0",
             "word": "Microsoft Word 16.0; exactly 4 pages",
             "platforms": {
                 "Windows 11": "tested",

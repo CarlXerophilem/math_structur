@@ -1,11 +1,13 @@
 {
-  "generated_at": "2026-08-17T03:16:48.061491+09:00",
+  "generated_at": "2026-08-17T03:57:08.082392+09:00",
   "project": "Math Structurer — Convincing, reusable target-matching skills for AI research agents.",
   "claim_boundary": "The current discovery signal is a problem-definition revision: the unconditioned catalyst ranking is underdetermined. No catalyst activity simulation, catalyst ranking, new mechanism, universal algebra, automatic PDE reduction, or general iterative-root proof is claimed.",
   "validation": {
-    "python": "16 passed in 3.83s",
+    "python": "18 passed in 4.70s",
     "quick_check": "passed; loopback only; model calls 0; external requests 0",
     "browser": "passed; desktop and 390px; 2D/3D; model calls 0; external requests 0",
+    "qwen_recognition": "passed; exact checkpoint and digest; one recognition-only call; deterministic gate passed; unconditional catalyst ranking rejected",
+    "qwen_browser": "passed; isolated Chrome; provider qwen; browser external requests 0",
     "word": "Microsoft Word 16.0; exactly 4 pages",
     "platforms": {
       "Windows 11": "tested",
@@ -34,28 +36,28 @@
     },
     {
       "path": "GOAI_四页提交稿_Math_Structurer.docx",
-      "bytes": 708620,
-      "sha256": "b6b67115843ca794b9c5113120dfdd127305b6db57022c53ae87d9c7abe93899"
+      "bytes": 716496,
+      "sha256": "55aa3463d85ee305f5b377c8ddef53f2c0c89a242a4579240519fd496bb82ea8"
     },
     {
       "path": "README.md",
-      "bytes": 3794,
-      "sha256": "5621dec8edd8aa71187ca7a00f02366e98920ac539162f4676f62f0080e9a9d9"
+      "bytes": 5979,
+      "sha256": "c6fc17c53d153a43ac411ef37293d874f2718dfd29c3c5514b81c2e30d7cce89"
     },
     {
       "path": "README_SUBMISSION.md",
-      "bytes": 3794,
-      "sha256": "5621dec8edd8aa71187ca7a00f02366e98920ac539162f4676f62f0080e9a9d9"
+      "bytes": 5979,
+      "sha256": "c6fc17c53d153a43ac411ef37293d874f2718dfd29c3c5514b81c2e30d7cce89"
     },
     {
       "path": "artifacts/panel/browser_acceptance.json",
-      "bytes": 3334,
-      "sha256": "c88710a187272168e25669e05be711e92e4d5776765606d013a7934d0cc9c8e8"
+      "bytes": 3349,
+      "sha256": "c032f205e93dd3f0ec7e4decf03ae9b67d25ba9a29b0a3ac7ec8b30d7264c01f"
     },
     {
       "path": "artifacts/panel/panel_desktop_general_2d.png",
-      "bytes": 472767,
-      "sha256": "24f37ceb9f3ac6d3916b965f9e645f03869262080d1fd2dc2e89bb7f55c3cda4"
+      "bytes": 480906,
+      "sha256": "56bc8bc050f5ff93c32982b21cb5112d7df8e6d9c85bdb95e1b83cefeb4d7648"
     },
     {
       "path": "artifacts/panel/panel_desktop_general_3d.png",
@@ -64,18 +66,23 @@
     },
     {
       "path": "artifacts/panel/panel_desktop_iterate.png",
-      "bytes": 245936,
-      "sha256": "1bf90a184d2d3e65f82d0ce154352c8d77ed4d3802bb00d36da72c6e867c28e8"
+      "bytes": 246365,
+      "sha256": "cb43f91afb891a12971fb7b5a6ccf7eafd93a5bde975779a57d53b3552b069f9"
+    },
+    {
+      "path": "artifacts/panel/panel_desktop_qwen_recognition.png",
+      "bytes": 500288,
+      "sha256": "b656437aa51c7381690f82c9f6db01f8de97bb75553f1c10064f6b1af3aa3699"
     },
     {
       "path": "artifacts/panel/panel_mobile_general.png",
-      "bytes": 429432,
-      "sha256": "5c91050596c9bfa1f4586e9c279b98740ebc531a2d3d6117a4ddfea2436a3920"
+      "bytes": 437371,
+      "sha256": "f680532a4319f02ca1369a3c8a4584118490149a8895a7d19ccd78e70c25b744"
     },
     {
       "path": "artifacts/panel/pytest.txt",
-      "bytes": 99,
-      "sha256": "cce3f25082873d4bacac8d38b83c6bbc5af82eb13aa2ac07de15dbda21405f30"
+      "bytes": 101,
+      "sha256": "683fccbb6cbee9e1108f6a560467d1823d6f9cefc3cbc51a4bcea17e24dc6211"
     },
     {
       "path": "artifacts/quick_check.json",
@@ -83,14 +90,24 @@
       "sha256": "a86a7e2634ad10f1f09d2c783a2d413f28e52119361ff1110e880b64679e3cd7"
     },
     {
+      "path": "artifacts/qwen_recognition_acceptance.json",
+      "bytes": 2500,
+      "sha256": "060b2598582ff2ba63c5427cfa84c7b2577b52f8be3493b938f537e46204f010"
+    },
+    {
+      "path": "artifacts/qwen_recognition_browser_acceptance.json",
+      "bytes": 2019,
+      "sha256": "1e240787713867a2a175300efd0a8cc45639675b36d65bedda9e1a07e9b4ded8"
+    },
+    {
       "path": "artifacts/validation_summary.json",
-      "bytes": 2194,
-      "sha256": "bc91be6f568f2986894fdfd9bed41832e2aabc9e0ba440fac0e1cda11d285fe1"
+      "bytes": 3454,
+      "sha256": "c4d102197ce57249cae6439c9166b55d04287edd86da17f8fb4e2b7694f66624"
     },
     {
       "path": "artifacts/visuals/page1_demo_slice.png",
-      "bytes": 106263,
-      "sha256": "be8e8a7a0a2731e9faeff48c61ab5954589addb4ec11aac1733c94d06d5ae48b"
+      "bytes": 113847,
+      "sha256": "829f9b06098ee61a471630130e3d9efb57f443b0eaf3579de039a01e8e28972b"
     },
     {
       "path": "artifacts/visuals/page2_environment_interface.png",
@@ -104,18 +121,18 @@
     },
     {
       "path": "artifacts/visuals/page4_function_space_screenshot.png",
-      "bytes": 245936,
-      "sha256": "1bf90a184d2d3e65f82d0ce154352c8d77ed4d3802bb00d36da72c6e867c28e8"
+      "bytes": 246365,
+      "sha256": "cb43f91afb891a12971fb7b5a6ccf7eafd93a5bde975779a57d53b3552b069f9"
     },
     {
       "path": "artifacts/word_validation.json",
-      "bytes": 1023,
-      "sha256": "195da2cfcee7e2104dfc4f3250a9f4e0ac1b42baca85b17c558e60d7fe413d88"
+      "bytes": 1057,
+      "sha256": "289ed86b303b5c699d6fc1b80ecaf881ff4234f68c0fe36a8824184348ec49a8"
     },
     {
       "path": "build_bundle.py",
-      "bytes": 8531,
-      "sha256": "ea135c0db00d149788b766bd193953783707d76e893d4a2808eb4048f23eeba1"
+      "bytes": 10604,
+      "sha256": "8963828d74621279ff4c28d59302f4d615a2d8eef7d380952be509ed02688f6c"
     },
     {
       "path": "build_word.py",
@@ -189,23 +206,23 @@
     },
     {
       "path": "panel/README.md",
-      "bytes": 2682,
-      "sha256": "4dfc29e4f1009864d44edc10abe3f07efd3fec3119746792949d02e9d80a1a91"
+      "bytes": 3279,
+      "sha256": "66fd42ec2dc7afaad971f56e838e9d8d753376ba00ccece625eadcb0d61cee94"
     },
     {
       "path": "panel/app.js",
-      "bytes": 23837,
-      "sha256": "cd270b351c1ed961fb5496b44790a80a52d6c2aef203b466e1b6543897f25d81"
+      "bytes": 25481,
+      "sha256": "1fc70321609110bcae83173c3113ee509dc419712a49837008461d7ad89772f1"
     },
     {
       "path": "panel/browser_smoke.cjs",
-      "bytes": 10785,
-      "sha256": "2cc25337074dc3df94b274032a2cde9759a317d2dc49d145f8cc0088fe66fb84"
+      "bytes": 11409,
+      "sha256": "96b34645c9acac7e51a5a382e8d54847e9f9280cd30869941f1bc633a503728b"
     },
     {
       "path": "panel/index.html",
-      "bytes": 11496,
-      "sha256": "e78d084ca790c565807c5c6645f050be32ea80e92510823bfc1b4b63fe62b748"
+      "bytes": 11892,
+      "sha256": "17307064c86883d9be7ee6e7db153dd03b944637a1567c461bfe6a01d01d6294"
     },
     {
       "path": "panel/lean/IterationContract.lean",
@@ -218,9 +235,19 @@
       "sha256": "d7a70386b83b5d59f912a6a0b2ae02563b18556c3aad766bd491017b3c84443e"
     },
     {
+      "path": "panel/qwen_browser_smoke.cjs",
+      "bytes": 4286,
+      "sha256": "8f596d24c4d7e47ba0fa5cc3f7465f1c45a88680b4e7ba0791c34a9cd7dc5fac"
+    },
+    {
+      "path": "panel/qwen_recognition_smoke.py",
+      "bytes": 5907,
+      "sha256": "442eefa792b06b788f9f79982b277e4f00d21134f1bfb37501781b08e8b501f4"
+    },
+    {
       "path": "panel/serve_panel.py",
-      "bytes": 41454,
-      "sha256": "16bfd2019dbd23e56ff741cbbfd7ee13f01ff78bd45ce85afb17aa98a9ec5682"
+      "bytes": 50189,
+      "sha256": "2524cea51b80de9d30ef95969467f691f3c74787390297455a900bafb263a118"
     },
     {
       "path": "panel/solver_output.schema.json",
@@ -234,8 +261,8 @@
     },
     {
       "path": "panel/test_panel.py",
-      "bytes": 10618,
-      "sha256": "3d29411a889317156dcb681115919d27e41e9b6b7b41c85491104efa95b91f1d"
+      "bytes": 13261,
+      "sha256": "f3f10979ce9d74f46bc281103fb965000c1e0b41174bae1d4f49726aa66fd2ed"
     },
     {
       "path": "panel/test_run.py",

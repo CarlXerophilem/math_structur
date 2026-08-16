@@ -160,7 +160,17 @@ function renderGeneral(result) {
   const normalized = result.normalized_problem || {};
   const standardMath = result.standard_math || {};
   const targetFunction = result.target_function || {};
+  const recognition = result.recognition || {};
+  const receipt = result.model_receipt || {};
+  const recognizedDomain = recognition.domain || recognition.recognized_domain || normalized.type || "未识别";
+  const recognizedIntent = recognition.intent || recognition.recognized_intent || normalized.directive || normalized.objective_state || "未识别";
+  const recognizedModel = recognition.model || recognition.model_name || receipt.model || (receipt.provider === "qwen" ? "Qwen3-8B-Jailbroken" : receipt.provider === "local_exact_kernel" || result.source === "local_exact_kernel" ? "本地精确内核（无模型调用）" : receipt.provider || "未调用模型");
+  const gateStatus = recognition.gate?.status;
+  const exactValidation = recognition.exact_validation || recognition.exact_verification || recognition.validator_status || (gateStatus === "passed" && result.basis?.matrix?.check?.every(value => Number(value) === 0) ? "通过：识别闸门、配平与 Aν=0" : gateStatus === "rejected" ? "拒绝：模型识别与确定性提示不一致" : result.basis?.matrix?.check?.every(value => Number(value) === 0) ? "通过：配平与 Aν=0" : standardMath.status || "待核验");
   badge($("#general-status"), statusLabel(result.status), statusKind(result.status));
+  $("#recognition-domain-intent").textContent = `识别域／意图：${recognizedDomain}／${recognizedIntent}`;
+  $("#recognition-model").textContent = `模型：${recognizedModel}`;
+  $("#recognition-validation").textContent = `精确核验：${exactValidation}`;
   renderMath($("#standard-formula"), standardMath.display || standardMath.logic, true);
   $("#input-equation").textContent = normalized.input_equation
     ? `原始查询（未守恒）：${normalized.input_equation}`
@@ -199,7 +209,6 @@ function renderGeneral(result) {
     $("#lean-assumptions").appendChild(token);
   }
   $("#lean-detail").textContent = JSON.stringify(result.model_receipt || { provider: result.source || "local", calls: 0 }, null, 2);
-  const receipt = result.model_receipt || {};
   $("#call-budget").textContent = `调用 ${receipt.calls || 0} / ${receipt.max_calls || 1}`;
 }
 
@@ -571,6 +580,10 @@ function drawAst(ast, counterexample = null) {
 
 async function start() {
   await detectRuntime();
+  const providerOverride = new URLSearchParams(window.location.search).get("provider");
+  if (["local", "qwen", "codex", "deepseek", "auto"].includes(providerOverride)) {
+    $("#solver-provider").value = providerOverride;
+  }
   await runGeneral();
   drawAst({ op: "basis", left: { op: "1" }, right: { op: "x" } });
 }

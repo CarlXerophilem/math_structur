@@ -1,0 +1,21 @@
+{
+  "generated_at": "2026-08-17T03:57:08.281952+09:00",
+  "bundle": "AI4R_OPEN_team_id.zip",
+  "bytes": 4394827,
+  "sha256": "99fc1ee54ae5932df32de0abe20f09c222d5e36f22465f95a8e7839f1a9ebde4",
+  "zip_integrity": "passed",
+  "zip_members": 114,
+  "pdf_members": 0,
+  "nested_zip_members": 0,
+  "unsafe_path_members": 0,
+  "forbidden_text_hits": {
+    "legacy_eml_term": 0,
+    "absolute_windows_host_path": 0,
+    "codex_thread_id": 0,
+    "private_host_marker": 0,
+    "credential_assignment": 0
+  },
+  "manifest_sha256": "5a13a5b0e70d59e37378e707fbd0cf1880a42eb299261309164f9d427212db66",
+  "word_sha256": "55aa3463d85ee305f5b377c8ddef53f2c0c89a242a4579240519fd496bb82ea8",
+  "word_pages": 4
+}

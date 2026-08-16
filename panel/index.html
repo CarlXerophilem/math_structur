@@ -22,7 +22,7 @@
     <div class="runtime" aria-live="polite">
       <div><span id="server-dot" class="dot"></span><b id="server-status">connecting</b></div>
       <div class="runtime-grid">
-        <span>Qwen3-8B <b id="qwen-status">—</b></span>
+        <span>Qwen3-8B-Jailbroken <b id="qwen-status">—</b></span>
         <span>Codex <b id="codex-status">—</b></span>
         <span>DeepSeek <b id="deepseek-status">—</b></span>
         <span>alphaXiv <b id="alphaxiv-status">—</b></span>
@@ -73,7 +73,7 @@
           <label>求解后端
             <select id="solver-provider">
               <option value="local">本地精确内核</option>
-              <option value="qwen">本地 Qwen3-8B（需精确复核）</option>
+              <option value="qwen" selected>本地 Qwen3-8B-Jailbroken（需精确复核）</option>
               <option value="codex">本机 Codex + alphaXiv</option>
               <option value="deepseek">DeepSeek 交叉核验</option>
               <option value="auto">自动选择一个后端</option>
@@ -98,6 +98,12 @@
       <div class="analysis-grid">
         <section class="card equation-card">
           <header><h2>数学滤镜与类型化目标</h2><span id="general-status" class="badge">待运行</span></header>
+          <div id="local-recognition" class="token-row" aria-label="本地识别" aria-live="polite">
+            <b>本地识别</b>
+            <code id="recognition-domain-intent">识别域／意图：—</code>
+            <code id="recognition-model">模型：—</code>
+            <code id="recognition-validation">精确核验：—</code>
+          </div>
           <code id="solver-contract" class="contract-line">用户目标 → 类型与逻辑 → 相连空间 → 专业插件 → 验证器</code>
           <div id="standard-formula" class="formula-display" aria-label="标准数学公式">—</div>
           <div id="input-equation" class="math-line">原始查询：—</div>

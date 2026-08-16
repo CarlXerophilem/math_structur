@@ -1,8 +1,8 @@
 {
-  "checked_at": "2026-08-17T03:15:30.162550+09:00",
+  "checked_at": "2026-08-17T03:53:18.759627+09:00",
   "file": "GOAI_四页提交稿_Math_Structurer.docx",
-  "sha256": "b6b67115843ca794b9c5113120dfdd127305b6db57022c53ae87d9c7abe93899",
-  "bytes": 708620,
+  "sha256": "55aa3463d85ee305f5b377c8ddef53f2c0c89a242a4579240519fd496bb82ea8",
+  "bytes": 716496,
   "application": "Microsoft Word 16.0",
   "method": "Document.Repaginate + ComputeStatistics(wdStatisticPages)",
   "repaginated": true,
@@ -23,6 +23,6 @@
     "https://proceedings.mlr.press/v162/brandstetter22a.html"
   ],
   "pdf_exported": false,
-  "word_processes_after_cleanup": 0,
+  "generation_source": "build_word.py with current artifacts/visuals",
   "status": "passed_exactly_four_pages"
 }

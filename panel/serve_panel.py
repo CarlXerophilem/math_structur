@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import cmath
 from functools import lru_cache
+import hashlib
 from http import HTTPStatus
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 import json
@@ -48,6 +49,47 @@ CODEX_CONFIG = _configured_path(
 )
 SCHEMA = PANEL / "solver_output.schema.json"
 MODEL_CALLS = 0
+
+QWEN_MODEL_ENV = "MATH_STRUCTURER_QWEN_MODEL"
+QWEN_JAILBROKEN_MODEL = "hf.co/mradermacher/Qwen3-8B-Jailbroken-GGUF:Q4_K_M"
+
+RECOGNITION_DOMAINS = {
+    "reaction",
+    "binding",
+    "mathematics",
+    "pde",
+    "number_theory",
+    "unknown",
+}
+RECOGNITION_INTENTS = {
+    "catalyst_search",
+    "structure_prediction",
+    "basis_operator_debug",
+    "half_iterate",
+    "pde_reduction",
+    "problem_generation",
+    "unknown",
+}
+RECOGNITION_SCHEMA = {
+    "type": "object",
+    "required": [
+        "domain",
+        "intent",
+        "entities",
+        "constraints",
+        "missing_fields",
+        "confidence",
+    ],
+    "properties": {
+        "domain": {"type": "string", "enum": sorted(RECOGNITION_DOMAINS)},
+        "intent": {"type": "string", "enum": sorted(RECOGNITION_INTENTS)},
+        "entities": {"type": "array", "items": {"type": "string"}, "maxItems": 16},
+        "constraints": {"type": "array", "items": {"type": "string"}, "maxItems": 16},
+        "missing_fields": {"type": "array", "items": {"type": "string"}, "maxItems": 16},
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+    },
+    "additionalProperties": False,
+}
 
 
 def _portable_text(value: Any) -> str:
@@ -559,6 +601,12 @@ def _probe(command: str, args: list[str]) -> dict[str, Any]:
     return {"ready": result["returncode"] == 0, "executable": Path(path).name, "detail": _portable_text(output[0][:180]) if output else f"exit {result['returncode']}"}
 
 
+def _select_qwen_model(names: list[str], configured: str = "") -> tuple[str | None, str]:
+    requested = configured or QWEN_JAILBROKEN_MODEL
+    model = next((name for name in names if name == requested), None)
+    return model, requested
+
+
 @lru_cache(maxsize=1)
 def _ollama_status() -> dict[str, Any]:
     endpoint = "http://127.0.0.1:11434/api/tags"
@@ -566,11 +614,31 @@ def _ollama_status() -> dict[str, Any]:
         request = Request(endpoint, headers={"Accept": "application/json"})
         with urlopen(request, timeout=2) as response:
             payload = json.loads(response.read().decode("utf-8"))
-        names = [str(item.get("name", "")) for item in payload.get("models", [])]
-        model = next((name for name in names if name == "qwen3:8b"), None)
-        return {"ready": model is not None, "endpoint": endpoint, "model": model, "installed": names}
+        models = [item for item in payload.get("models", []) if isinstance(item, dict)]
+        names = [str(item.get("name", "")) for item in models]
+        configured = os.environ.get(QWEN_MODEL_ENV, "").strip()
+        model, requested = _select_qwen_model(names, configured)
+        metadata = next((item for item in models if str(item.get("name", "")) == model), {})
+        return {
+            "ready": model is not None,
+            "endpoint": endpoint,
+            "model": model,
+            "requested_model": requested,
+            "digest": metadata.get("digest"),
+            "size": metadata.get("size"),
+            "installed": names,
+            "configured_by": "environment" if configured else "jailbroken_default",
+        }
     except Exception as exc:
-        return {"ready": False, "endpoint": endpoint, "model": None, "installed": [], "detail": _portable_text(exc)[:180]}
+        return {
+            "ready": False,
+            "endpoint": endpoint,
+            "model": None,
+            "requested_model": os.environ.get(QWEN_MODEL_ENV, "").strip() or QWEN_JAILBROKEN_MODEL,
+            "digest": None,
+            "installed": [],
+            "detail": _portable_text(exc)[:180],
+        }
 
 
 def _bash_executable() -> Path | None:
@@ -597,7 +665,12 @@ def harness_status() -> dict[str, Any]:
     deepseek_harness = bool(bash and CROSS_VERIFY.is_file() and os.environ.get("DEEPSEEK_API_KEY"))
     alphaxiv_configured = CODEX_CONFIG.is_file() and "[mcp_servers.alphaxiv]" in CODEX_CONFIG.read_text("utf-8", errors="ignore")
     return {
-        "qwen_local": {**_ollama_status(), "scope": "local semantic parsing only; output must pass exact validators", "max_calls": 1},
+        "qwen_local": {
+            **_ollama_status(),
+            "scope": "bounded local target recognition only; output cannot bypass exact validators",
+            "max_calls": 1,
+            "trust_boundary": "checkpoint name is not a scientific-validation or safety guarantee",
+        },
         "codex": {**codex, "scope": "local CLI; configured model backend may be remote", "approval": "never", "sandbox": "read-only"},
         "deepseek_cli": deepseek,
         "deepseek_harness": {"ready": deepseek_harness, "script": CROSS_VERIFY.name if CROSS_VERIFY.is_file() else None, "configured_by": "environment" if os.environ.get("MATH_STRUCTURER_CROSS_VERIFY") else "portable_probe", "credential_present": bool(os.environ.get("DEEPSEEK_API_KEY"))},
@@ -644,6 +717,89 @@ def _parse_json(text: str) -> dict[str, Any]:
     return value
 
 
+def _recognition_prompt(payload: dict[str, Any]) -> str:
+    return f"""You are a bounded scientific-target recognizer inside Math Structurer.
+Do not solve the research problem, recommend a catalyst, predict a molecular structure, or assert a theorem.
+Return only the requested JSON classification. Extract only entities and constraints that are explicit in the input.
+Use missing_fields for conditions required before the target becomes machine-checkable.
+For a reaction followed by @best, use domain=reaction and intent=catalyst_search; temperature, pressure, candidate_space, objective_measurements, and baseline are missing unless explicitly supplied.
+The output will be rejected unless a deterministic gate agrees with the domain and intent.
+
+Input: {str(payload.get('problem', '')).strip()}
+User domain hint: {payload.get('domain', 'auto')}
+"""
+
+
+def _expected_recognition(problem: str) -> tuple[str, str | None]:
+    lowered = problem.lower()
+    compact = re.sub(r"\s+", "", lowered)
+    if (
+        "co2" in compact
+        and "h2" in compact
+        and ("->" in compact or "--" in compact or "→" in problem)
+    ):
+        return "reaction", "catalyst_search" if "@best" in lowered or "catal" in lowered or "催化" in problem else None
+    if any(token in lowered for token in ("protein", "binding", "bind site")) or any(token in problem for token in ("蛋白", "结合位点")):
+        return "binding", "structure_prediction"
+    if "pde" in lowered or "partial differential" in lowered or "偏微分" in problem or "李对称" in problem:
+        return "pde", "pde_reduction"
+    if "half-iterate" in lowered or "half iterate" in lowered or "g∘g" in problem or "半迭代" in problem:
+        return "mathematics", "half_iterate"
+    if "prime" in lowered or "number theory" in lowered or "数论" in problem:
+        return "number_theory", "problem_generation"
+    return "unknown", None
+
+
+def _validate_recognition(value: dict[str, Any]) -> dict[str, Any]:
+    missing = [key for key in RECOGNITION_SCHEMA["required"] if key not in value]
+    allowed = set(RECOGNITION_SCHEMA["properties"])
+    extra = sorted(set(value) - allowed)
+    domain = value.get("domain")
+    intent = value.get("intent")
+    list_fields = ("entities", "constraints", "missing_fields")
+    types_ok = all(isinstance(value.get(key), list) and all(isinstance(item, str) for item in value[key]) for key in list_fields)
+    confidence = value.get("confidence")
+    confidence_ok = isinstance(confidence, (int, float)) and not isinstance(confidence, bool) and 0 <= float(confidence) <= 1
+    checks = {
+        "required_fields": not missing,
+        "additional_properties": not extra,
+        "domain_enum": domain in RECOGNITION_DOMAINS,
+        "intent_enum": intent in RECOGNITION_INTENTS,
+        "list_types": types_ok,
+        "confidence_range": confidence_ok,
+    }
+    if not all(checks.values()):
+        raise ValueError(f"recognition schema rejected: {checks}; missing={missing}; extra={extra}")
+    return {
+        "domain": str(domain),
+        "intent": str(intent),
+        "entities": [item.strip()[:120] for item in value["entities"] if item.strip()],
+        "constraints": [item.strip()[:180] for item in value["constraints"] if item.strip()],
+        "missing_fields": [item.strip()[:120] for item in value["missing_fields"] if item.strip()],
+        "confidence": round(float(confidence), 4),
+        "schema_checks": checks,
+    }
+
+
+def _recognition_gate(problem: str, recognition: dict[str, Any]) -> dict[str, Any]:
+    expected_domain, expected_intent = _expected_recognition(problem)
+    checks = {
+        "nonempty_input": bool(problem.strip()),
+        "domain_agrees_with_deterministic_hint": expected_domain == "unknown" or recognition.get("domain") == expected_domain,
+        "intent_agrees_with_deterministic_hint": expected_intent is None or recognition.get("intent") == expected_intent,
+        "no_scientific_result_fields": not any(
+            key in recognition for key in ("answer", "best_catalyst", "predicted_structure", "proof")
+        ),
+    }
+    return {
+        "status": "passed" if all(checks.values()) else "rejected",
+        "checks": checks,
+        "expected_domain": expected_domain,
+        "expected_intent": expected_intent,
+        "effect": "route metadata only; exact validators retain authority",
+    }
+
+
 def _run_codex(payload: dict[str, Any]) -> dict[str, Any]:
     codex = shutil.which("codex.cmd") or shutil.which("codex")
     if not codex:
@@ -665,13 +821,22 @@ def _run_codex(payload: dict[str, Any]) -> dict[str, Any]:
 def _run_qwen(payload: dict[str, Any]) -> dict[str, Any]:
     status = _ollama_status()
     if not status.get("ready") or not status.get("model"):
-        raise RuntimeError("local qwen3:8b is unavailable")
+        raise RuntimeError(
+            f"local Qwen3-8B-Jailbroken is unavailable; requested={status.get('requested_model')}"
+        )
     body = {
         "model": status["model"],
-        "prompt": _solver_prompt(payload),
+        "prompt": _recognition_prompt(payload),
         "stream": False,
-        "format": json.loads(SCHEMA.read_text("utf-8")),
-        "options": {"temperature": 0, "num_predict": 1400},
+        "think": False,
+        "format": RECOGNITION_SCHEMA,
+        "keep_alive": "5m",
+        "options": {
+            "temperature": 0,
+            "seed": 0,
+            "num_ctx": 4096,
+            "num_predict": 320,
+        },
     }
     request = Request(
         "http://127.0.0.1:11434/api/generate",
@@ -679,11 +844,37 @@ def _run_qwen(payload: dict[str, Any]) -> dict[str, Any]:
         headers={"Content-Type": "application/json", "Accept": "application/json"},
         method="POST",
     )
-    with urlopen(request, timeout=150) as response:
+    with urlopen(request, timeout=180) as response:
         reply = json.loads(response.read().decode("utf-8"))
     if reply.get("error"):
         raise RuntimeError(str(reply["error"]))
-    return _parse_json(str(reply.get("response", "")))
+    response_text = str(reply.get("response") or "").strip()
+    thinking_text = str(reply.get("thinking") or "").strip()
+    output_channel = "response" if response_text else "thinking_fallback"
+    parsed = _validate_recognition(_parse_json(response_text or thinking_text))
+    problem = str(payload.get("problem", "")).strip()
+    gate = _recognition_gate(problem, parsed)
+    exact_result = analyze_general(payload)
+    exact_result["recognition"] = {
+        **parsed,
+        "gate": gate,
+        "model": status["model"],
+        "model_digest": status.get("digest"),
+        "input_sha256": hashlib.sha256(problem.encode("utf-8")).hexdigest(),
+        "role": "recognition_only",
+        "scientific_authority": False,
+        "runtime": {
+            "output_channel": output_channel,
+            "done_reason": reply.get("done_reason"),
+            "prompt_eval_count": reply.get("prompt_eval_count"),
+            "eval_count": reply.get("eval_count"),
+            "total_duration_ms": round(float(reply.get("total_duration", 0)) / 1_000_000, 3),
+        },
+    }
+    exact_result["source"] = "local_qwen_recognition_then_exact_kernel"
+    if gate["status"] != "passed":
+        exact_result["status"] = "recognition_rejected"
+    return exact_result
 
 
 def _run_deepseek(payload: dict[str, Any]) -> dict[str, Any]:
@@ -716,7 +907,18 @@ def solver_run(payload: dict[str, Any]) -> dict[str, Any]:
     try:
         result = _run_qwen(payload) if provider == "qwen" else _run_codex(payload) if provider == "codex" else _run_deepseek(payload)
         result.setdefault("model_receipt", {})
-        result["model_receipt"].update({"provider": provider, "calls": 1, "max_calls": 1, "pdf_saved": False})
+        result["model_receipt"].update(
+            {
+                "provider": provider,
+                "calls": 1,
+                "max_calls": 1,
+                "pdf_saved": False,
+                "role": "recognition_only" if provider == "qwen" else "structured_solver_adapter",
+                "model": result.get("recognition", {}).get("model") if provider == "qwen" else None,
+                "model_digest": result.get("recognition", {}).get("model_digest") if provider == "qwen" else None,
+                "exact_validation": result.get("recognition", {}).get("gate", {}).get("status") if provider == "qwen" else "required",
+            }
+        )
         return result
     except Exception:
         MODEL_CALLS -= 1
@@ -730,6 +932,8 @@ def health() -> dict[str, Any]:
         "python": os.sys.version.split()[0],
         "panel": "math-structurer.v0.5",
         "qwen_ready": harness["qwen_local"]["ready"],
+        "qwen_model": harness["qwen_local"].get("model"),
+        "qwen_model_digest": harness["qwen_local"].get("digest"),
         "codex_ready": harness["codex"]["ready"],
         "deepseek_harness_ready": harness["deepseek_harness"]["ready"],
         "alphaxiv_ready": harness["alphaxiv_mcp"]["ready"],

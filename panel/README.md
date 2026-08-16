@@ -16,7 +16,7 @@ Windows 也可使用 **python run.py**。离线结构检查：
 python3 run.py --check
 ~~~
 
-默认催化切片仅使用 Python 标准库、相对路径和回环地址。符号分支调试需要可选的 SymPy；本地 Lean、Qwen3-8B、Codex 和 DeepSeek 不可用时会显式显示“不可用”，不会阻断默认面板或静默替换后端。
+零模型核验切片仅使用 Python 标准库、相对路径和回环地址。默认交互识别需要本机 Ollama 的 Qwen3-8B-Jailbroken；符号分支调试需要可选的 SymPy。Lean、模型或其他后端不可用时会显式显示“不可用”，不会静默替换后端。
 
 ## 两个工作区
 
@@ -36,13 +36,13 @@ B(u,v)=e^u-\operatorname{Log}v.
 
 ## 可选后端
 
-- **本地 Qwen3-8B**：通过 Ollama 的 **qwen3:8b**，每次最多一次语义解析；输出必须经过精确验证器。
+- **本地 Qwen3-8B-Jailbroken**：通过 Ollama 的 **hf.co/mradermacher/Qwen3-8B-Jailbroken-GGUF:Q4_K_M**，每次最多一次目标识别；只允许返回域、意图、实体、约束和缺项，输出必须经过确定性验证器。`Jailbroken` 仅为检查点名称，不构成可信或科学验证保证。
 - **本机 Codex**：只读、无审批模式，可通过已配置的 alphaXiv MCP 读取论文。
 - **DeepSeek**：只在用户显式选择且凭证与 cross-verify harness 可用时调用。
 - **Lean 4**：核验明示命题，不把科学结论写成公理。
 
 ## 验证边界
 
-本轮 Windows 实测为 **13 passed**；真实 Chrome 验收覆盖双工作区、KaTeX、守恒、文献跳转、二维／三维切换、390 px 布局、特定算子反例与 Lean 状态。浏览器验收期间外网请求为 0、模型调用为 0。Linux 与 macOS 使用同一入口，但在真实平台或持续集成复跑前仅标为“设计适配、未实测”。
+本轮 Windows 回归测试为 **18 passed**。零模型 Chrome 基准覆盖双工作区、KaTeX、守恒、文献跳转、二维／三维切换、390 px 布局、特定算子反例与 Lean 状态，期间外网请求为 0、模型调用为 0。另一次隔离 Chrome 验收真实调用上述 Qwen 检查点一次，确认受限识别字段、精确模型摘要、确定性闸门、配平与拒绝无条件排名均可见；浏览器侧外网请求仍为 0。对应收据分别为 `artifacts/panel/browser_acceptance.json`、`artifacts/qwen_recognition_acceptance.json` 和 `artifacts/qwen_recognition_browser_acceptance.json`。Linux 与 macOS 使用同一入口，但在真实平台或持续集成复跑前仅标为“设计适配、未实测”。
 
 面板不提供导出、下载或 PDF 保存功能。检索失败不等于研究不存在；元数据不等于实验结论；示意图不等于弛豫结构；有限采样和 **sorry** 都不等于证明。

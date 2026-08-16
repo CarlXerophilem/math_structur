@@ -1,6 +1,6 @@
 {
-  "checked_at": "2026-08-17T03:16:33.450551+09:00",
-  "python_tests": "16 passed in 3.83s",
+  "checked_at": "2026-08-17T03:56:50.863885+09:00",
+  "python_tests": "18 passed in 4.70s",
   "quick_check": {
     "element_conservation": "passed",
     "external_network_requests": 0,
@@ -9,7 +9,7 @@
     "panel_http": 200,
     "status": "passed"
   },
-  "browser": {
+  "browser_zero_model": {
     "status": "passed",
     "external_network_requests": 0,
     "model_calls": "调用 0 / 1",
@@ -21,11 +21,46 @@
     "operator_contract": "B: C x C^times -> C; pointwise principal Log; Arg(v) in (-pi,pi]",
     "tree_label": "基算子复合表达树"
   },
+  "qwen_recognition": {
+    "status": "passed",
+    "model": "hf.co/mradermacher/Qwen3-8B-Jailbroken-GGUF:Q4_K_M",
+    "model_digest": "ca6da952658c16e9eafcf68cb6a1719dbdc67891c89cff06f0394a722508a5d8",
+    "model_size_bytes": 5027786509,
+    "elapsed_seconds": 14.395,
+    "external_network_requests": 0,
+    "domain": "reaction",
+    "intent": "catalyst_search",
+    "missing_fields": [
+      "temperature",
+      "pressure",
+      "candidate_space",
+      "objective_measurements",
+      "baseline"
+    ],
+    "gate": "passed",
+    "balanced_equation": "2 CO2(g) + 6 H2(g) -> C2H5OH(g) + 3 H2O(g)",
+    "element_conservation": [
+      0,
+      0,
+      0
+    ],
+    "best_status": "abstain_until_conditions_candidate_space_and_measurements_are_fixed",
+    "scientific_boundary": "The local model only recognized target metadata. It did not rank catalysts, simulate activity, predict a relaxed structure, or prove a theorem."
+  },
+  "qwen_browser": {
+    "status": "passed",
+    "provider": "qwen",
+    "model_calls": "调用 1 / 1",
+    "external_browser_requests": 0,
+    "console_errors": 0,
+    "page_errors": 0,
+    "request_failures": 0
+  },
   "word": {
-    "checked_at": "2026-08-17T03:15:30.162550+09:00",
+    "checked_at": "2026-08-17T03:53:18.759627+09:00",
     "file": "GOAI_四页提交稿_Math_Structurer.docx",
-    "sha256": "b6b67115843ca794b9c5113120dfdd127305b6db57022c53ae87d9c7abe93899",
-    "bytes": 708620,
+    "sha256": "55aa3463d85ee305f5b377c8ddef53f2c0c89a242a4579240519fd496bb82ea8",
+    "bytes": 716496,
     "application": "Microsoft Word 16.0",
     "method": "Document.Repaginate + ComputeStatistics(wdStatisticPages)",
     "repaginated": true,
@@ -46,7 +81,7 @@
       "https://proceedings.mlr.press/v162/brandstetter22a.html"
     ],
     "pdf_exported": false,
-    "word_processes_after_cleanup": 0,
+    "generation_source": "build_word.py with current artifacts/visuals",
     "status": "passed_exactly_four_pages"
   },
   "platform": {
@@ -59,5 +94,5 @@
     "active_legacy_eml_terms": 0,
     "raw_session_logs_published": false
   },
-  "scientific_boundary": "no catalyst activity simulation; no catalyst ranking; current discovery signal is problem-definition revision; scientific discovery gate not passed"
+  "scientific_boundary": "local model performed recognition only; no catalyst activity simulation or ranking; current discovery signal is problem-definition revision; scientific discovery gate not passed"
 }

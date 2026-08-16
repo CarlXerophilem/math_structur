@@ -1,0 +1,75 @@
+{
+  "checked_at": "2026-08-16T18:52:38.754Z",
+  "browser": "system Chrome via Playwright; isolated profile",
+  "provider": "qwen",
+  "assertions": {
+    "domain_intent": "识别域／意图：reaction／catalyst_search",
+    "model": "模型：hf.co/mradermacher/Qwen3-8B-Jailbroken-GGUF:Q4_K_M",
+    "exact_validation": "精确核验：通过：识别闸门、配平与 Aν=0",
+    "model_calls": "调用 1 / 1",
+    "input_audit": "原始守恒检查=未通过 · @best=条件欠定，拒绝排名",
+    "external_browser_requests": 0
+  },
+  "requests": [
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8766/?provider=qwen"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8766/vendor/katex/katex.min.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8766/styles.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8766/vendor/katex/katex.min.js"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8766/app.js"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8766/api/health"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8766/api/harness/status"
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8766/api/solver/run"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8766/vendor/katex/fonts/KaTeX_Math-Italic.woff2"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8766/vendor/katex/fonts/KaTeX_Main-Regular.woff2"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8766/vendor/katex/fonts/KaTeX_AMS-Regular.woff2"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8766/vendor/katex/fonts/KaTeX_SansSerif-Regular.woff2"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8766/api/health"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8766/api/harness/status"
+    }
+  ],
+  "console_errors": [],
+  "page_errors": [],
+  "request_failures": [],
+  "status": "passed"
+}

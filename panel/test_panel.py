@@ -6,6 +6,8 @@ import subprocess
 import threading
 from urllib.request import Request, urlopen
 
+import pytest
+
 import serve_panel
 
 
@@ -45,6 +47,11 @@ def test_static_delivery_has_exactly_two_panels_and_no_export_surface():
     assert "Arg(v)∈(−π,π]" in html
     assert "当前测试域" in html
     assert "基算子复合表达树" in html
+    assert "Qwen3-8B-Jailbroken" in html
+    assert '<option value="qwen" selected>' in html
+    assert 'id="recognition-domain-intent"' in html
+    assert 'id="recognition-model"' in html
+    assert 'id="recognition-validation"' in html
     assert "函数空间" not in html
     assert "不主张统一代数" in html
     assert "E" + "ML" not in html
@@ -134,6 +141,9 @@ def test_unregistered_general_request_requires_harness_without_inventing_geometr
 def test_local_codex_alphaxiv_and_lean_interfaces_are_detected_without_calling_models():
     serve_panel.harness_status.cache_clear()
     status = serve_panel.harness_status()
+    missing = [name for name in ("codex", "alphaxiv_mcp", "lean") if not status[name]["ready"]]
+    if missing:
+        pytest.skip(f"optional local harnesses unavailable: {', '.join(missing)}")
     assert status["codex"]["ready"] is True
     assert "codex" in status["codex"]["detail"].lower()
     assert status["codex"]["sandbox"] == "read-only"
@@ -142,6 +152,54 @@ def test_local_codex_alphaxiv_and_lean_interfaces_are_detected_without_calling_m
     assert status["lean"]["ready"] is True
     assert status["max_calls_per_run"] == 1
     assert status["model_calls"] == 0
+
+
+def test_jailbroken_qwen_is_the_only_default_recognition_model():
+    installed = [
+        "qwen3:8b",
+        "hf.co/mradermacher/Qwen3-8B-Jailbroken-GGUF:Q4_K_M",
+    ]
+    selected, requested = serve_panel._select_qwen_model(installed)
+    assert selected == serve_panel.QWEN_JAILBROKEN_MODEL
+    assert requested == serve_panel.QWEN_JAILBROKEN_MODEL
+    missing, requested = serve_panel._select_qwen_model(["qwen3:8b"])
+    assert missing is None
+    assert requested == serve_panel.QWEN_JAILBROKEN_MODEL
+    alias, requested = serve_panel._select_qwen_model(
+        ["hf.co/mradermacher/Qwen3-8B-Jailbroken-GGUF:latest"]
+    )
+    assert alias is None
+    assert requested == serve_panel.QWEN_JAILBROKEN_MODEL
+    configured, requested = serve_panel._select_qwen_model(installed, "qwen3:8b")
+    assert configured == "qwen3:8b"
+    assert requested == "qwen3:8b"
+
+
+def test_qwen_recognition_is_schema_limited_and_deterministically_gated():
+    recognition = serve_panel._validate_recognition({
+        "domain": "reaction",
+        "intent": "catalyst_search",
+        "entities": ["CO2gas", "H2gas", "CH3CH2OHgas"],
+        "constraints": [],
+        "missing_fields": ["temperature", "pressure", "candidate_space", "objective_measurements", "baseline"],
+        "confidence": 0.95,
+    })
+    gate = serve_panel._recognition_gate(
+        "CO2gas+H2gas -- CH3CH2OHgas @best",
+        recognition,
+    )
+    assert gate["status"] == "passed"
+    assert gate["effect"] == "route metadata only; exact validators retain authority"
+    wrong = dict(recognition, domain="mathematics", intent="half_iterate")
+    assert serve_panel._recognition_gate(
+        "CO2gas+H2gas -- CH3CH2OHgas @best",
+        wrong,
+    )["status"] == "rejected"
+    with pytest.raises(ValueError, match="additional_properties"):
+        serve_panel._validate_recognition({
+            **recognition,
+            "best_catalyst": "unsupported scientific answer",
+        })
 
 
 def test_runtime_paths_are_portable_and_api_status_redacts_local_absolute_paths():
@@ -189,6 +247,9 @@ def test_finite_iteration_root_checks_closure_before_composition():
 
 
 def test_fixed_lean_files_compile_with_honest_axiom_boundary():
+    upstream = serve_panel.PRIME_REPO / "PrimeLoopVerification" / "Basic.lean"
+    if serve_panel._lean_executable() is None or not upstream.is_file():
+        pytest.skip("optional pinned Lean toolchain or prime-loop source unavailable")
     result = serve_panel.lean_check()
     assert result["status"] == "partial_formalization"
     assert result["results"]["reaction_balance"]["status"] == "passed"

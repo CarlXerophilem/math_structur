@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-08-16T18:14:44.638Z",
+  "checked_at": "2026-08-16T18:52:33.510Z",
   "base_url": "http://127.0.0.1:8766/",
   "browser": "system Chrome via Playwright; isolated profile",
   "assertions": {
@@ -61,7 +61,7 @@
   "requests": [
     {
       "method": "GET",
-      "url": "http://127.0.0.1:8766/"
+      "url": "http://127.0.0.1:8766/?provider=local"
     },
     {
       "method": "GET",

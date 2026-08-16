@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d2538'/%3E%3Cpath d='M12 18h40v7H36v21h-8V25H12z' fill='%23e9c46a'/%3E%3C/svg%3E">
+  <title>Math Structurer</title>
+  <link rel="stylesheet" href="vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#workspace">跳到工作区</a>
+
+  <header class="topbar">
+    <div class="brand">
+      <p>GOAI · OPEN EXPLORATION</p>
+      <h1>Math <span>Structurer</span></h1>
+      <strong class="project-tagline">Convincing, reusable target-matching skills for AI research agents.</strong>
+      <code>target → type + constraints + basis → tasks → oracle → 2D/3D</code>
+    </div>
+    <div class="runtime" aria-live="polite">
+      <div><span id="server-dot" class="dot"></span><b id="server-status">connecting</b></div>
+      <div class="runtime-grid">
+        <span>Codex <b id="codex-status">—</b></span>
+        <span>DeepSeek <b id="deepseek-status">—</b></span>
+        <span>alphaXiv <b id="alphaxiv-status">—</b></span>
+        <span>Lean 4 <b id="lean-runtime-status">—</b></span>
+      </div>
+      <button id="lean-check-global" class="micro-button" type="button">Lean check</button>
+    </div>
+  </header>
+
+  <nav class="tabs" aria-label="工具模式">
+    <button class="tab is-active" data-mode="general" aria-selected="true">
+      <span>01</span><b>广义分析器</b><small>分解 · 基空间 · 催化 · 2D/3D</small>
+    </button>
+    <button class="tab" data-mode="iterate" aria-selected="false">
+      <span>02</span><b>迭代 · 反逆调试</b><small>EML · f⁻¹ · gⁿ=f · Lean</small>
+    </button>
+  </nav>
+
+  <main id="workspace">
+    <section id="panel-general" class="mode-panel is-active" data-panel="general">
+      <form id="general-form" class="control-panel">
+        <div class="field-wide">
+          <label for="problem-input">QUERY</label>
+          <textarea id="problem-input" rows="3">CO2gas+H2gas -- CH3CH2OHgas @best</textarea>
+        </div>
+
+        <div class="form-grid">
+          <label>DOMAIN
+            <select id="problem-domain">
+              <option value="auto">auto</option>
+              <option value="reaction">reaction / catalyst</option>
+              <option value="binding">molecule / protein binding</option>
+              <option value="mathematics">mathematics</option>
+            </select>
+          </label>
+          <label>BASIS
+            <select id="basis-select">
+              <option value="stoichiometric_kernel">ker(A) + graph</option>
+              <option value="symmetry_invariants">symmetry invariants</option>
+              <option value="spectral_graph">spectral graph basis</option>
+              <option value="lie_generators">Lie generator basis</option>
+              <option value="hybrid">hybrid registered basis</option>
+            </select>
+          </label>
+          <label>DIMENSION
+            <input id="basis-dimension" type="number" min="1" max="12" value="4">
+          </label>
+          <label>HARNESS
+            <select id="solver-provider">
+              <option value="local">local exact kernel</option>
+              <option value="codex">local Codex CLI + alphaXiv MCP</option>
+              <option value="deepseek">DeepSeek cross-verify harness</option>
+              <option value="auto">auto-select one harness</option>
+            </select>
+          </label>
+        </div>
+
+        <fieldset class="weights">
+          <legend>OBJECTIVE w</legend>
+          <label>activity <input id="weight-activity" type="range" min="0" max="100" value="25"><output>25</output></label>
+          <label>selectivity <input id="weight-selectivity" type="range" min="0" max="100" value="35"><output>35</output></label>
+          <label>stability <input id="weight-stability" type="range" min="0" max="100" value="25"><output>25</output></label>
+          <label>cost <input id="weight-cost" type="range" min="0" max="100" value="15"><output>15</output></label>
+        </fieldset>
+
+        <div class="run-row">
+          <button class="run-button" type="submit">RUN</button>
+          <code id="call-budget">calls 0 / 1</code>
+        </div>
+      </form>
+
+      <div class="analysis-grid">
+        <section class="card equation-card">
+          <header><h2>Math filter / typed target</h2><span id="general-status" class="badge">idle</span></header>
+          <code id="solver-contract" class="contract-line">user target → typed logic → connected spaces → plugins → oracle</code>
+          <div id="standard-formula" class="formula-display" aria-label="标准数学公式">—</div>
+          <div class="equation" id="normalized-equation">—</div>
+          <code id="input-audit">—</code>
+          <div id="target-function" class="formula-inline" aria-label="目标函数">—</div>
+          <div id="objective-vector" class="math-line">J = —</div>
+          <p id="reaction-language" class="reaction-language">—</p>
+        </section>
+
+        <section class="card basis-card">
+          <header><h2>Connected spaces / basis</h2><span id="basis-state" class="badge">—</span></header>
+          <code id="basis-operator">Π<sub>B</sub> : X → ℝᵏ</code>
+          <div id="space-chain" class="space-chain"></div>
+          <div id="plugin-route" class="plugin-route"></div>
+          <div id="basis-matrix" class="matrix-wrap"></div>
+        </section>
+
+        <section class="card tasks-card">
+          <header><h2>Machine problems</h2><span class="badge">M0…Mn</span></header>
+          <div id="machine-tasks" class="task-list"></div>
+        </section>
+
+        <section class="card candidates-card">
+          <header><h2>Catalyst candidates · unranked</h2><span id="candidate-count" class="badge">0</span></header>
+          <div id="candidate-list" class="candidate-list"></div>
+        </section>
+
+        <section class="card geometry-card">
+          <header>
+            <div><h2>Geometry</h2><code id="geometry-title">—</code></div>
+            <div class="segmented" role="group" aria-label="几何维度">
+              <button class="is-active" data-view="2d" type="button">2D</button>
+              <button data-view="3d" type="button">3D</button>
+            </div>
+          </header>
+          <svg id="geometry-2d" viewBox="0 0 720 430" role="img" aria-label="二维几何构型"></svg>
+          <canvas id="geometry-3d" width="720" height="430" aria-label="可旋转三维几何构型" hidden></canvas>
+          <div class="geometry-meta">
+            <code id="geometry-quotient">—</code><code id="geometry-count">—</code>
+            <code id="geometry-symmetry">—</code><code id="geometry-smiles">—</code>
+          </div>
+        </section>
+
+        <section class="card lean-card">
+          <header><h2>Lean 4</h2><span id="lean-status" class="badge">idle</span></header>
+          <div id="lean-proposition" class="math-line">—</div>
+          <div id="lean-assumptions" class="token-row"></div>
+          <pre id="lean-detail">—</pre>
+        </section>
+
+        <section class="card references-card">
+          <header><h2>References</h2><span class="badge">alphaXiv MCP / DOI source</span></header>
+          <ol id="reference-list"></ol>
+        </section>
+      </div>
+    </section>
+
+    <section id="panel-iterate" class="mode-panel" data-panel="iterate" hidden>
+      <div class="expander-boundary">
+        <b>EMLExpander</b><code>eligible scalar analytic subtree only</code><span>algebraic structure: unconfirmed</span>
+      </div>
+      <form id="iterate-form" class="control-panel iterate-controls">
+        <div class="form-grid">
+          <label>OPERATOR
+            <select id="iterate-kind">
+              <option value="eml">EML expression</option>
+              <option value="finite">finite g²=f</option>
+              <option value="inverse">inverse / gⁿ=f obligation</option>
+            </select>
+          </label>
+          <label id="template-wrap">TARGET
+            <select id="function-template">
+              <option value="log">Log(x)</option>
+              <option value="exp">exp(x)</option>
+              <option value="identity">identity</option>
+            </select>
+          </label>
+          <label id="x-wrap">x
+            <input id="iterate-x" type="number" step="any" value="-1">
+          </label>
+          <label id="domain-wrap">DOMAIN
+            <select id="iterate-domain">
+              <option value="complex_nonzero">ℂ \ {0}</option>
+              <option value="positive_real">ℝ₊</option>
+              <option value="finite">finite D</option>
+            </select>
+          </label>
+          <label id="branch-wrap">BRANCH
+            <select id="iterate-branch"><option value="principal_complex_log">principal Log</option></select>
+          </label>
+          <label id="tolerance-wrap">ε
+            <input id="iterate-tolerance" value="1e-10">
+          </label>
+        </div>
+        <div id="finite-fields" class="form-grid is-hidden">
+          <label>f<input id="finite-f" value="0,1,2"></label>
+          <label>g<input id="finite-g" value="1,2,0"></label>
+        </div>
+        <div id="inverse-fields" class="form-grid is-hidden">
+          <label>RELATION<input id="inverse-relation" value="g^2 = f"></label>
+          <label>ASSUMPTIONS<input id="inverse-assumptions" value="g(D) ⊆ D; D fixed"></label>
+        </div>
+        <button class="run-button" type="submit">CHECK</button>
+      </form>
+
+      <div class="iterate-grid">
+        <section class="card result-card">
+          <header><h2>Oracle</h2><span id="iterate-status" class="badge">idle</span></header>
+          <div class="value-grid">
+            <div><span>compiled / g(g(x))</span><code id="iterate-compiled">—</code></div>
+            <div><span>reference / f(x)</span><code id="iterate-reference">—</code></div>
+            <div><span>error / counterexample</span><code id="iterate-error">—</code></div>
+          </div>
+          <pre id="iterate-trace">—</pre>
+        </section>
+        <section class="card ast-card">
+          <header><h2>Expression graph</h2><code id="iterate-obligation">—</code></header>
+          <svg id="iterate-ast" viewBox="0 0 720 430" role="img" aria-label="迭代表达图"></svg>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <footer><code>Aν=0 · Π<sub>B</sub> · R<sup>3n</sup>/SE(3) · f∘g · Lean kernel</code><span>Math Structurer v0.4</span></footer>
+  <script src="vendor/katex/katex.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+__pycache__/
+.pytest_cache/
+*.py[cod]
+archive/
+GOAI_submission_bundle.zip

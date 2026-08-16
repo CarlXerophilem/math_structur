@@ -1,0 +1,15 @@
+{
+  "validated_at": "2026-08-17T00:30:28.3470713+09:00",
+  "application": "Microsoft Word",
+  "version": "16.0",
+  "file": "GOAI_四页提交稿_Math_Structurer.docx",
+  "pages": 4,
+  "inline_shapes": 4,
+  "paragraphs": 150,
+  "required_sections": 12,
+  "missing_sections": [],
+  "sha256": "d9d8a5bdfeb9537f006a967f9dbc594de9d27a3d62ef84376e60707849f67416",
+  "zip_open": "passed",
+  "docx_members": 22,
+  "bytes": 226430
+}

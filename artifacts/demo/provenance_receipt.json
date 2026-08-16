@@ -1,0 +1,104 @@
+{
+  "generated_at": "2026-08-17T00:50:38.593750+09:00",
+  "project": "Math Structurer minimum EML scientific slice",
+  "python": "3.14.2",
+  "sympy": "1.14.0",
+  "commands": [
+    "python demo/run_demo.py",
+    "python -m pytest -q demo/test_demo.py",
+    "python demo/generate_visuals.py"
+  ],
+  "pytest_exit_code": 0,
+  "pytest_result": "............                                                             [100%]\n\n12 passed in 0.50s",
+  "lean_available": true,
+  "lean_toolchain": "leanprover/lean4:v4.29.0-rc6",
+  "lean_status": "partial_formalization",
+  "local_contract_status": "passed",
+  "prime_eml_status": "accepted_with_sorry",
+  "prime_eml_limit": "reconstruct_ln uses sorry; no completed proof claim",
+  "adaptive_first_failure_step": 2,
+  "random_median_first_failure_step": 2,
+  "superiority_claim": false,
+  "files": [
+    {
+      "path": "artifacts/demo/events.jsonl",
+      "bytes": 3222,
+      "sha256": "32c66b3913afaf8a797dfee0d569e9ca787ec54d83cc61d092eb939fcf056277"
+    },
+    {
+      "path": "artifacts/demo/lean_status.txt",
+      "bytes": 739,
+      "sha256": "96d87466b437d7e9c54c0e901e9d4bde95ff25760912dbe977f3c5b0d7f19295"
+    },
+    {
+      "path": "artifacts/demo/pytest.txt",
+      "bytes": 103,
+      "sha256": "becef649669b43eca0e1ffd1eacc5b5e90d484e8f4eb002a7b361aacb508af09"
+    },
+    {
+      "path": "artifacts/demo/results.json",
+      "bytes": 13687,
+      "sha256": "79c2b39115b234f3f0a4b6d8cdbfd18ec90315717f1b62b5bd790e6540c0e230"
+    },
+    {
+      "path": "artifacts/demo/run_demo_stdout.txt",
+      "bytes": 354,
+      "sha256": "8376186cd1757dc27404fcf27cd1c09155d6332dec93129fffca7e63955b7856"
+    },
+    {
+      "path": "demo/README.md",
+      "bytes": 1067,
+      "sha256": "30fca6ef9d21e9f817147353f144f031216dd810b7d13cf981e4c49c4345caa1"
+    },
+    {
+      "path": "demo/contracts/eml_compiled_ln.json",
+      "bytes": 667,
+      "sha256": "b1967224fae919c17df079cfc9e83638ccd7c1f0860f22c2f277c4d731e09441"
+    },
+    {
+      "path": "demo/function_contract.py",
+      "bytes": 10194,
+      "sha256": "3fa93b40120f0ca716bf90d5c9f254f9217147e0523c327a6f10639be7a0b003"
+    },
+    {
+      "path": "demo/generate_visuals.py",
+      "bytes": 7609,
+      "sha256": "e796bfd54c4d421fca105f1aa5c8d1d81822efc650429721b487dce5cda29d9a"
+    },
+    {
+      "path": "demo/lean/FunctionContract.lean",
+      "bytes": 679,
+      "sha256": "d2459d49ac2f095316193a9249c5872a9a2a000b589e5e636fade83d1a1581b7"
+    },
+    {
+      "path": "demo/run_demo.py",
+      "bytes": 7675,
+      "sha256": "f6c5bfec35e1638c74cf1ba84e4bba5a143a48115cf67c9b95cb66ced1303c0d"
+    },
+    {
+      "path": "demo/test_demo.py",
+      "bytes": 2512,
+      "sha256": "51eb5ee80b641e9f9bdc6fbfb98b9e3b21b0fffa96042f249ac1fb0cc45351ee"
+    },
+    {
+      "path": "artifacts/visuals/page1_branch_mismatch.png",
+      "bytes": 48430,
+      "sha256": "d52a93ae9a4f5153febb0bab50983d32716a354d5d32490f9e9b40c844b7e511"
+    },
+    {
+      "path": "artifacts/visuals/page2_environment_loop.png",
+      "bytes": 57301,
+      "sha256": "72e70d5e1affa4c102cc4b17f90dd41b37d59b3d6b22e88cf0a603e15194c8dc"
+    },
+    {
+      "path": "artifacts/visuals/page3_baseline_result.png",
+      "bytes": 43486,
+      "sha256": "e45ed073bdda4632a168eef2a1a7479e95e6f7f94c325ffdbe87a4211675e918"
+    },
+    {
+      "path": "artifacts/visuals/page4_reproduction.png",
+      "bytes": 42053,
+      "sha256": "23a3c89ce8e1123299bcc1f77f508164ecf881a25c36d7724334283cacc69404"
+    }
+  ]
+}

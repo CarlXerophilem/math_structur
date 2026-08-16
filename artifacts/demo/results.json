@@ -1,0 +1,495 @@
+{
+  "runtime": {
+    "python": "3.14.2"
+  },
+  "research_claim": "minimum environment reproduction of a known EML branch failure, not a new theorem",
+  "adaptive": {
+    "budget": 5,
+    "events": [
+      {
+        "step": 1,
+        "action": {
+          "probe": 1.0
+        },
+        "feedback": {
+          "status": "equivalent",
+          "input": 1.0,
+          "compiled_value": {
+            "real": -3.4730605460704336e-164,
+            "imag": 0.0
+          },
+          "reference_value": {
+            "real": 0.0,
+            "imag": 0.0
+          },
+          "absolute_error": 3.4730605460704336e-164,
+          "reason": "values agree within tolerance",
+          "oracle_trace": [
+            "branch_policy=principal_complex_log",
+            "compiled_backend=sympy_symbolic_then_numeric",
+            "compiled_symbolic=-log(-log(1) + exp(exp(1))) + exp(1)",
+            "reference_symbolic=0",
+            "recursive_cmath_auxiliary=0j"
+          ]
+        },
+        "next_action_reason": "positive point agreed; probe sign-reflected point for branch asymmetry"
+      },
+      {
+        "step": 2,
+        "action": {
+          "probe": -1.0
+        },
+        "feedback": {
+          "status": "mismatch",
+          "input": -1.0,
+          "compiled_value": {
+            "real": -2.407412430484045e-35,
+            "imag": -3.141592653589793
+          },
+          "reference_value": {
+            "real": 0.0,
+            "imag": 3.141592653589793
+          },
+          "absolute_error": 6.283185307179586,
+          "reason": "principal-branch values differ; inspect negative-real-axis branch",
+          "oracle_trace": [
+            "branch_policy=principal_complex_log",
+            "compiled_backend=sympy_symbolic_then_numeric",
+            "compiled_symbolic=-log(log(1) + exp(exp(1))) + exp(1) - I*pi",
+            "reference_symbolic=I*pi",
+            "recursive_cmath_auxiliary=3.141592653589793j"
+          ]
+        },
+        "next_action_reason": "mismatch found; probe neighboring negative points and the zero boundary"
+      },
+      {
+        "step": 3,
+        "action": {
+          "probe": -2.0
+        },
+        "feedback": {
+          "status": "mismatch",
+          "input": -2.0,
+          "compiled_value": {
+            "real": 0.6931471805599453,
+            "imag": -3.141592653589793
+          },
+          "reference_value": {
+            "real": 0.6931471805599453,
+            "imag": 3.141592653589793
+          },
+          "absolute_error": 6.283185307179586,
+          "reason": "principal-branch values differ; inspect negative-real-axis branch",
+          "oracle_trace": [
+            "branch_policy=principal_complex_log",
+            "compiled_backend=sympy_symbolic_then_numeric",
+            "compiled_symbolic=-log(log(1) + exp(exp(1))/2) + exp(1) - I*pi",
+            "reference_symbolic=log(2) + I*pi",
+            "recursive_cmath_auxiliary=(0.6931471805599454+3.141592653589793j)"
+          ]
+        },
+        "next_action_reason": "mismatch found; probe neighboring negative points and the zero boundary"
+      },
+      {
+        "step": 4,
+        "action": {
+          "probe": -0.5
+        },
+        "feedback": {
+          "status": "mismatch",
+          "input": -0.5,
+          "compiled_value": {
+            "real": -0.6931471805599453,
+            "imag": -3.141592653589793
+          },
+          "reference_value": {
+            "real": -0.6931471805599453,
+            "imag": 3.141592653589793
+          },
+          "absolute_error": 6.283185307179586,
+          "reason": "principal-branch values differ; inspect negative-real-axis branch",
+          "oracle_trace": [
+            "branch_policy=principal_complex_log",
+            "compiled_backend=sympy_symbolic_then_numeric",
+            "compiled_symbolic=-log(log(1) + 2*exp(exp(1))) + exp(1) - I*pi",
+            "reference_symbolic=-log(2) + I*pi",
+            "recursive_cmath_auxiliary=(-0.6931471805599454+3.141592653589793j)"
+          ]
+        },
+        "next_action_reason": "mismatch found; probe neighboring negative points and the zero boundary"
+      },
+      {
+        "step": 5,
+        "action": {
+          "probe": 0.0
+        },
+        "feedback": {
+          "status": "undefined",
+          "input": 0.0,
+          "compiled_value": null,
+          "reference_value": null,
+          "absolute_error": null,
+          "reason": "compiled expression undefined: ValueError: symbolic result contains an undefined or infinite value",
+          "oracle_trace": [
+            "branch_policy=principal_complex_log",
+            "compiled_backend=sympy_symbolic_then_numeric"
+          ]
+        },
+        "next_action_reason": "record excluded boundary; do not coerce undefined to false"
+      }
+    ],
+    "revisions": [
+      "H0: uncorrected compiled ln matches principal log for every nonzero real x",
+      "H1: mismatch is supported on the negative real axis; restrict the uncorrected contract to x>0 or supply a branch correction",
+      "H2: x=0 is excluded because principal log is undefined"
+    ]
+  },
+  "random_baseline": {
+    "budget": 5,
+    "runs": [
+      {
+        "seed": 0,
+        "first_failure_step": 2,
+        "statuses": [
+          "equivalent",
+          "mismatch",
+          "mismatch",
+          "mismatch",
+          "equivalent"
+        ]
+      },
+      {
+        "seed": 1,
+        "first_failure_step": 1,
+        "statuses": [
+          "undefined",
+          "equivalent",
+          "equivalent",
+          "mismatch",
+          "mismatch"
+        ]
+      },
+      {
+        "seed": 2,
+        "first_failure_step": 1,
+        "statuses": [
+          "mismatch",
+          "undefined",
+          "mismatch",
+          "equivalent",
+          "equivalent"
+        ]
+      },
+      {
+        "seed": 3,
+        "first_failure_step": 1,
+        "statuses": [
+          "mismatch",
+          "mismatch",
+          "undefined",
+          "equivalent",
+          "equivalent"
+        ]
+      },
+      {
+        "seed": 4,
+        "first_failure_step": 4,
+        "statuses": [
+          "equivalent",
+          "equivalent",
+          "equivalent",
+          "undefined",
+          "mismatch"
+        ]
+      },
+      {
+        "seed": 5,
+        "first_failure_step": 2,
+        "statuses": [
+          "equivalent",
+          "undefined",
+          "mismatch",
+          "mismatch",
+          "equivalent"
+        ]
+      },
+      {
+        "seed": 6,
+        "first_failure_step": 1,
+        "statuses": [
+          "mismatch",
+          "equivalent",
+          "mismatch",
+          "undefined",
+          "mismatch"
+        ]
+      },
+      {
+        "seed": 7,
+        "first_failure_step": 4,
+        "statuses": [
+          "equivalent",
+          "equivalent",
+          "equivalent",
+          "mismatch",
+          "undefined"
+        ]
+      },
+      {
+        "seed": 8,
+        "first_failure_step": 3,
+        "statuses": [
+          "equivalent",
+          "equivalent",
+          "mismatch",
+          "equivalent",
+          "undefined"
+        ]
+      },
+      {
+        "seed": 9,
+        "first_failure_step": 1,
+        "statuses": [
+          "mismatch",
+          "equivalent",
+          "mismatch",
+          "equivalent",
+          "mismatch"
+        ]
+      },
+      {
+        "seed": 10,
+        "first_failure_step": 1,
+        "statuses": [
+          "mismatch",
+          "equivalent",
+          "mismatch",
+          "equivalent",
+          "undefined"
+        ]
+      },
+      {
+        "seed": 11,
+        "first_failure_step": 1,
+        "statuses": [
+          "mismatch",
+          "mismatch",
+          "mismatch",
+          "equivalent",
+          "equivalent"
+        ]
+      },
+      {
+        "seed": 12,
+        "first_failure_step": 2,
+        "statuses": [
+          "equivalent",
+          "mismatch",
+          "mismatch",
+          "equivalent",
+          "equivalent"
+        ]
+      },
+      {
+        "seed": 13,
+        "first_failure_step": 1,
+        "statuses": [
+          "undefined",
+          "mismatch",
+          "equivalent",
+          "equivalent",
+          "mismatch"
+        ]
+      },
+      {
+        "seed": 14,
+        "first_failure_step": 2,
+        "statuses": [
+          "equivalent",
+          "mismatch",
+          "undefined",
+          "mismatch",
+          "equivalent"
+        ]
+      },
+      {
+        "seed": 15,
+        "first_failure_step": 2,
+        "statuses": [
+          "equivalent",
+          "mismatch",
+          "undefined",
+          "equivalent",
+          "equivalent"
+        ]
+      },
+      {
+        "seed": 16,
+        "first_failure_step": 2,
+        "statuses": [
+          "equivalent",
+          "mismatch",
+          "mismatch",
+          "equivalent",
+          "equivalent"
+        ]
+      },
+      {
+        "seed": 17,
+        "first_failure_step": 2,
+        "statuses": [
+          "equivalent",
+          "mismatch",
+          "mismatch",
+          "equivalent",
+          "mismatch"
+        ]
+      },
+      {
+        "seed": 18,
+        "first_failure_step": 4,
+        "statuses": [
+          "equivalent",
+          "equivalent",
+          "equivalent",
+          "mismatch",
+          "undefined"
+        ]
+      },
+      {
+        "seed": 19,
+        "first_failure_step": 1,
+        "statuses": [
+          "mismatch",
+          "undefined",
+          "mismatch",
+          "equivalent",
+          "equivalent"
+        ]
+      }
+    ],
+    "median_first_failure_step": 2
+  },
+  "no_intervention_baseline": {
+    "policy": "positive interior points only",
+    "points": [
+      1.0,
+      2.0,
+      0.5
+    ],
+    "results": [
+      {
+        "status": "equivalent",
+        "input": 1.0,
+        "compiled_value": {
+          "real": -3.4730605460704336e-164,
+          "imag": 0.0
+        },
+        "reference_value": {
+          "real": 0.0,
+          "imag": 0.0
+        },
+        "absolute_error": 3.4730605460704336e-164,
+        "reason": "values agree within tolerance",
+        "oracle_trace": [
+          "branch_policy=principal_complex_log",
+          "compiled_backend=sympy_symbolic_then_numeric",
+          "compiled_symbolic=-log(-log(1) + exp(exp(1))) + exp(1)",
+          "reference_symbolic=0",
+          "recursive_cmath_auxiliary=0j"
+        ]
+      },
+      {
+        "status": "equivalent",
+        "input": 2.0,
+        "compiled_value": {
+          "real": 0.6931471805599453,
+          "imag": 0.0
+        },
+        "reference_value": {
+          "real": 0.6931471805599453,
+          "imag": 0.0
+        },
+        "absolute_error": 0.0,
+        "reason": "values agree within tolerance",
+        "oracle_trace": [
+          "branch_policy=principal_complex_log",
+          "compiled_backend=sympy_symbolic_then_numeric",
+          "compiled_symbolic=-log(-log(1) + exp(exp(1))/2) + exp(1)",
+          "reference_symbolic=log(2)",
+          "recursive_cmath_auxiliary=(0.6931471805599454+0j)"
+        ]
+      },
+      {
+        "status": "equivalent",
+        "input": 0.5,
+        "compiled_value": {
+          "real": -0.6931471805599453,
+          "imag": 0.0
+        },
+        "reference_value": {
+          "real": -0.6931471805599453,
+          "imag": 0.0
+        },
+        "absolute_error": 0.0,
+        "reason": "values agree within tolerance",
+        "oracle_trace": [
+          "branch_policy=principal_complex_log",
+          "compiled_backend=sympy_symbolic_then_numeric",
+          "compiled_symbolic=-log(-log(1) + 2*exp(exp(1))) + exp(1)",
+          "reference_symbolic=-log(2)",
+          "recursive_cmath_auxiliary=(-0.6931471805599454+0j)"
+        ]
+      }
+    ]
+  },
+  "sympy_baseline": {
+    "status": "computed",
+    "compiled_domain": "Interval.open(0, oo)",
+    "reference_domain": "Interval.open(0, oo)",
+    "note": "real continuity baseline; it does not compare complex principal-branch values"
+  },
+  "finite_map_calibration": {
+    "positive": {
+      "status": "proved_finite",
+      "reason": "checked every x in the declared finite domain",
+      "domain_size": 3
+    },
+    "counterexample": {
+      "status": "refuted",
+      "reason": "g(g(x)) != f(x)",
+      "counterexample": {
+        "x": 0,
+        "g_g_x": 2,
+        "f_x": 0
+      }
+    },
+    "closure_failure": {
+      "status": "invalid",
+      "reason": "g is not closed on D=0..2",
+      "counterexample": {
+        "input": 1,
+        "output": 3
+      }
+    }
+  },
+  "lean": {
+    "status": "partial_formalization",
+    "reason": "local obligation compiles; repository EML reconstruction remains incomplete because reconstruct_ln uses sorry",
+    "toolchain_bin": "C:\\Users\\Administrator\\.elan\\toolchains\\leanprover--lean4---v4.29.0-rc6\\bin",
+    "local_contract_export": {
+      "status": "passed",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "",
+      "source": "demo\\lean\\FunctionContract.lean"
+    },
+    "prime_eml": {
+      "status": "accepted_with_sorry",
+      "returncode": 0,
+      "stdout": "eml_verification\\eml.lean:47:8: warning: declaration uses `sorry`\n",
+      "stderr": "",
+      "source": "D:\\MATHs\\scripts\\shape_of_set\\prime_loop_verification\\eml_verification\\eml.lean"
+    }
+  }
+}

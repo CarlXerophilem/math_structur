@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "status",
+    "normalized_problem",
+    "standard_math",
+    "target_function",
+    "basis",
+    "machine_problems",
+    "spaces",
+    "plugin_route",
+    "geometry",
+    "references",
+    "lean"
+  ],
+  "properties": {
+    "status": { "type": "string" },
+    "source": { "type": "string" },
+    "input": { "type": "string" },
+    "normalized_problem": { "type": "object" },
+    "standard_math": {
+      "type": "object",
+      "required": ["display", "status"],
+      "properties": {
+        "display": { "type": "string" },
+        "logic": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "target_function": {
+      "type": "object",
+      "required": ["display", "nontriviality", "status"],
+      "properties": {
+        "display": { "type": "string" },
+        "nontriviality": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "basis": { "type": "object" },
+    "machine_problems": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "operator", "status"],
+        "properties": {
+          "id": { "type": "string" },
+          "operator": { "type": "string" },
+          "status": { "type": "string" },
+          "output": {},
+          "oracle": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "search_targets": { "type": "array", "items": { "type": "object" } },
+    "spaces": { "type": "array", "items": { "type": "object" } },
+    "plugin_route": { "type": "array", "items": { "type": "object" } },
+    "geometry": {
+      "type": "object",
+      "required": ["kind", "nodes", "edges"],
+      "properties": {
+        "kind": { "type": "string" },
+        "title": { "type": "string" },
+        "nodes": { "type": "array", "items": { "type": "object" } },
+        "edges": { "type": "array", "items": { "type": "array" } }
+      },
+      "additionalProperties": true
+    },
+    "references": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["title", "url"],
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "url": { "type": "string" },
+          "role": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "lean": { "type": "object" },
+    "model_receipt": { "type": "object" }
+  },
+  "additionalProperties": true
+}

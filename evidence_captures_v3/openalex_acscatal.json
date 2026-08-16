@@ -1,0 +1,1270 @@
+{
+  "id": "https://openalex.org/W3196838305",
+  "doi": "https://doi.org/10.1021/acscatal.1c01504",
+  "title": "Direct Conversion of CO<sub>2</sub> to Ethanol Boosted by Intimacy-Sensitive Multifunctional Catalysts",
+  "display_name": "Direct Conversion of CO<sub>2</sub> to Ethanol Boosted by Intimacy-Sensitive Multifunctional Catalysts",
+  "publication_year": 2021,
+  "publication_date": "2021-09-07",
+  "ids": {
+    "openalex": "https://openalex.org/W3196838305",
+    "doi": "https://doi.org/10.1021/acscatal.1c01504",
+    "mag": "3196838305"
+  },
+  "language": "en",
+  "primary_location": {
+    "id": "doi:10.1021/acscatal.1c01504",
+    "is_oa": false,
+    "landing_page_url": "https://doi.org/10.1021/acscatal.1c01504",
+    "pdf_url": null,
+    "source": {
+      "id": "https://openalex.org/S37391459",
+      "display_name": "ACS Catalysis",
+      "issn_l": "2155-5435",
+      "issn": [
+        "2155-5435"
+      ],
+      "is_oa": false,
+      "is_in_doaj": false,
+      "is_core": true,
+      "host_organization": "https://openalex.org/P4310320006",
+      "host_organization_name": "American Chemical Society",
+      "host_organization_lineage": [
+        "https://openalex.org/P4310320006"
+      ],
+      "host_organization_lineage_names": [
+        "American Chemical Society"
+      ],
+      "type": "journal"
+    },
+    "license": null,
+    "license_id": null,
+    "version": "publishedVersion",
+    "is_accepted": true,
+    "is_published": true,
+    "raw_source_name": "ACS Catalysis",
+    "raw_type": "journal-article"
+  },
+  "type": "article",
+  "indexed_in": [
+    "crossref"
+  ],
+  "open_access": {
+    "is_oa": false,
+    "oa_status": "closed",
+    "oa_url": null,
+    "any_repository_has_fulltext": false
+  },
+  "authorships": [
+    {
+      "author_position": "first",
+      "author": {
+        "id": "https://openalex.org/A5100662541",
+        "display_name": "Yang Wang",
+        "orcid": "https://orcid.org/0000-0003-2505-6847"
+      },
+      "institutions": [
+        {
+          "id": "https://openalex.org/I4210162190",
+          "display_name": "China University of Petroleum, East China",
+          "ror": "https://ror.org/05gbn2817",
+          "country_code": "CN",
+          "type": "education",
+          "lineage": [
+            "https://openalex.org/I4210162190"
+          ]
+        },
+        {
+          "id": "https://openalex.org/I42766147",
+          "display_name": "University of Toyama",
+          "ror": "https://ror.org/0445phv87",
+          "country_code": "JP",
+          "type": "education",
+          "lineage": [
+            "https://openalex.org/I42766147"
+          ]
+        }
+      ],
+      "countries": [
+        "CN",
+        "JP"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Yang Wang",
+      "raw_affiliation_strings": [
+        "Department of Applied Chemistry, Graduate School of Engineering, University of Toyama, Gofuku 3190, Toyama 930-8555, Japan",
+        "Institute of New Energy, College of New Energy, State Key Laboratory of Heavy Oil Processing, China University of Petroleum (East China), Qingdao 266580, China"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+        {
+          "raw_affiliation_string": "Department of Applied Chemistry, Graduate School of Engineering, University of Toyama, Gofuku 3190, Toyama 930-8555, Japan",
+          "institution_ids": [
+            "https://openalex.org/I42766147"
+          ]
+        },
+        {
+          "raw_affiliation_string": "Institute of New Energy, College of New Energy, State Key Laboratory of Heavy Oil Processing, China University of Petroleum (East China), Qingdao 266580, China",
+          "institution_ids": [
+            "https://openalex.org/I4210162190"
+          ]
+        }
+      ]
+    },
+    {
+      "author_position": "middle",
+      "author": {
+        "id": "https://openalex.org/A5103016109",
+        "display_name": "Kangzhou Wang",
+        "orcid": "https://orcid.org/0009-0002-2462-5470"
+      },
+      "institutions": [
+        {
+          "id": "https://openalex.org/I42766147",
+          "display_name": "University of Toyama",
+          "ror": "https://ror.org/0445phv87",
+          "country_code": "JP",
+          "type": "education",
+          "lineage": [
+            "https://openalex.org/I42766147"
+          ]
+        }
+      ],
+      "countries": [
+        "JP"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Kangzhou Wang",
+      "raw_affiliation_strings": [
+        "Department of Applied Chemistry, Graduate School of Engineering, University of Toyama, Gofuku 3190, Toyama 930-8555, Japan"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+        {
+          "raw_affiliation_string": "Department of Applied Chemistry, Graduate School of Engineering, University of Toyama, Gofuku 3190, Toyama 930-8555, Japan",
+          "institution_ids": [
+            "https://openalex.org/I42766147"
+          ]
+        }
+      ]
+    },
+    {
+      "author_position": "middle",
+      "author": {
+        "id": "https://openalex.org/A5033904254",
+        "display_name": "Baizhang Zhang",
+        "orcid": null
+      },
+      "institutions": [
+        {
+          "id": "https://openalex.org/I42766147",
+          "display_name": "University of Toyama",
+          "ror": "https://ror.org/0445phv87",
+          "country_code": "JP",
+          "type": "education",
+          "lineage": [
+            "https://openalex.org/I42766147"
+          ]
+        }
+      ],
+      "countries": [
+        "JP"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Baizhang Zhang",
+      "raw_affiliation_strings": [
+        "Department of Applied Chemistry, Graduate School of Engineering, University of Toyama, Gofuku 3190, Toyama 930-8555, Japan"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+        {
+          "raw_affiliation_string": "Department of Applied Chemistry, Graduate School of Engineering, University of Toyama, Gofuku 3190, Toyama 930-8555, Japan",
+          "institution_ids": [
+            "https://openalex.org/I42766147"
+          ]
+        }
+      ]
+    },
+    {
+      "author_position": "middle",
+      "author": {
+        "id": "https://openalex.org/A5021859777",
+        "display_name": "Xiaobo Peng",
+        "orcid": "https://orcid.org/0000-0002-4437-1546"
+      },
+      "institutions": [
+        {
+          "id": "https://openalex.org/I42766147",
+          "display_name": "University of Toyama",
+          "ror": "https://ror.org/0445phv87",
+          "country_code": "JP",
+          "type": "education",
+          "lineage": [
+            "https://openalex.org/I42766147"
+          ]
+        }
+      ],
+      "countries": [
+        "JP"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Xiaobo Peng",
+      "raw_affiliation_strings": [
+        "Department of Applied Chemistry, Graduate School of Engineering, University of Toyama, Gofuku 3190, Toyama 930-8555, Japan"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+        {
+          "raw_affiliation_string": "Department of Applied Chemistry, Graduate School of Engineering, University of Toyama, Gofuku 3190, Toyama 930-8555, Japan",
+          "institution_ids": [
+            "https://openalex.org/I42766147"
+          ]
+        }
+      ]
+    },
+    {
+      "author_position": "middle",
+      "author": {
+        "id": "https://openalex.org/A5053277179",
+        "display_name": "Xinhua Gao",
+        "orcid": "https://orcid.org/0000-0003-1368-1901"
+      },
+      "institutions": [
+        {
+          "id": "https://openalex.org/I21642278",
+          "display_name": "Ningxia University",
+          "ror": "https://ror.org/04j7b2v61",
+          "country_code": "CN",
+          "type": "education",
+          "lineage": [
+            "https://openalex.org/I21642278"
+          ]
+        }
+      ],
+      "countries": [
+        "CN"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Xinhua Gao",
+      "raw_affiliation_strings": [
+        "State Key Laboratory of High-Efficiency Utilization of Coal and Green Chemical Engineering, College of Chemistry & Chemical Engineering, Ningxia University, Yinchuan 750021, China"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+        {
+          "raw_affiliation_string": "State Key Laboratory of High-Efficiency Utilization of Coal and Green Chemical Engineering, College of Chemistry & Chemical Engineering, Ningxia University, Yinchuan 750021, China",
+          "institution_ids": [
+            "https://openalex.org/I21642278"
+          ]
+        }
+      ]
+    },
+    {
+      "author_position": "middle",
+      "author": {
+        "id": "https://openalex.org/A5067123324",
+        "display_name": "Guohui Yang",
+        "orcid": "https://orcid.org/0000-0001-9799-0984"
+      },
+      "institutions": [
+        {
+          "id": "https://openalex.org/I4210159903",
+          "display_name": "Institute of Coal Chemistry",
+          "ror": "https://ror.org/05j73fd60",
+          "country_code": "CN",
+          "type": "facility",
+          "lineage": [
+            "https://openalex.org/I19820366",
+            "https://openalex.org/I4210159903"
+          ]
+        },
+        {
+          "id": "https://openalex.org/I42766147",
+          "display_name": "University of Toyama",
+          "ror": "https://ror.org/0445phv87",
+          "country_code": "JP",
+          "type": "education",
+          "lineage": [
+            "https://openalex.org/I42766147"
+          ]
+        }
+      ],
+      "countries": [
+        "CN",
+        "JP"
+      ],
+      "is_corresponding": true,
+      "raw_author_name": "Guohui Yang",
+      "raw_affiliation_strings": [
+        "Department of Applied Chemistry, Graduate School of Engineering, University of Toyama, Gofuku 3190, Toyama 930-8555, Japan",
+        "State Key Laboratory of Coal Conversion, Institute of Coal Chemistry, Chinese Academy of Sciences, Taiyuan 030001, China"
+      ],
+      "raw_orcid": null,
+      "affiliations": [
+        {
+          "raw_affiliation_string": "Department of Applied Chemistry, Graduate School of Engineering, University of Toyama, Gofuku 3190, Toyama 930-8555, Japan",
+          "institution_ids": [
+            "https://openalex.org/I42766147"
+          ]
+        },
+        {
+          "raw_affiliation_string": "State Key Laboratory of Coal Conversion, Institute of Coal Chemistry, Chinese Academy of Sciences, Taiyuan 030001, China",
+          "institution_ids": [
+            "https://openalex.org/I4210159903"
+          ]
+        }
+      ]
+    },
+    {
+      "author_position": "middle",
+      "author": {
+        "id": "https://openalex.org/A5048769631",
+        "display_name": "Han Hu",
+        "orcid": "https://orcid.org/0000-0002-3755-7342"
+      },
+      "institutions": [
+        {
+          "id": "https://openalex.org/I4210162190",
+          "display_name": "China University of Petroleum, East China",
+          "ror": "https://ror.org/05gbn2817",
+          "country_code": "CN",
+          "type": "education",
+          "lineage": [
+            "https://openalex.org/I4210162190"
+          ]
+        }
+      ],
+      "countries": [
+        "CN"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Han Hu",
+      "raw_affiliation_strings": [
+        "Institute of New Energy, College of New Energy, State Key Laboratory of Heavy Oil Processing, China University of Petroleum (East China), Qingdao 266580, China"
+      ],
+      "raw_orcid": "https://orcid.org/0000-0002-3755-7342",
+      "affiliations": [
+        {
+          "raw_affiliation_string": "Institute of New Energy, College of New Energy, State Key Laboratory of Heavy Oil Processing, China University of Petroleum (East China), Qingdao 266580, China",
+          "institution_ids": [
+            "https://openalex.org/I4210162190"
+          ]
+        }
+      ]
+    },
+    {
+      "author_position": "middle",
+      "author": {
+        "id": "https://openalex.org/A5063554744",
+        "display_name": "Mingbo Wu",
+        "orcid": "https://orcid.org/0000-0003-0048-778X"
+      },
+      "institutions": [
+        {
+          "id": "https://openalex.org/I4210162190",
+          "display_name": "China University of Petroleum, East China",
+          "ror": "https://ror.org/05gbn2817",
+          "country_code": "CN",
+          "type": "education",
+          "lineage": [
+            "https://openalex.org/I4210162190"
+          ]
+        }
+      ],
+      "countries": [
+        "CN"
+      ],
+      "is_corresponding": true,
+      "raw_author_name": "Mingbo Wu",
+      "raw_affiliation_strings": [
+        "Institute of New Energy, College of New Energy, State Key Laboratory of Heavy Oil Processing, China University of Petroleum (East China), Qingdao 266580, China"
+      ],
+      "raw_orcid": "https://orcid.org/0000-0003-0048-778X",
+      "affiliations": [
+        {
+          "raw_affiliation_string": "Institute of New Energy, College of New Energy, State Key Laboratory of Heavy Oil Processing, China University of Petroleum (East China), Qingdao 266580, China",
+          "institution_ids": [
+            "https://openalex.org/I4210162190"
+          ]
+        }
+      ]
+    },
+    {
+      "author_position": "last",
+      "author": {
+        "id": "https://openalex.org/A5054090836",
+        "display_name": "Noritatsu Tsubaki",
+        "orcid": "https://orcid.org/0000-0001-6786-5058"
+      },
+      "institutions": [
+        {
+          "id": "https://openalex.org/I42766147",
+          "display_name": "University of Toyama",
+          "ror": "https://ror.org/0445phv87",
+          "country_code": "JP",
+          "type": "education",
+          "lineage": [
+            "https://openalex.org/I42766147"
+          ]
+        }
+      ],
+      "countries": [
+        "JP"
+      ],
+      "is_corresponding": true,
+      "raw_author_name": "Noritatsu Tsubaki",
+      "raw_affiliation_strings": [
+        "Department of Applied Chemistry, Graduate School of Engineering, University of Toyama, Gofuku 3190, Toyama 930-8555, Japan"
+      ],
+      "raw_orcid": "https://orcid.org/0000-0001-6786-5058",
+      "affiliations": [
+        {
+          "raw_affiliation_string": "Department of Applied Chemistry, Graduate School of Engineering, University of Toyama, Gofuku 3190, Toyama 930-8555, Japan",
+          "institution_ids": [
+            "https://openalex.org/I42766147"
+          ]
+        }
+      ]
+    }
+  ],
+  "institutions": [],
+  "countries_distinct_count": 2,
+  "institutions_distinct_count": 4,
+  "corresponding_author_ids": [
+    "https://openalex.org/A5054090836",
+    "https://openalex.org/A5063554744",
+    "https://openalex.org/A5067123324"
+  ],
+  "corresponding_institution_ids": [
+    "https://openalex.org/I4210159903",
+    "https://openalex.org/I4210162190",
+    "https://openalex.org/I42766147"
+  ],
+  "apc_list": null,
+  "apc_paid": null,
+  "fwci": 5.1549,
+  "has_fulltext": false,
+  "cited_by_count": 168,
+  "citation_normalized_percentile": {
+    "value": 0.97175959,
+    "is_in_top_1_percent": false,
+    "is_in_top_10_percent": true
+  },
+  "cited_by_percentile_year": {
+    "min": 99,
+    "max": 100
+  },
+  "biblio": {
+    "volume": "11",
+    "issue": "18",
+    "first_page": "11742",
+    "last_page": "11753"
+  },
+  "is_retracted": false,
+  "is_paratext": false,
+  "is_xpac": false,
+  "primary_topic": {
+    "id": "https://openalex.org/T10495",
+    "display_name": "Catalysts for Methane Reforming",
+    "score": 0.9998999834060669,
+    "subfield": {
+      "id": "https://openalex.org/subfields/1503",
+      "display_name": "Catalysis"
+    },
+    "field": {
+      "id": "https://openalex.org/fields/15",
+      "display_name": "Chemical Engineering"
+    },
+    "domain": {
+      "id": "https://openalex.org/domains/3",
+      "display_name": "Physical Sciences"
+    }
+  },
+  "topics": [
+    {
+      "id": "https://openalex.org/T10495",
+      "display_name": "Catalysts for Methane Reforming",
+      "score": 0.9998999834060669,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1503",
+        "display_name": "Catalysis"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/15",
+        "display_name": "Chemical Engineering"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11593",
+      "display_name": "Carbon dioxide utilization in catalysis",
+      "score": 0.9998000264167786,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1508",
+        "display_name": "Process Chemistry and Technology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/15",
+        "display_name": "Chemical Engineering"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11784",
+      "display_name": "CO2 Reduction Techniques and Catalysts",
+      "score": 0.9995999932289124,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2105",
+        "display_name": "Renewable Energy, Sustainability and the Environment"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/21",
+        "display_name": "Energy"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    }
+  ],
+  "keywords": [
+    {
+      "id": "https://openalex.org/keywords/catalysis",
+      "display_name": "Catalysis",
+      "score": 0.9020833969116211
+    },
+    {
+      "id": "https://openalex.org/keywords/methanol",
+      "display_name": "Methanol",
+      "score": 0.7273756265640259
+    },
+    {
+      "id": "https://openalex.org/keywords/alkene",
+      "display_name": "Alkene",
+      "score": 0.6773493885993958
+    },
+    {
+      "id": "https://openalex.org/keywords/ethanol",
+      "display_name": "Ethanol",
+      "score": 0.6414341926574707
+    },
+    {
+      "id": "https://openalex.org/keywords/alcohol",
+      "display_name": "Alcohol",
+      "score": 0.5008203983306885
+    },
+    {
+      "id": "https://openalex.org/keywords/aldehyde",
+      "display_name": "Aldehyde",
+      "score": 0.4976833164691925
+    },
+    {
+      "id": "https://openalex.org/keywords/chemistry",
+      "display_name": "Chemistry",
+      "score": 0.46352750062942505
+    },
+    {
+      "id": "https://openalex.org/keywords/materials-science",
+      "display_name": "Materials science",
+      "score": 0.4510679244995117
+    },
+    {
+      "id": "https://openalex.org/keywords/chemical-engineering",
+      "display_name": "Chemical engineering",
+      "score": 0.4321015477180481
+    },
+    {
+      "id": "https://openalex.org/keywords/density-functional-theory",
+      "display_name": "Density functional theory",
+      "score": 0.4117676615715027
+    },
+    {
+      "id": "https://openalex.org/keywords/nanotechnology",
+      "display_name": "Nanotechnology",
+      "score": 0.3949072062969208
+    },
+    {
+      "id": "https://openalex.org/keywords/combinatorial-chemistry",
+      "display_name": "Combinatorial chemistry",
+      "score": 0.38423997163772583
+    },
+    {
+      "id": "https://openalex.org/keywords/organic-chemistry",
+      "display_name": "Organic chemistry",
+      "score": 0.2999291718006134
+    },
+    {
+      "id": "https://openalex.org/keywords/computational-chemistry",
+      "display_name": "Computational chemistry",
+      "score": 0.07936728000640869
+    }
+  ],
+  "concepts": [
+    {
+      "id": "https://openalex.org/C161790260",
+      "wikidata": "https://www.wikidata.org/wiki/Q82264",
+      "display_name": "Catalysis",
+      "level": 2,
+      "score": 0.9020833969116211
+    },
+    {
+      "id": "https://openalex.org/C2779607525",
+      "wikidata": "https://www.wikidata.org/wiki/Q14982",
+      "display_name": "Methanol",
+      "level": 2,
+      "score": 0.7273756265640259
+    },
+    {
+      "id": "https://openalex.org/C2776254738",
+      "wikidata": "https://www.wikidata.org/wiki/Q81406",
+      "display_name": "Alkene",
+      "level": 3,
+      "score": 0.6773493885993958
+    },
+    {
+      "id": "https://openalex.org/C2780161600",
+      "wikidata": "https://www.wikidata.org/wiki/Q153",
+      "display_name": "Ethanol",
+      "level": 2,
+      "score": 0.6414341926574707
+    },
+    {
+      "id": "https://openalex.org/C2781066024",
+      "wikidata": "https://www.wikidata.org/wiki/Q156",
+      "display_name": "Alcohol",
+      "level": 2,
+      "score": 0.5008203983306885
+    },
+    {
+      "id": "https://openalex.org/C2779825165",
+      "wikidata": "https://www.wikidata.org/wiki/Q101497",
+      "display_name": "Aldehyde",
+      "level": 3,
+      "score": 0.4976833164691925
+    },
+    {
+      "id": "https://openalex.org/C185592680",
+      "wikidata": "https://www.wikidata.org/wiki/Q2329",
+      "display_name": "Chemistry",
+      "level": 0,
+      "score": 0.46352750062942505
+    },
+    {
+      "id": "https://openalex.org/C192562407",
+      "wikidata": "https://www.wikidata.org/wiki/Q228736",
+      "display_name": "Materials science",
+      "level": 0,
+      "score": 0.4510679244995117
+    },
+    {
+      "id": "https://openalex.org/C42360764",
+      "wikidata": "https://www.wikidata.org/wiki/Q83588",
+      "display_name": "Chemical engineering",
+      "level": 1,
+      "score": 0.4321015477180481
+    },
+    {
+      "id": "https://openalex.org/C152365726",
+      "wikidata": "https://www.wikidata.org/wiki/Q1048589",
+      "display_name": "Density functional theory",
+      "level": 2,
+      "score": 0.4117676615715027
+    },
+    {
+      "id": "https://openalex.org/C171250308",
+      "wikidata": "https://www.wikidata.org/wiki/Q11468",
+      "display_name": "Nanotechnology",
+      "level": 1,
+      "score": 0.3949072062969208
+    },
+    {
+      "id": "https://openalex.org/C21951064",
+      "wikidata": "https://www.wikidata.org/wiki/Q899212",
+      "display_name": "Combinatorial chemistry",
+      "level": 1,
+      "score": 0.38423997163772583
+    },
+    {
+      "id": "https://openalex.org/C178790620",
+      "wikidata": "https://www.wikidata.org/wiki/Q11351",
+      "display_name": "Organic chemistry",
+      "level": 1,
+      "score": 0.2999291718006134
+    },
+    {
+      "id": "https://openalex.org/C147597530",
+      "wikidata": "https://www.wikidata.org/wiki/Q369472",
+      "display_name": "Computational chemistry",
+      "level": 1,
+      "score": 0.07936728000640869
+    },
+    {
+      "id": "https://openalex.org/C127413603",
+      "wikidata": "https://www.wikidata.org/wiki/Q11023",
+      "display_name": "Engineering",
+      "level": 0,
+      "score": 0.0
+    }
+  ],
+  "mesh": [],
+  "locations_count": 1,
+  "locations": [
+    {
+      "id": "doi:10.1021/acscatal.1c01504",
+      "is_oa": false,
+      "landing_page_url": "https://doi.org/10.1021/acscatal.1c01504",
+      "pdf_url": null,
+      "source": {
+        "id": "https://openalex.org/S37391459",
+        "display_name": "ACS Catalysis",
+        "issn_l": "2155-5435",
+        "issn": [
+          "2155-5435"
+        ],
+        "is_oa": false,
+        "is_in_doaj": false,
+        "is_core": true,
+        "host_organization": "https://openalex.org/P4310320006",
+        "host_organization_name": "American Chemical Society",
+        "host_organization_lineage": [
+          "https://openalex.org/P4310320006"
+        ],
+        "host_organization_lineage_names": [
+          "American Chemical Society"
+        ],
+        "type": "journal"
+      },
+      "license": null,
+      "license_id": null,
+      "version": "publishedVersion",
+      "is_accepted": true,
+      "is_published": true,
+      "raw_source_name": "ACS Catalysis",
+      "raw_type": "journal-article"
+    }
+  ],
+  "best_oa_location": null,
+  "sustainable_development_goals": [],
+  "awards": [
+    {
+      "id": "https://openalex.org/G2726305459",
+      "display_name": null,
+      "funder_award_id": "2020D-5007-0407",
+      "funder_id": "https://openalex.org/F4320321570",
+      "funder_display_name": "China National Petroleum Corporation"
+    },
+    {
+      "id": "https://openalex.org/G3411718291",
+      "display_name": "二酸化炭素からの新しいGas-to-Liquid触媒技術",
+      "funder_award_id": "JPMJMI17E2",
+      "funder_id": "https://openalex.org/F4320334789",
+      "funder_display_name": "Japan Science and Technology Agency"
+    },
+    {
+      "id": "https://openalex.org/G7242397225",
+      "display_name": null,
+      "funder_award_id": "2020M672169",
+      "funder_id": "https://openalex.org/F4320321543",
+      "funder_display_name": "China Postdoctoral Science Foundation"
+    },
+    {
+      "id": "https://openalex.org/G920715582",
+      "display_name": "The creation of new ethanol synthesis route from carbon dioxide",
+      "funder_award_id": "20K05219",
+      "funder_id": "https://openalex.org/F4320334764",
+      "funder_display_name": "Japan Society for the Promotion of Science"
+    }
+  ],
+  "funders": [
+    {
+      "id": "https://openalex.org/F4320321543",
+      "display_name": "China Postdoctoral Science Foundation",
+      "ror": "https://ror.org/0426zh255"
+    },
+    {
+      "id": "https://openalex.org/F4320321570",
+      "display_name": "China National Petroleum Corporation",
+      "ror": "https://ror.org/05269d038"
+    },
+    {
+      "id": "https://openalex.org/F4320334764",
+      "display_name": "Japan Society for the Promotion of Science",
+      "ror": "https://ror.org/00hhkn466"
+    },
+    {
+      "id": "https://openalex.org/F4320334789",
+      "display_name": "Japan Science and Technology Agency",
+      "ror": "https://ror.org/00097mb19"
+    }
+  ],
+  "has_content": {
+    "pdf": false,
+    "grobid_xml": false
+  },
+  "content_urls": null,
+  "referenced_works_count": 51,
+  "referenced_works": [
+    "https://openalex.org/W1540270122",
+    "https://openalex.org/W1978747619",
+    "https://openalex.org/W1983973754",
+    "https://openalex.org/W1991692033",
+    "https://openalex.org/W2002549200",
+    "https://openalex.org/W2013826816",
+    "https://openalex.org/W2013896112",
+    "https://openalex.org/W2022873561",
+    "https://openalex.org/W2055761328",
+    "https://openalex.org/W2073065588",
+    "https://openalex.org/W2073632700",
+    "https://openalex.org/W2077585920",
+    "https://openalex.org/W2100538709",
+    "https://openalex.org/W2110154495",
+    "https://openalex.org/W2173962905",
+    "https://openalex.org/W2194661701",
+    "https://openalex.org/W2266852966",
+    "https://openalex.org/W2323504704",
+    "https://openalex.org/W2471126886",
+    "https://openalex.org/W2477980016",
+    "https://openalex.org/W2592278398",
+    "https://openalex.org/W2598202665",
+    "https://openalex.org/W2600566292",
+    "https://openalex.org/W2611869399",
+    "https://openalex.org/W2613395675",
+    "https://openalex.org/W2624906538",
+    "https://openalex.org/W2647468055",
+    "https://openalex.org/W2761760067",
+    "https://openalex.org/W2762487790",
+    "https://openalex.org/W2770562898",
+    "https://openalex.org/W2770591304",
+    "https://openalex.org/W2773918169",
+    "https://openalex.org/W2783694712",
+    "https://openalex.org/W2803712767",
+    "https://openalex.org/W2888358588",
+    "https://openalex.org/W2898240707",
+    "https://openalex.org/W2904982608",
+    "https://openalex.org/W2911689623",
+    "https://openalex.org/W2913669861",
+    "https://openalex.org/W2914133570",
+    "https://openalex.org/W2914435074",
+    "https://openalex.org/W2999489873",
+    "https://openalex.org/W3002738036",
+    "https://openalex.org/W3045292660",
+    "https://openalex.org/W3108624877",
+    "https://openalex.org/W3144647442",
+    "https://openalex.org/W3167000462",
+    "https://openalex.org/W3186342579",
+    "https://openalex.org/W4238672774",
+    "https://openalex.org/W4241260398",
+    "https://openalex.org/W4242707582"
+  ],
+  "related_works": [
+    "https://openalex.org/W2083956773",
+    "https://openalex.org/W2058884525",
+    "https://openalex.org/W2953367779",
+    "https://openalex.org/W1966684194",
+    "https://openalex.org/W4388728454",
+    "https://openalex.org/W4388243386",
+    "https://openalex.org/W2023505289",
+    "https://openalex.org/W1997558008",
+    "https://openalex.org/W2046440066",
+    "https://openalex.org/W2998709957"
+  ],
+  "abstract_inverted_index": {
+    "It": [
+      0
+    ],
+    "is": [
+      1,
+      123,
+      141
+    ],
+    "still": [
+      2
+    ],
+    "a": [
+      3,
+      14
+    ],
+    "challenge": [
+      4
+    ],
+    "to": [
+      5,
+      13,
+      39,
+      55,
+      64,
+      117,
+      125,
+      133,
+      143
+    ],
+    "realize": [
+      6,
+      56
+    ],
+    "highly": [
+      7
+    ],
+    "efficient": [
+      8
+    ],
+    "conversion": [
+      9,
+      35,
+      59,
+      112
+    ],
+    "of": [
+      10,
+      36,
+      60,
+      94,
+      103,
+      114,
+      147,
+      151
+    ],
+    "CO": [
+      11,
+      37,
+      61,
+      115,
+      152
+    ],
+    "2": [
+      12,
+      38,
+      62,
+      116,
+      153
+    ],
+    "single": [
+      15
+    ],
+    "target": [
+      16
+    ],
+    "chemical.": [
+      17
+    ],
+    "Herein,": [
+      18
+    ],
+    "substantial": [
+      19
+    ],
+    "progress": [
+      20
+    ],
+    "has": [
+      21
+    ],
+    "been": [
+      22
+    ],
+    "made,": [
+      23
+    ],
+    "both": [
+      24
+    ],
+    "in": [
+      25,
+      77,
+      109
+    ],
+    "catalyst": [
+      26,
+      45,
+      54,
+      122
+    ],
+    "design": [
+      27
+    ],
+    "and": [
+      28,
+      80,
+      128
+    ],
+    "reaction": [
+      29
+    ],
+    "route": [
+      30
+    ],
+    "exploration,": [
+      31
+    ],
+    "for": [
+      32,
+      154
+    ],
+    "the": [
+      33,
+      57,
+      88,
+      95,
+      101,
+      110,
+      120,
+      134,
+      145,
+      148
+    ],
+    "direct": [
+      34,
+      58
+    ],
+    "ethanol.": [
+      40,
+      118
+    ],
+    "An": [
+      41
+    ],
+    "alkene": [
+      42,
+      72
+    ],
+    "synthesis": [
+      43,
+      52
+    ],
+    "Na-Fe@C": [
+      44
+    ],
+    "was": [
+      46
+    ],
+    "integrated": [
+      47
+    ],
+    "with": [
+      48
+    ],
+    "another": [
+      49
+    ],
+    "potassium-doped": [
+      50
+    ],
+    "methanol": [
+      51
+    ],
+    "CuZnAl": [
+      53
+    ],
+    "(39.2%)": [
+      63
+    ],
+    "ethanol": [
+      65
+    ],
+    "(35.0%)": [
+      66
+    ],
+    "selectively,": [
+      67
+    ],
+    "accompanied": [
+      68
+    ],
+    "by": [
+      69
+    ],
+    "some": [
+      70
+    ],
+    "useful": [
+      71
+    ],
+    "formation": [
+      73
+    ],
+    "(33.0%).": [
+      74
+    ],
+    "More": [
+      75
+    ],
+    "in-depth": [
+      76
+    ],
+    "situ": [
+      78
+    ],
+    "characterizations": [
+      79
+    ],
+    "density": [
+      81
+    ],
+    "functional": [
+      82
+    ],
+    "theory": [
+      83
+    ],
+    "(DFT)": [
+      84
+    ],
+    "calculations": [
+      85
+    ],
+    "suggested": [
+      86
+    ],
+    "that": [
+      87
+    ],
+    "unique": [
+      89
+    ],
+    "catalytic": [
+      90
+    ],
+    "interfaces,": [
+      91
+    ],
+    "intimacy": [
+      92
+    ],
+    "modes": [
+      93
+    ],
+    "multifunctional": [
+      96,
+      121
+    ],
+    "catalysts,": [
+      97
+    ],
+    "as": [
+      98,
+      100
+    ],
+    "well": [
+      99
+    ],
+    "intermediate": [
+      102
+    ],
+    "aldehyde": [
+      104
+    ],
+    "species": [
+      105
+    ],
+    "played": [
+      106
+    ],
+    "vital": [
+      107
+    ],
+    "roles": [
+      108
+    ],
+    "higher": [
+      111
+    ],
+    "rate": [
+      113
+    ],
+    "Moreover,": [
+      119
+    ],
+    "easy": [
+      124
+    ],
+    "fabricate,": [
+      126
+    ],
+    "regenerate,": [
+      127
+    ],
+    "recycle,": [
+      129
+    ],
+    "being": [
+      130
+    ],
+    "very": [
+      131
+    ],
+    "close": [
+      132
+    ],
+    "real": [
+      135
+    ],
+    "industry": [
+      136
+    ],
+    "application.": [
+      137
+    ],
+    "Therefore,": [
+      138
+    ],
+    "this": [
+      139
+    ],
+    "work": [
+      140
+    ],
+    "promising": [
+      142
+    ],
+    "enrich": [
+      144
+    ],
+    "horizon": [
+      146
+    ],
+    "economical": [
+      149
+    ],
+    "utilization": [
+      150
+    ],
+    "renewable": [
+      155
+    ],
+    "chemical": [
+      156
+    ],
+    "synthesis.": [
+      157
+    ]
+  },
+  "counts_by_year": [
+    {
+      "year": 2026,
+      "cited_by_count": 28
+    },
+    {
+      "year": 2025,
+      "cited_by_count": 38
+    },
+    {
+      "year": 2024,
+      "cited_by_count": 38
+    },
+    {
+      "year": 2023,
+      "cited_by_count": 39
+    },
+    {
+      "year": 2022,
+      "cited_by_count": 25
+    }
+  ],
+  "updated_date": "2026-08-12T07:12:00.856984",
+  "created_date": "2025-10-10T00:00:00"
+}

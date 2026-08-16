@@ -1,11 +1,12 @@
 {
-  "checked_at": "2026-08-16T15:34:24.668Z",
+  "checked_at": "2026-08-16T18:14:44.638Z",
   "base_url": "http://127.0.0.1:8766/",
   "browser": "system Chrome via Playwright; isolated profile",
   "assertions": {
     "general": {
-      "equation": "2 CO2(g) + 6 H2(g) -> C2H5OH(g) + 3 H2O(g)",
-      "audit": "input_balance=invalid · @best=abstain_until_conditions_candidate_space_and_measurements_are_fixed",
+      "original_equation": "原始查询（未守恒）：CO2(g) + H2(g) -> C2H5OH(g)",
+      "balanced_equation": "配平结果（Aν=0）：2 CO2(g) + 6 H2(g) -> C2H5OH(g) + 3 H2O(g)",
+      "audit": "原始守恒检查=未通过 · @best=条件欠定，拒绝排名",
       "kernel": "ν = (-2, -6, 1, 3); Aν = (0, 0, 0)",
       "candidates": 4,
       "atom_elements": [
@@ -18,10 +19,16 @@
       "spaces": 6,
       "plugins": [
         "ReactionDecomposer",
-        "EMLExpander:not_invoked",
+        "BasisOperatorComposer:not_invoked",
         "GeometryPlugin"
       ],
-      "katex": true
+      "katex": true,
+      "slice": {
+        "x": 22,
+        "y": 729,
+        "width": 1396,
+        "height": 578
+      }
     },
     "geometry_3d": {
       "visible": true,
@@ -37,16 +44,19 @@
       }
     },
     "iterate": {
-      "status": "mismatch",
+      "status": "不匹配",
       "absolute_error": "6.283185e+0",
-      "lean": "partial_formalization"
+      "lean": "partial_formalization",
+      "operator_contract": "B: C x C^times -> C; pointwise principal Log; Arg(v) in (-pi,pi]",
+      "current_test_domain": "D_f = ℂ \\ {0}",
+      "tree_label": "基算子复合表达树"
     },
     "mobile": {
       "viewport_width": 390,
       "scroll_width": 390
     },
     "external_network_requests": 0,
-    "model_calls": "calls 0 / 1"
+    "model_calls": "调用 0 / 1"
   },
   "requests": [
     {
@@ -88,10 +98,6 @@
     {
       "method": "GET",
       "url": "http://127.0.0.1:8766/vendor/katex/fonts/KaTeX_Main-Regular.woff2"
-    },
-    {
-      "method": "GET",
-      "url": "http://127.0.0.1:8766/vendor/katex/fonts/KaTeX_Caligraphic-Regular.woff2"
     },
     {
       "method": "GET",

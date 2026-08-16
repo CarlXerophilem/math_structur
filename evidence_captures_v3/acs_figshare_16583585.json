@@ -1,0 +1,248 @@
+{
+  "files": [
+    {
+      "id": 30694805,
+      "name": "cs1c01504_si_001.pdf",
+      "size": 1899012,
+      "is_link_only": false,
+      "download_url": "https://ndownloader.figshare.com/files/30694805",
+      "supplied_md5": "d332b0c3fb156019f120ef3b25d7f7f1",
+      "computed_md5": "d332b0c3fb156019f120ef3b25d7f7f1",
+      "mimetype": "application/pdf"
+    }
+  ],
+  "folder_structure": {},
+  "authors": [
+    {
+      "id": 5921,
+      "full_name": "Yang Wang",
+      "first_name": "Yang",
+      "last_name": "Wang",
+      "is_active": false,
+      "url_name": "Yang_Wang",
+      "orcid_id": ""
+    },
+    {
+      "id": 4731876,
+      "full_name": "Kangzhou Wang",
+      "first_name": "Kangzhou",
+      "last_name": "Wang",
+      "is_active": false,
+      "url_name": "_",
+      "orcid_id": ""
+    },
+    {
+      "id": 10120799,
+      "full_name": "Baizhang Zhang",
+      "first_name": "Baizhang",
+      "last_name": "Zhang",
+      "is_active": false,
+      "url_name": "_",
+      "orcid_id": ""
+    },
+    {
+      "id": 3396125,
+      "full_name": "Xiaobo Peng",
+      "first_name": "Xiaobo",
+      "last_name": "Peng",
+      "is_active": false,
+      "url_name": "_",
+      "orcid_id": ""
+    },
+    {
+      "id": 5193524,
+      "full_name": "Xinhua Gao",
+      "first_name": "Xinhua",
+      "last_name": "Gao",
+      "is_active": false,
+      "url_name": "_",
+      "orcid_id": ""
+    },
+    {
+      "id": 1928113,
+      "full_name": "Guohui Yang",
+      "first_name": "Guohui",
+      "last_name": "Yang",
+      "is_active": false,
+      "url_name": "_",
+      "orcid_id": ""
+    },
+    {
+      "id": 131769,
+      "full_name": "Han Hu",
+      "first_name": "Han",
+      "last_name": "Hu",
+      "is_active": false,
+      "url_name": "_",
+      "orcid_id": ""
+    },
+    {
+      "id": 1465525,
+      "full_name": "Mingbo Wu",
+      "first_name": "Mingbo",
+      "last_name": "Wu",
+      "is_active": false,
+      "url_name": "_",
+      "orcid_id": ""
+    },
+    {
+      "id": 1266459,
+      "full_name": "Noritatsu Tsubaki",
+      "first_name": "Noritatsu",
+      "last_name": "Tsubaki",
+      "is_active": false,
+      "url_name": "_",
+      "orcid_id": ""
+    }
+  ],
+  "custom_fields": [],
+  "figshare_url": "https://acs.figshare.com/articles/journal_contribution/Direct_Conversion_of_CO_sub_2_sub_to_Ethanol_Boosted_by_Intimacy-Sensitive_Multifunctional_Catalysts/16583585",
+  "download_disabled": false,
+  "description": "It\nis still a challenge to realize highly efficient conversion\nof CO<sub>2</sub> to a single target chemical. Herein, substantial\nprogress has been made, both in catalyst design and reaction route\nexploration, for the direct conversion of CO<sub>2</sub> to ethanol.\nAn alkene synthesis Na-Fe@C catalyst was integrated with another potassium-doped\nmethanol synthesis CuZnAl catalyst to realize the direct conversion\nof CO<sub>2</sub> (39.2%) to ethanol (35.0%) selectively, accompanied\nby some useful alkene formation (33.0%). More in-depth <i>in\nsitu</i> characterizations and density functional theory (DFT)\ncalculations suggested that the unique catalytic interfaces, intimacy\nmodes of the multifunctional catalysts, as well as the intermediate\nof aldehyde species played vital roles in the higher conversion rate\nof CO<sub>2</sub> to ethanol. Moreover, the multifunctional catalyst\nis easy to fabricate, regenerate, and recycle, being very close to\nthe real industry application. Therefore, this work is promising to\nenrich the horizon of the economical utilization of CO<sub>2</sub> for renewable chemical synthesis.",
+  "funding": null,
+  "funding_list": [],
+  "version": 1,
+  "status": "public",
+  "size": 1899012,
+  "created_date": "2021-09-07T20:06:37Z",
+  "modified_date": "2023-07-01T06:41:37Z",
+  "is_public": true,
+  "is_confidential": false,
+  "is_metadata_record": false,
+  "confidential_reason": "",
+  "metadata_reason": "",
+  "license": {
+    "value": 10,
+    "name": "CC BY-NC 4.0",
+    "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+  },
+  "tags": [
+    "useful alkene formation",
+    "unique catalytic interfaces",
+    "single target chemical",
+    "renewable chemical synthesis",
+    "real industry application",
+    "reaction route exploration",
+    "density functional theory",
+    "alkene synthesis na",
+    "higher conversion rate",
+    "0 %) selectively",
+    "sensitive multifunctional catalysts",
+    "2 </ sub",
+    "2 %)",
+    "multifunctional catalysts",
+    "situ </",
+    "direct conversion",
+    "0 %).",
+    "multifunctional catalyst",
+    "substantial progress",
+    "economical utilization",
+    "catalyst design",
+    "calculations suggested",
+    "c catalyst",
+    "another potassium"
+  ],
+  "keywords": [
+    "useful alkene formation",
+    "unique catalytic interfaces",
+    "single target chemical",
+    "renewable chemical synthesis",
+    "real industry application",
+    "reaction route exploration",
+    "density functional theory",
+    "alkene synthesis na",
+    "higher conversion rate",
+    "0 %) selectively",
+    "sensitive multifunctional catalysts",
+    "2 </ sub",
+    "2 %)",
+    "multifunctional catalysts",
+    "situ </",
+    "direct conversion",
+    "0 %).",
+    "multifunctional catalyst",
+    "substantial progress",
+    "economical utilization",
+    "catalyst design",
+    "calculations suggested",
+    "c catalyst",
+    "another potassium"
+  ],
+  "categories": [
+    {
+      "id": 4,
+      "title": "Biochemistry",
+      "parent_id": 38,
+      "path": "",
+      "source_id": "",
+      "taxonomy_id": 10
+    },
+    {
+      "id": 21,
+      "title": "Biotechnology",
+      "parent_id": 48,
+      "path": "",
+      "source_id": "",
+      "taxonomy_id": 10
+    },
+    {
+      "id": 873,
+      "title": "Chemical Sciences not elsewhere classified",
+      "parent_id": 38,
+      "path": "",
+      "source_id": "",
+      "taxonomy_id": 10
+    },
+    {
+      "id": 45,
+      "title": "Sociology",
+      "parent_id": 26,
+      "path": "",
+      "source_id": "",
+      "taxonomy_id": 10
+    }
+  ],
+  "references": [
+    "https://doi.org/10.1021/acscatal.1c01504"
+  ],
+  "has_linked_file": false,
+  "citation": "Wang, Yang; Wang, Kangzhou; Zhang, Baizhang; Peng, Xiaobo; Gao, Xinhua; Yang, Guohui; et al. (2021). Direct Conversion of CO2 to Ethanol Boosted\nby Intimacy-Sensitive Multifunctional Catalysts. ACS Publications. Journal contribution. https://doi.org/10.1021/acscatal.1c01504.s001",
+  "related_materials": [
+    {
+      "id": 107450109,
+      "identifier": "10.1021/acscatal.1c01504",
+      "title": "Direct Conversion of CO<sub>2</sub> to Ethanol Boosted\nby Intimacy-Sensitive Multifunctional Catalysts",
+      "relation": "IsSupplementTo",
+      "identifier_type": "DOI",
+      "is_linkout": true,
+      "link": "https://doi.org/10.1021/acscatal.1c01504"
+    }
+  ],
+  "is_embargoed": false,
+  "embargo_date": null,
+  "embargo_type": null,
+  "embargo_title": "",
+  "embargo_reason": "",
+  "embargo_options": [],
+  "id": 16583585,
+  "title": "Direct Conversion of CO<sub>2</sub> to Ethanol Boosted\nby Intimacy-Sensitive Multifunctional Catalysts",
+  "doi": "10.1021/acscatal.1c01504.s001",
+  "handle": "",
+  "url": "https://api.figshare.com/v2/articles/16583585",
+  "published_date": "2021-09-07T20:06:37Z",
+  "thumb": "https://ndownloader.figshare.com/files/30694805/preview/30694805/thumb.png",
+  "defined_type": 6,
+  "defined_type_name": "journal contribution",
+  "group_id": 2481,
+  "url_private_api": "https://api.figshare.com/v2/account/articles/16583585",
+  "url_public_api": "https://api.figshare.com/v2/articles/16583585",
+  "url_private_html": "https://figshare.com/account/articles/16583585",
+  "url_public_html": "https://acs.figshare.com/articles/journal_contribution/Direct_Conversion_of_CO_sub_2_sub_to_Ethanol_Boosted_by_Intimacy-Sensitive_Multifunctional_Catalysts/16583585",
+  "timeline": {
+    "posted": "2021-09-07T20:06:37",
+    "publisherPublication": "2021-09-07T00:00:00",
+    "firstOnline": "2021-09-07"
+  },
+  "resource_title": "Direct Conversion of CO<sub>2</sub> to Ethanol Boosted\nby Intimacy-Sensitive Multifunctional Catalysts",
+  "resource_doi": "10.1021/acscatal.1c01504"
+}

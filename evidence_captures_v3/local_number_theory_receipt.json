@@ -1,0 +1,19 @@
+﻿{
+    "captured_at":  "2026-08-17T03:04:28.5437067+09:00",
+    "status":  "local_sources_verified",
+    "old_lean":  {
+                     "published_path":  "local-number-theory/cycles/17lean4.lean",
+                     "sha256":  "f2ae4bfbcf658b699333f4e994f16cef03abc908f854fb0218accb908ab4bd86",
+                     "support":  [
+                                     "line 14: f (10 * p + (p % 10))",
+                                     "line 34: sorry"
+                                 ],
+                     "interpretation":  "the old prototype hard-codes 10 and does not prove the final conjecture"
+                 },
+    "parameterized_record":  {
+                                 "published_path":  "local-number-theory/project/gpf_prime_map_v2.json",
+                                 "sha256":  "e4a5071d54adb1107e1ae871b9946f8ed78ee0ba057294a4b9e3c3756ad9e829",
+                                 "support":  "description: Finite exploration of T_{q,k}(p)=P^+(q*p+(p mod k)) on prime starts."
+                             },
+    "limitation":  "This receipt establishes an implementation/proof-status mismatch only. It does not establish a number-theory theorem, novelty, or universal periodicity."
+}

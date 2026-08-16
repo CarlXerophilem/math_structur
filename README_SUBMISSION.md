@@ -1,50 +1,68 @@
-# GOAI 四小时提交包
+# GOAI 开放探索提交包
 
 **Math Structurer — Convincing, reusable target-matching skills for AI research agents.**
 
-## 直接打开
+Math Structurer 将自然语言科研目标整理为类型化目标、约束、相连空间、特定基算子和可验证子任务。当前版本是可检查的研究原型：它可以暴露守恒失败、目标欠定、反例和未知状态，但不会把候选文献、示意构型或模型文本冒充科学结论。
 
-- **完整提交包**：`AI4R_OPEN_team_id.zip`
-- **四页 Word 稿**：`GOAI_四页提交稿_Math_Structurer.docx`
-- **完整指导 Markdown**：`03_GOAI_FOUR_PAGE_GUIDANCE_FINAL.md`
-- **资格闸门**：`02_QUALIFICATION_GATE.md`
-- **反方与验证**：`04_VALIDATION_AND_RED_TEAM.md`
+## 一行启动
 
-## 运行 Demo
+解压后在项目根目录运行。Linux／macOS 入口为：
 
-```powershell
-python demo/run_demo.py
-python -m pytest -q demo/test_demo.py
-python demo/generate_visuals.py
-```
+~~~bash
+python3 run.py
+~~~
 
-## 打开交互面板
+Windows 入口为：
 
-```powershell
-python panel/serve_panel.py
-```
+~~~powershell
+python run.py
+~~~
 
-浏览器打开 `http://127.0.0.1:8766/`。界面只含两个标签：
+程序启动回环地址上的本地 HTML5 服务，并在终端打印 `http://127.0.0.1:8766/`；它不会擅自打开浏览器。按 `Ctrl+C` 停止。入口以 `run.py` 自身位置寻找 `panel/`，不依赖调用命令时的当前工作目录；因此也可以从其他目录用脚本绝对路径启动。
 
-1. **广义分析器**：默认输入 `CO2gas+H2gas -- CH3CH2OHgas @best`；先报告不守恒，再配平并列出四个未排名文献候选、2D/3D 示意构型和 Lean 守恒义务。
-2. **迭代・反逆调试**：EML、有限 `g²=f`、一般反逆义务和固定 Lean 检查。
+## 一行核验
 
-统一路线是：`用户目标 → 类型/逻辑/KaTeX → 相连空间与有限基 → 专业插件/oracle → 证据、反例或 unknown → 2D/3D`。催化先经过 ReactionDecomposer；EML 只接收合格标量解析子式且代数结构仍为 `unconfirmed`；几何坐标不经过 EML。
+Linux／macOS：
 
-默认本地精确内核运行 0 次模型。Codex CLI + alphaXiv MCP 和 DeepSeek cross-verify 是单次显式可选后端；本轮浏览器验收没有调用。面板不提供导出或 PDF 下载。
+~~~bash
+python3 run.py --check
+~~~
 
-当前验证结果：Demo `12 passed in 0.50s`、面板 `11 passed in 11.31s`；真实 Chrome 桌面/390px 移动验收通过且外网请求、模型调用均为 0；Word 16 实测为 4 页；自适应与随机首次失败中位数均为第 2 步。固定 Lean 工具链存在，本地义务编译通过；上游 `reconstruct_ln` 使用 `sorry`，状态为 `partial_formalization / accepted_with_sorry`。
+Windows：
 
-## 最重要的提交口径
+~~~powershell
+python run.py --check
+~~~
 
-这是一个**数学滤镜与可复用目标匹配插件环境首版**，以定义域/分支失效作为已运行科学切片。它复现已知反例并诚实保留未胜随机的负结果；它不是万能解析器，也没有发现新定理或验证催化/PDE。
+`--check` 只在回环地址临时启动服务，固定选择本地精确内核，不调用模型或外网。只有静态页面可访问、失衡输入被识别且配平结果满足 \(A\nu=0\) 时才返回退出码 `0` 和 `"status":"passed"`。任一检查失败都会向标准错误输出 `"status":"failed"` 并返回非零退出码，不会以降级结果冒充通过。
 
-## 目录提示
+默认催化切片可由 Python 标准库运行；Windows 上已额外以禁用站点包的 `python -I -S -B run.py --check` 核验。符号分支比较才会按需使用可选的 SymPy，缺失时返回明确的不可用状态。
 
-- `demo/`：源码、测试、冻结合同、Lean 导出草案。
-- `panel/`：无前端依赖的 HTML5 面板、本地只读 API、测试和浏览器验收脚本。
-- `artifacts/demo/`：结果、事件日志、测试与哈希收据。
-- `artifacts/panel/`：桌面/移动截图、浏览器验收 JSON 与测试输出。
-- `artifacts/visuals/`：Word 内使用的四幅图。
-- `evidence_captures_v2/`：原始页面快照和 manifest。
-- `archive/`：已被取代的旧 OC20/D3 路线，不得混入当前提交。
+## 默认切片的边界
+
+默认输入是 **CO2gas+H2gas -- CH3CH2OHgas @best**。系统先报告原式不守恒，再给出配平式、\(A\nu=0\)、欠定目标函数、相连空间、未排名文献候选及标有“示意、未经弛豫”的二维／三维构型。
+
+这里没有催化活性数值模拟，没有 DFT 或动力学计算，也没有“最佳催化剂”排名。当前发现信号是：缺少温度、压力、候选域和统一观测表时，无条件排名在数学上欠定，科研代理应拒绝作答并要求补齐条件。文献候选只提供可核验入口，几何图只承担接口与可视化演示。
+
+第二个工作区只调试已声明的基算子
+\[
+B:\mathbb C\times\mathbb C^\times\to\mathbb C,\qquad B(u,v)=e^u-\operatorname{Log}v,
+\]
+有限域上的 \(g\circ g=f\) 和一般反逆证明义务；这里的 \(\operatorname{Log}\) 逐点取主值。它不把反应配平或三维坐标送入标量迭代，也不声称存在统一代数。
+
+## 平台与后端状态
+
+- **Windows 11：已实测。** 一行启动、隔离标准库核验、Python 回归测试和真实 Chrome 验收均已运行。
+- **Linux／macOS：设计适配，尚未实机验收。** 标准库入口、相对资源定位和回环服务没有操作系统专用调用；在真实平台或 CI 复跑前，不把 Windows 结果表述为跨平台实测。
+- 默认精确内核调用模型次数为零。本地 Qwen3-8B、Codex、DeepSeek 和 Lean 均属于可选后端；不可用时必须显式显示“不可用”，不能静默替换或伪造结果。
+- 最新测试计数、浏览器网络记录、Word 页数和文件哈希以 `artifacts/` 中与提交包同时生成的收据为准。
+
+## 文件入口
+
+- 四页 Word：`GOAI_四页提交稿_Math_Structurer.docx`
+- 指导性 Markdown：`03_GOAI_FOUR_PAGE_GUIDANCE_FINAL.md`
+- 交互面板：`panel/`
+- 验证截图与收据：`artifacts/`
+- 提交压缩包：`AI4R_OPEN_team_id.zip`
+
+压缩包不收录论文 PDF。检索失败不等于研究不存在，元数据不等于实验结论，示意图不等于弛豫结构，有限采样、模型输出或 `sorry` 也不等于证明。

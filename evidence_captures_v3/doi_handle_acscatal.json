@@ -1,0 +1,40 @@
+{
+  "responseCode": 1,
+  "handle": "10.1021/acscatal.1c01504",
+  "values": [
+    {
+      "index": 1,
+      "type": "URL",
+      "data": {
+        "format": "string",
+        "value": "https://pubs.acs.org/doi/10.1021/acscatal.1c01504"
+      },
+      "ttl": 86400,
+      "timestamp": "2021-09-07T20:03:51Z"
+    },
+    {
+      "index": 700050,
+      "type": "700050",
+      "data": {
+        "format": "string",
+        "value": "2023042501571900289"
+      },
+      "ttl": 86400,
+      "timestamp": "2023-04-27T18:43:16Z"
+    },
+    {
+      "index": 100,
+      "type": "HS_ADMIN",
+      "data": {
+        "format": "admin",
+        "value": {
+          "handle": "0.na/10.1021",
+          "index": 200,
+          "permissions": "111111110010"
+        }
+      },
+      "ttl": 86400,
+      "timestamp": "2021-09-07T20:03:51Z"
+    }
+  ]
+}

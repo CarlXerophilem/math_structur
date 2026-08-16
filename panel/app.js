@@ -81,11 +81,12 @@ async function detectRuntime() {
     const [health, harness] = await Promise.all([api("/api/health"), api("/api/harness/status")]);
     $("#server-dot").classList.add("is-live");
     $("#server-status").textContent = health.panel;
-    $("#codex-status").textContent = harness.codex.ready ? "ready" : "off";
-    $("#deepseek-status").textContent = harness.deepseek_harness.ready ? "ready" : "off";
-    $("#alphaxiv-status").textContent = harness.alphaxiv_mcp.ready ? "MCP" : "off";
-    $("#lean-runtime-status").textContent = harness.lean.ready ? "ready" : "off";
-    $("#call-budget").textContent = `calls ${health.model_calls} / ${harness.max_calls_per_run}`;
+    $("#qwen-status").textContent = harness.qwen_local.ready ? "本地" : "未启动";
+    $("#codex-status").textContent = harness.codex.ready ? "就绪" : "关闭";
+    $("#deepseek-status").textContent = harness.deepseek_harness.ready ? "就绪" : "关闭";
+    $("#alphaxiv-status").textContent = harness.alphaxiv_mcp.ready ? "MCP 就绪" : "关闭";
+    $("#lean-runtime-status").textContent = harness.lean.ready ? "就绪" : "关闭";
+    $("#call-budget").textContent = `调用 ${health.model_calls} / ${harness.max_calls_per_run}`;
   } catch (error) {
     $("#server-status").textContent = "offline";
     $("#lean-detail").textContent = String(error);
@@ -142,26 +143,44 @@ function statusKind(value) {
   return "unknown";
 }
 
+function statusLabel(value) {
+  const labels = {
+    decomposed: "已分解", solved: "已求解", rendered: "已呈现", passed: "已通过",
+    equivalent: "等价", mismatch: "不匹配", invalid: "无效", refuted: "已否证",
+    unknown: "未知", underdetermined: "欠定", ready: "就绪", invoked: "已调用",
+    not_invoked: "未调用", optional: "可选", fixed_obligation: "固定验证义务",
+    gated: "受闸门约束", required: "必需", awaiting_typed_geometry: "等待类型化几何",
+    obligation_only: "仅生成验证义务", partial_formalization: "部分形式化",
+    proved_finite: "有限域穷举通过", undefined: "未定义", error: "错误"
+  };
+  return labels[value] || value || "未知";
+}
+
 function renderGeneral(result) {
   const normalized = result.normalized_problem || {};
   const standardMath = result.standard_math || {};
   const targetFunction = result.target_function || {};
-  badge($("#general-status"), result.status || "unknown", statusKind(result.status));
+  badge($("#general-status"), statusLabel(result.status), statusKind(result.status));
   renderMath($("#standard-formula"), standardMath.display || standardMath.logic, true);
-  $("#normalized-equation").textContent = normalized.balanced_equation || normalized.statement || "—";
+  $("#input-equation").textContent = normalized.input_equation
+    ? `原始查询（未守恒）：${normalized.input_equation}`
+    : `原始查询：${normalized.statement || result.input || "—"}`;
+  $("#normalized-equation").textContent = normalized.balanced_equation
+    ? `配平结果（Aν=0）：${normalized.balanced_equation}`
+    : "配平结果：等待专业分解器";
   $("#input-audit").textContent = normalized.input_balance
-    ? `input_balance=${normalized.input_balance} · @best=${normalized.best_status || "unresolved"}`
-    : `type=${normalized.type || "unresolved"} · harness=${result.source || "required"}`;
+    ? `原始守恒检查=${normalized.input_balance === "invalid" ? "未通过" : statusLabel(normalized.input_balance)} · @best=${String(normalized.best_status || "").startsWith("abstain") ? "条件欠定，拒绝排名" : statusLabel(normalized.best_status)}`
+    : `类型=${normalized.type || "未解析"} · AI 接口=${result.source || "必需"}`;
   const weights = normalized.objective || {};
   renderMath($("#target-function"), targetFunction.display || "J:\\mathcal X\\to\\mathbb R\\cup\\{\\mathrm{unknown}\\}", false);
   $("#objective-vector").textContent = Object.keys(weights).length
-    ? `w = (${Object.entries(weights).map(([key, value]) => `${key}:${value}`).join(", ")}) · nontriviality=${targetFunction.nontriviality || "unresolved"}`
-    : `objective = ${normalized.objective || "unresolved"} · nontriviality=${targetFunction.nontriviality || "unresolved"}`;
+    ? `w = (${Object.entries(weights).map(([key, value]) => `${key}:${value}`).join(", ")}) · 非平凡性=${targetFunction.nontriviality === "unverified_on_candidate_set_without_conditioned_measurements" ? "未核验：缺少条件化观测" : statusLabel(targetFunction.nontriviality)}`
+    : `目标=${normalized.objective || "未解析"} · 非平凡性=${statusLabel(targetFunction.nontriviality)}`;
   $("#reaction-language").textContent = normalized.reaction_natural_language || "—";
 
   const basis = result.basis || {};
   $("#basis-operator").textContent = basis.operator || "Π_B : X → R^k";
-  badge($("#basis-state"), `${basis.name || "basis"} / k=${basis.dimension || "?"}`, "unknown");
+  badge($("#basis-state"), `${basis.display_name || basis.name || "基空间"} / k=${basis.dimension || "?"}`, "unknown");
   renderSpaces(result.spaces || []);
   renderPlugins(result.plugin_route || []);
   renderMatrix(basis.matrix);
@@ -171,7 +190,7 @@ function renderGeneral(result) {
   renderReferences(result.references || []);
 
   const lean = result.lean || {};
-  badge($("#lean-status"), lean.status || "obligation", statusKind(lean.status));
+  badge($("#lean-status"), statusLabel(lean.status || "obligation"), statusKind(lean.status));
   $("#lean-proposition").textContent = lean.proposition || "—";
   clear($("#lean-assumptions"));
   for (const item of lean.assumptions || []) {
@@ -181,7 +200,7 @@ function renderGeneral(result) {
   }
   $("#lean-detail").textContent = JSON.stringify(result.model_receipt || { provider: result.source || "local", calls: 0 }, null, 2);
   const receipt = result.model_receipt || {};
-  $("#call-budget").textContent = `calls ${receipt.calls || 0} / ${receipt.max_calls || 1}`;
+  $("#call-budget").textContent = `调用 ${receipt.calls || 0} / ${receipt.max_calls || 1}`;
 }
 
 function renderSpaces(spaces) {
@@ -197,9 +216,9 @@ function renderSpaces(spaces) {
     const id = document.createElement("b");
     id.textContent = space.id || "?";
     const label = document.createElement("small");
-    label.textContent = space.label || "space";
+    label.textContent = space.label || "空间";
     const map = document.createElement("code");
-    map.textContent = space.map || "map";
+    map.textContent = space.map || "映射";
     token.append(id, label, map);
     host.appendChild(token);
   });
@@ -211,9 +230,9 @@ function renderPlugins(routes) {
   for (const route of routes) {
     const row = document.createElement("div");
     const name = document.createElement("b");
-    name.textContent = route.plugin || "plugin";
+    name.textContent = route.label || route.plugin || "插件";
     const state = document.createElement("span");
-    state.textContent = route.status || "unknown";
+    state.textContent = statusLabel(route.status);
     const scope = document.createElement("small");
     scope.textContent = route.scope || "—";
     row.append(name, state, scope);
@@ -290,7 +309,8 @@ function renderCandidates(candidates) {
       name.rel = "noopener noreferrer";
     }
     const state = document.createElement("span");
-    state.textContent = candidate.state || candidate.status || "query";
+    const candidateState = candidate.state || candidate.status || "query";
+    state.textContent = ({ "abstract-verified": "摘要已核验", "metadata-only": "仅元数据", query: "待检索" })[candidateState] || statusLabel(candidateState);
     const query = document.createElement("code");
     query.textContent = candidate.query || candidate.evidence || "—";
     row.append(name, state, query);
@@ -460,10 +480,10 @@ $("#lean-check-global").addEventListener("click", async () => {
 
 $("#iterate-kind").addEventListener("change", event => {
   const kind = event.target.value;
-  $("#template-wrap").classList.toggle("is-hidden", kind !== "eml");
-  $("#x-wrap").classList.toggle("is-hidden", kind !== "eml");
-  $("#branch-wrap").classList.toggle("is-hidden", kind !== "eml");
-  $("#tolerance-wrap").classList.toggle("is-hidden", kind !== "eml");
+  $("#template-wrap").classList.toggle("is-hidden", kind !== "basis");
+  $("#x-wrap").classList.toggle("is-hidden", kind !== "basis");
+  $("#branch-wrap").classList.toggle("is-hidden", kind !== "basis");
+  $("#tolerance-wrap").classList.toggle("is-hidden", kind !== "basis");
   $("#finite-fields").classList.toggle("is-hidden", kind !== "finite");
   $("#inverse-fields").classList.toggle("is-hidden", kind !== "inverse");
 });
@@ -477,7 +497,7 @@ $("#iterate-form").addEventListener("submit", async event => {
   event.preventDefault();
   const kind = $("#iterate-kind").value;
   const payload = { kind };
-  if (kind === "eml") {
+  if (kind === "basis") {
     Object.assign(payload, {
       template: $("#function-template").value,
       x: Number($("#iterate-x").value),
@@ -513,12 +533,12 @@ function fmtComplex(value) {
 
 function renderIterate(payload) {
   const result = payload.result || {};
-  badge($("#iterate-status"), result.status || payload.status || "unknown", statusKind(result.status || payload.status));
+  badge($("#iterate-status"), statusLabel(result.status || payload.status), statusKind(result.status || payload.status));
   $("#iterate-compiled").textContent = result.compiled_value ? fmtComplex(result.compiled_value) : result.counterexample ? JSON.stringify(result.counterexample) : "—";
   $("#iterate-reference").textContent = result.reference_value ? fmtComplex(result.reference_value) : "—";
   $("#iterate-error").textContent = typeof result.absolute_error === "number" ? result.absolute_error.toExponential(6) : result.reason || result.status || "—";
   $("#iterate-trace").textContent = (result.oracle_trace || []).join("\n") || result.reason || "—";
-  $("#iterate-obligation").textContent = payload.obligation || "domain → composition → equality";
+  $("#iterate-obligation").textContent = payload.obligation || "定义域 → 复合闭合性 → 等式";
   drawAst(payload.ast, result.counterexample);
 }
 
@@ -542,8 +562,8 @@ function drawAst(ast, counterexample = null) {
   walk(ast, 0, 45, 675);
   edges.forEach(([a, b]) => svg.appendChild(svgEl("line", { x1: nodes[a].x, y1: nodes[a].y, x2: nodes[b].x, y2: nodes[b].y, stroke: "#8da0aa", "stroke-width": 3 })));
   nodes.forEach(({ node, x, y }) => {
-    const label = node.op === "eml" ? "EML" : node.op;
-    const isOperator = label === "EML";
+    const label = node.op === "basis" ? "B" : node.op;
+    const isOperator = label === "B";
     svg.appendChild(svgEl("circle", { cx: x, cy: y, r: isOperator ? 31 : 25, fill: isOperator ? "#0d2538" : "#e9c46a", stroke: "white", "stroke-width": 4 }));
     svg.appendChild(svgEl("text", { x, y: y + 5, "text-anchor": "middle", fill: isOperator ? "white" : "#0d2538", "font-size": isOperator ? 12 : 15, "font-weight": 900 }, label));
   });
@@ -552,7 +572,7 @@ function drawAst(ast, counterexample = null) {
 async function start() {
   await detectRuntime();
   await runGeneral();
-  drawAst({ op: "eml", left: { op: "1" }, right: { op: "x" } });
+  drawAst({ op: "basis", left: { op: "1" }, right: { op: "x" } });
 }
 
 start();

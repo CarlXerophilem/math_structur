@@ -22,6 +22,7 @@
     <div class="runtime" aria-live="polite">
       <div><span id="server-dot" class="dot"></span><b id="server-status">connecting</b></div>
       <div class="runtime-grid">
+        <span>Qwen3-8B <b id="qwen-status">—</b></span>
         <span>Codex <b id="codex-status">—</b></span>
         <span>DeepSeek <b id="deepseek-status">—</b></span>
         <span>alphaXiv <b id="alphaxiv-status">—</b></span>
@@ -36,7 +37,7 @@
       <span>01</span><b>广义分析器</b><small>分解 · 基空间 · 催化 · 2D/3D</small>
     </button>
     <button class="tab" data-mode="iterate" aria-selected="false">
-      <span>02</span><b>迭代 · 反逆调试</b><small>EML · f⁻¹ · gⁿ=f · Lean</small>
+      <span>02</span><b>迭代 · 反逆调试</b><small>特定基算子 · f⁻¹ · gⁿ=f · Lean</small>
     </button>
   </nav>
 
@@ -44,12 +45,12 @@
     <section id="panel-general" class="mode-panel is-active" data-panel="general">
       <form id="general-form" class="control-panel">
         <div class="field-wide">
-          <label for="problem-input">QUERY</label>
+          <label for="problem-input">科研目标</label>
           <textarea id="problem-input" rows="3">CO2gas+H2gas -- CH3CH2OHgas @best</textarea>
         </div>
 
         <div class="form-grid">
-          <label>DOMAIN
+          <label>问题域
             <select id="problem-domain">
               <option value="auto">auto</option>
               <option value="reaction">reaction / catalyst</option>
@@ -57,7 +58,7 @@
               <option value="mathematics">mathematics</option>
             </select>
           </label>
-          <label>BASIS
+          <label>基空间
             <select id="basis-select">
               <option value="stoichiometric_kernel">ker(A) + graph</option>
               <option value="symmetry_invariants">symmetry invariants</option>
@@ -66,39 +67,41 @@
               <option value="hybrid">hybrid registered basis</option>
             </select>
           </label>
-          <label>DIMENSION
+          <label>维数
             <input id="basis-dimension" type="number" min="1" max="12" value="4">
           </label>
-          <label>HARNESS
+          <label>求解后端
             <select id="solver-provider">
-              <option value="local">local exact kernel</option>
-              <option value="codex">local Codex CLI + alphaXiv MCP</option>
-              <option value="deepseek">DeepSeek cross-verify harness</option>
-              <option value="auto">auto-select one harness</option>
+              <option value="local">本地精确内核</option>
+              <option value="qwen">本地 Qwen3-8B（需精确复核）</option>
+              <option value="codex">本机 Codex + alphaXiv</option>
+              <option value="deepseek">DeepSeek 交叉核验</option>
+              <option value="auto">自动选择一个后端</option>
             </select>
           </label>
         </div>
 
         <fieldset class="weights">
-          <legend>OBJECTIVE w</legend>
-          <label>activity <input id="weight-activity" type="range" min="0" max="100" value="25"><output>25</output></label>
-          <label>selectivity <input id="weight-selectivity" type="range" min="0" max="100" value="35"><output>35</output></label>
-          <label>stability <input id="weight-stability" type="range" min="0" max="100" value="25"><output>25</output></label>
-          <label>cost <input id="weight-cost" type="range" min="0" max="100" value="15"><output>15</output></label>
+          <legend>目标权重 w</legend>
+          <label>活性 <input id="weight-activity" type="range" min="0" max="100" value="25"><output>25</output></label>
+          <label>选择性 <input id="weight-selectivity" type="range" min="0" max="100" value="35"><output>35</output></label>
+          <label>稳定性 <input id="weight-stability" type="range" min="0" max="100" value="25"><output>25</output></label>
+          <label>成本 <input id="weight-cost" type="range" min="0" max="100" value="15"><output>15</output></label>
         </fieldset>
 
         <div class="run-row">
-          <button class="run-button" type="submit">RUN</button>
+          <button class="run-button" type="submit">运行</button>
           <code id="call-budget">calls 0 / 1</code>
         </div>
       </form>
 
       <div class="analysis-grid">
         <section class="card equation-card">
-          <header><h2>Math filter / typed target</h2><span id="general-status" class="badge">idle</span></header>
-          <code id="solver-contract" class="contract-line">user target → typed logic → connected spaces → plugins → oracle</code>
+          <header><h2>数学滤镜与类型化目标</h2><span id="general-status" class="badge">待运行</span></header>
+          <code id="solver-contract" class="contract-line">用户目标 → 类型与逻辑 → 相连空间 → 专业插件 → 验证器</code>
           <div id="standard-formula" class="formula-display" aria-label="标准数学公式">—</div>
-          <div class="equation" id="normalized-equation">—</div>
+          <div id="input-equation" class="math-line">原始查询：—</div>
+          <div class="equation" id="normalized-equation">配平结果：—</div>
           <code id="input-audit">—</code>
           <div id="target-function" class="formula-inline" aria-label="目标函数">—</div>
           <div id="objective-vector" class="math-line">J = —</div>
@@ -106,7 +109,7 @@
         </section>
 
         <section class="card basis-card">
-          <header><h2>Connected spaces / basis</h2><span id="basis-state" class="badge">—</span></header>
+          <header><h2>相连空间与有限基</h2><span id="basis-state" class="badge">—</span></header>
           <code id="basis-operator">Π<sub>B</sub> : X → ℝᵏ</code>
           <div id="space-chain" class="space-chain"></div>
           <div id="plugin-route" class="plugin-route"></div>
@@ -114,18 +117,18 @@
         </section>
 
         <section class="card tasks-card">
-          <header><h2>Machine problems</h2><span class="badge">M0…Mn</span></header>
+          <header><h2>可验证机器子任务</h2><span class="badge">M0…Mn</span></header>
           <div id="machine-tasks" class="task-list"></div>
         </section>
 
         <section class="card candidates-card">
-          <header><h2>Catalyst candidates · unranked</h2><span id="candidate-count" class="badge">0</span></header>
+          <header><h2>催化剂文献候选（未排名）</h2><span id="candidate-count" class="badge">0</span></header>
           <div id="candidate-list" class="candidate-list"></div>
         </section>
 
         <section class="card geometry-card">
           <header>
-            <div><h2>Geometry</h2><code id="geometry-title">—</code></div>
+            <div><h2>二维／三维示意构型</h2><code id="geometry-title">—</code></div>
             <div class="segmented" role="group" aria-label="几何维度">
               <button class="is-active" data-view="2d" type="button">2D</button>
               <button data-view="3d" type="button">3D</button>
@@ -147,7 +150,7 @@
         </section>
 
         <section class="card references-card">
-          <header><h2>References</h2><span class="badge">alphaXiv MCP / DOI source</span></header>
+          <header><h2>可跳转文献</h2><span class="badge">alphaXiv／DOI</span></header>
           <ol id="reference-list"></ol>
         </section>
       </div>
@@ -155,18 +158,20 @@
 
     <section id="panel-iterate" class="mode-panel" data-panel="iterate" hidden>
       <div class="expander-boundary">
-        <b>EMLExpander</b><code>eligible scalar analytic subtree only</code><span>algebraic structure: unconfirmed</span>
+        <b>特定基算子复合器</b>
+        <code>B: ℂ × ℂ<sup>×</sup> → ℂ；B(u,v)=e<sup>u</sup>−Log(v)</code>
+        <span>Log 为逐点主值复对数，Arg(v)∈(−π,π]；负实轴两侧不连续。仅在声明的测试域与分支约定下复合，不主张统一代数。</span>
       </div>
       <form id="iterate-form" class="control-panel iterate-controls">
         <div class="form-grid">
-          <label>OPERATOR
+          <label>任务类型
             <select id="iterate-kind">
-              <option value="eml">EML expression</option>
-              <option value="finite">finite g²=f</option>
-              <option value="inverse">inverse / gⁿ=f obligation</option>
+              <option value="basis">特定基算子 B 的展开</option>
+              <option value="finite">有限域上的 g²=f</option>
+              <option value="inverse">反函数／gⁿ=f 证明义务</option>
             </select>
           </label>
-          <label id="template-wrap">TARGET
+          <label id="template-wrap">目标函数
             <select id="function-template">
               <option value="log">Log(x)</option>
               <option value="exp">exp(x)</option>
@@ -176,15 +181,15 @@
           <label id="x-wrap">x
             <input id="iterate-x" type="number" step="any" value="-1">
           </label>
-          <label id="domain-wrap">DOMAIN
+          <label id="domain-wrap">当前测试域 D<sub>f</sub>
             <select id="iterate-domain">
-              <option value="complex_nonzero">ℂ \ {0}</option>
-              <option value="positive_real">ℝ₊</option>
-              <option value="finite">finite D</option>
+              <option value="complex_nonzero">D_f = ℂ \ {0}</option>
+              <option value="positive_real">D_f = ℝ₊</option>
+              <option value="finite">有限测试域 D_f</option>
             </select>
           </label>
-          <label id="branch-wrap">BRANCH
-            <select id="iterate-branch"><option value="principal_complex_log">principal Log</option></select>
+          <label id="branch-wrap">对数约定
+            <select id="iterate-branch"><option value="principal_complex_log">逐点主值 Log；Arg∈(−π,π]</option></select>
           </label>
           <label id="tolerance-wrap">ε
             <input id="iterate-tolerance" value="1e-10">
@@ -198,28 +203,28 @@
           <label>RELATION<input id="inverse-relation" value="g^2 = f"></label>
           <label>ASSUMPTIONS<input id="inverse-assumptions" value="g(D) ⊆ D; D fixed"></label>
         </div>
-        <button class="run-button" type="submit">CHECK</button>
+        <button class="run-button" type="submit">核验</button>
       </form>
 
       <div class="iterate-grid">
         <section class="card result-card">
-          <header><h2>Oracle</h2><span id="iterate-status" class="badge">idle</span></header>
+          <header><h2>精确验证器</h2><span id="iterate-status" class="badge">待运行</span></header>
           <div class="value-grid">
-            <div><span>compiled / g(g(x))</span><code id="iterate-compiled">—</code></div>
-            <div><span>reference / f(x)</span><code id="iterate-reference">—</code></div>
-            <div><span>error / counterexample</span><code id="iterate-error">—</code></div>
+            <div><span>基算子展开／g(g(x))</span><code id="iterate-compiled">—</code></div>
+            <div><span>参考函数／f(x)</span><code id="iterate-reference">—</code></div>
+            <div><span>误差／反例</span><code id="iterate-error">—</code></div>
           </div>
           <pre id="iterate-trace">—</pre>
         </section>
         <section class="card ast-card">
-          <header><h2>Expression graph</h2><code id="iterate-obligation">—</code></header>
-          <svg id="iterate-ast" viewBox="0 0 720 430" role="img" aria-label="迭代表达图"></svg>
+          <header><h2>基算子复合表达树</h2><code id="iterate-obligation">—</code></header>
+          <svg id="iterate-ast" viewBox="0 0 720 430" role="img" aria-label="基算子复合表达树"></svg>
         </section>
       </div>
     </section>
   </main>
 
-  <footer><code>Aν=0 · Π<sub>B</sub> · R<sup>3n</sup>/SE(3) · f∘g · Lean kernel</code><span>Math Structurer v0.4</span></footer>
+  <footer><code>Aν=0 · bᵢ:Xᵢ⇀Xⱼ · R<sup>3n</sup>/SE(3) · g∘g=f · Lean</code><span>Math Structurer v0.5</span></footer>
   <script src="vendor/katex/katex.min.js"></script>
   <script src="app.js"></script>
 </body>

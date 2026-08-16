@@ -25,7 +25,7 @@ def _post(url: str, payload: dict) -> dict:
 
 
 def test_static_delivery_has_exactly_two_panels_and_no_export_surface():
-    for name in ("index.html", "styles.css", "app.js", "solver_output.schema.json", "lean/ReactionBalance.lean", "vendor/katex/katex.min.js", "vendor/katex/katex.min.css", "vendor/katex/LICENSE"):
+    for name in ("index.html", "styles.css", "app.js", "solver_output.schema.json", "lean/ReactionBalance.lean", "lean/IterationContract.lean", "vendor/katex/katex.min.js", "vendor/katex/katex.min.css", "vendor/katex/LICENSE"):
         assert (PANEL / name).is_file()
     assert len(list((PANEL / "vendor" / "katex" / "fonts").glob("*"))) >= 50
     assert not (PANEL / "data.js").exists()
@@ -37,10 +37,17 @@ def test_static_delivery_has_exactly_two_panels_and_no_export_surface():
     assert 'data-panel="iterate"' in html
     assert 'data-panel="mapping"' not in html
     assert "CO2gas+H2gas -- CH3CH2OHgas @best" in html
-    assert "user target → typed logic → connected spaces → plugins → oracle" in html
+    assert "用户目标 → 类型与逻辑 → 相连空间 → 专业插件 → 验证器" in html
     assert "ReactionDecomposer" not in html
     assert "vendor/katex/katex.min.js" in html
-    assert "algebraic structure: unconfirmed" in html
+    assert "特定基算子复合器" in html
+    assert "B: ℂ × ℂ<sup>×</sup> → ℂ" in html
+    assert "Arg(v)∈(−π,π]" in html
+    assert "当前测试域" in html
+    assert "基算子复合表达树" in html
+    assert "函数空间" not in html
+    assert "不主张统一代数" in html
+    assert "E" + "ML" not in html
     lowered = html.lower()
     assert "export" not in lowered
     assert "download" not in lowered
@@ -76,12 +83,14 @@ def test_catalyst_demo_fails_closed_then_balances_exactly():
     assert all(item["state"] in {"abstract-verified", "metadata-only"} for item in result["search_targets"])
     assert result["standard_math"]["status"] == "typed_but_objective_underdetermined"
     assert "A\\nu=0" in result["standard_math"]["display"]
+    assert "冻结前未定义" in result["standard_math"]["display"]
     assert result["target_function"]["nontriviality"] == "unverified_on_candidate_set_without_conditioned_measurements"
     assert result["intermediates"]["status"] == "unknown"
     routes = {item["plugin"]: item for item in result["plugin_route"]}
     assert routes["ReactionDecomposer"]["status"] == "invoked"
-    assert routes["EMLExpander"]["status"] == "not_invoked"
-    assert routes["GeometryPlugin"]["scope"].endswith("independent of EML")
+    assert routes["BasisOperatorComposer"]["status"] == "not_invoked"
+    assert routes["BasisOperatorComposer"]["label"] == "特定基算子复合器"
+    assert "不进入标量算子复合" in routes["GeometryPlugin"]["scope"]
     assert [space["id"] for space in result["spaces"]] == ["N", "S", "C", "Y", "G", "P"]
 
 
@@ -91,7 +100,7 @@ def test_geometry_is_schematic_pd_fe_interface_with_honest_smiles_boundary():
     elements = {node["element"] for node in geometry["nodes"]}
     assert {"Pd", "Fe", "O", "C", "H"}.issubset(elements)
     assert geometry["coordinate_status"] == "illustrative_not_relaxed"
-    assert "no space-group claim" in geometry["symmetry"]
+    assert "不主张空间群" in geometry["symmetry"]
     assert "ethanol=CCO" in geometry["smiles"]
     assert "catalyst=N/A" in geometry["smiles"]
     assert "Manim" in geometry["render_contract"]
@@ -119,7 +128,7 @@ def test_unregistered_general_request_requires_harness_without_inventing_geometr
     assert result["search_targets"] == []
     assert result["model_receipt"]["calls"] == 0
     assert result["standard_math"]["status"] == "harness_required"
-    assert {item["plugin"] for item in result["plugin_route"]} == {"AIHarness", "EMLExpander", "GeometryPlugin", "Lean4"}
+    assert {item["plugin"] for item in result["plugin_route"]} == {"AIHarness", "BasisOperatorComposer", "GeometryPlugin", "Lean4"}
 
 
 def test_local_codex_alphaxiv_and_lean_interfaces_are_detected_without_calling_models():
@@ -135,11 +144,37 @@ def test_local_codex_alphaxiv_and_lean_interfaces_are_detected_without_calling_m
     assert status["model_calls"] == 0
 
 
-def test_eml_negative_real_branch_counterexample_is_two_pi():
-    result = serve_panel.evaluate_eml({"template": "log", "x": -1, "tolerance": 1e-10})
+def test_runtime_paths_are_portable_and_api_status_redacts_local_absolute_paths():
+    source = (PANEL / "serve_panel.py").read_text("utf-8")
+    assert "MATH_STRUCTURER_PRIME_REPO" in source
+    assert "MATH_STRUCTURER_CROSS_VERIFY" in source
+    assert "MATH_STRUCTURER_BASH" in source
+    assert "Program Files" not in source
+    assert "D:" + "\\MATHs" not in source
+    browser_source = (PANEL / "browser_smoke.cjs").read_text("utf-8")
+    assert "C:" + "\\\\Program Files" not in browser_source
+    assert "discoverChrome" in browser_source
+    serve_panel.harness_status.cache_clear()
+    serialized = json.dumps(serve_panel.harness_status(), ensure_ascii=False)
+    assert str(serve_panel.ROOT) not in serialized
+    assert str(Path.home()) not in serialized
+    assert str(serve_panel.PRIME_REPO) not in serialized
+    assert str(serve_panel.CROSS_VERIFY) not in serialized
+
+
+def test_specific_basis_operator_negative_real_branch_counterexample_is_two_pi():
+    result = serve_panel.evaluate_basis_operator({"template": "log", "x": -1, "tolerance": 1e-10, "domain": "complex_nonzero", "branch": "principal_complex_log"})
     assert result["result"]["status"] == "mismatch"
     assert abs(result["result"]["absolute_error"] - 6.283185307179586) < 1e-12
-    unsupported = serve_panel.evaluate_eml({"template": "sin(x)+x^2", "x": 1})
+    assert result["ast"]["op"] == "basis"
+    assert result["operator_contract"]["display_signature"] == "B: ℂ × ℂ^× → ℂ"
+    assert result["operator_contract"]["log_policy"] == "pointwise_principal_value"
+    assert result["operator_contract"]["argument_range"] == "Arg(v) in (-pi, pi]"
+    assert result["target_domain"] == "D_f = C^times"
+    outside = serve_panel.evaluate_basis_operator({"template": "log", "x": -1, "domain": "positive_real"})
+    assert outside["result"]["status"] == "undefined"
+    assert "outside the declared current test domain" in outside["result"]["oracle_trace"][0]
+    unsupported = serve_panel.evaluate_basis_operator({"template": "sin(x)+x^2", "x": 1})
     assert unsupported["status"] == "unsupported"
 
 
@@ -153,12 +188,12 @@ def test_finite_iteration_root_checks_closure_before_composition():
     assert invalid["reason"] == "g(D) not subset D"
 
 
-def test_fixed_lean_files_compile_with_honest_sorry_boundary():
+def test_fixed_lean_files_compile_with_honest_axiom_boundary():
     result = serve_panel.lean_check()
     assert result["status"] == "partial_formalization"
     assert result["results"]["reaction_balance"]["status"] == "passed"
     assert result["results"]["function_contract"]["status"] == "passed"
-    assert result["results"]["prime_eml"]["status"] == "accepted_with_sorry"
+    assert result["results"]["upstream_basis_reconstruction"]["status"] == "source_contains_axiom"
 
 
 def test_http_server_serves_local_analysis_health_and_references():

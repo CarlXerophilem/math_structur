@@ -1,0 +1,63 @@
+{
+  "checked_at": "2026-08-17T03:16:33.450551+09:00",
+  "python_tests": "16 passed in 3.83s",
+  "quick_check": {
+    "element_conservation": "passed",
+    "external_network_requests": 0,
+    "local_kernel": "passed",
+    "model_calls": 0,
+    "panel_http": 200,
+    "status": "passed"
+  },
+  "browser": {
+    "status": "passed",
+    "external_network_requests": 0,
+    "model_calls": "调用 0 / 1",
+    "mobile": {
+      "viewport_width": 390,
+      "scroll_width": 390
+    },
+    "lean": "partial_formalization",
+    "operator_contract": "B: C x C^times -> C; pointwise principal Log; Arg(v) in (-pi,pi]",
+    "tree_label": "基算子复合表达树"
+  },
+  "word": {
+    "checked_at": "2026-08-17T03:15:30.162550+09:00",
+    "file": "GOAI_四页提交稿_Math_Structurer.docx",
+    "sha256": "b6b67115843ca794b9c5113120dfdd127305b6db57022c53ae87d9c7abe93899",
+    "bytes": 708620,
+    "application": "Microsoft Word 16.0",
+    "method": "Document.Repaginate + ComputeStatistics(wdStatisticPages)",
+    "repaginated": true,
+    "pages": 4,
+    "words": 3476,
+    "characters": 4274,
+    "characters_with_spaces": 4523,
+    "hyperlink_elements": 19,
+    "external_hyperlink_relationships": 7,
+    "unique_hyperlink_targets": 7,
+    "hyperlink_targets": [
+      "https://arxiv.org/abs/1901.01543",
+      "https://arxiv.org/abs/2307.05432",
+      "https://arxiv.org/abs/2408.07818",
+      "https://doi.org/10.1007/s00010-020-00739-w",
+      "https://doi.org/10.1021/acscatal.1c01504",
+      "https://doi.org/10.20429/tag.2021.080108",
+      "https://proceedings.mlr.press/v162/brandstetter22a.html"
+    ],
+    "pdf_exported": false,
+    "word_processes_after_cleanup": 0,
+    "status": "passed_exactly_four_pages"
+  },
+  "platform": {
+    "windows_11": "tested",
+    "linux": "designed_not_tested",
+    "macos": "designed_not_tested"
+  },
+  "workspace": {
+    "pdf_files": 0,
+    "active_legacy_eml_terms": 0,
+    "raw_session_logs_published": false
+  },
+  "scientific_boundary": "no catalyst activity simulation; no catalyst ranking; current discovery signal is problem-definition revision; scientific discovery gate not passed"
+}

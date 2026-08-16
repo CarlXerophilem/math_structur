@@ -1,0 +1,39 @@
+{
+  "status": "success",
+  "source": "alphaxiv MCP",
+  "papers": [
+    {
+      "arxiv_id": "2408.07818",
+      "exact_title": "LONG TIME DERIVATION OF THE BOLTZMANN EQUATION FROM HARD SPHERE DYNAMICS",
+      "authors": ["Yu Deng", "Zaher Hani", "Xiao Ma"],
+      "exposed_version/date": "v3 — 18 Jul 2025",
+      "url": "https://arxiv.org/abs/2408.07818",
+      "claims": [
+        "The authors rigorously derive Boltzmann’s kinetic equation from hard-sphere dynamics for arbitrarily long times, as long as the Boltzmann solution exists.",
+        "They state that, together with a companion paper connecting this result to hydrodynamic limits, the work completes Hilbert’s Sixth Problem for a rarefied hard-sphere gas."
+      ]
+    },
+    {
+      "arxiv_id": "2307.05432",
+      "exact_title": "Self-Supervised Learning with Lie Symmetries for Partial Differential Equations",
+      "authors": [
+        "Grégoire Mialon",
+        "Quentin Garrido",
+        "Hannah Lawrence",
+        "Danyal Rehman",
+        "Yann LeCun",
+        "Bobak T. Kiani"
+      ],
+      "exposed_version/date": "v2 — 14 Feb 2024",
+      "url": "https://arxiv.org/abs/2307.05432",
+      "claims": [
+        "The authors learn general-purpose PDE representations from heterogeneous data using joint-embedding self-supervised learning.",
+        "Their representation outperforms baselines on invariant tasks such as PDE-coefficient regression and also improves neural-solver time-stepping performance."
+      ]
+    }
+  ],
+  "limitations": [
+    "Dates report the version/date exposed in the retrieved records, not necessarily first-submission dates.",
+    "No PDFs were downloaded or saved."
+  ]
+}

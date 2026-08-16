@@ -1,0 +1,39 @@
+{
+  "captured_at": "2026-08-17T01:45:49.407295+09:00",
+  "doi_api": {
+    "status": "passed",
+    "endpoint": "https://doi.org/api/handles/10.1021/acscatal.1c01504",
+    "responseCode": 1
+  },
+  "openalex_metadata": {
+    "status": "passed",
+    "endpoint": "https://api.openalex.org/works/https://doi.org/10.1021/acscatal.1c01504"
+  },
+  "alphaxiv_mcp": {
+    "status": "passed_after_case_sensitive_retry",
+    "result": "alphaxiv_result_v2.json",
+    "pdf_saved": false,
+    "raw_session_log_published": false
+  },
+  "local_pdf_receipts": [
+    {
+      "title": "Long Time Derivation of the Boltzmann Equation from Hard Sphere Dynamics",
+      "bytes": 7682019,
+      "sha256": "61cc39d44eabf2f119880a9f1bd0cbb9409382ac3f67beff4c952f69290a30ed",
+      "pages": 192,
+      "bundled": false
+    },
+    {
+      "title": "Iterative square roots of functions",
+      "bytes": 450623,
+      "sha256": "12f169e238dfd72ca7e24b6c23eea16e6e00e0cceca2e168bb08b2c3cff22b60",
+      "pages": 27,
+      "bundled": false
+    }
+  ],
+  "limitations": [
+    "ACS landing page returned HTTP 403 in this environment",
+    "Crossref returned HTTP 429; no novelty claim is based on that failure",
+    "OpenAlex metadata and abstract are secondary indexing evidence; DOI Handle API only verifies resolution"
+  ]
+}

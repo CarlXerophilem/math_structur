@@ -1,0 +1,96 @@
+{
+  "captured_at": "2026-08-17T02:48:18.693961+09:00",
+  "kozyra": {
+    "status": "publisher_abstract_verified",
+    "title": "The Structure Of Functional Graphs For Functions From A Finite Domain To Itself For Which A Half Iterate Exists",
+    "authors": [
+      "Paweł Marcin Kozyra"
+    ],
+    "url": "https://digitalcommons.georgiasouthern.edu/tag/vol8/iss1/8/",
+    "capture": "kozyra.html",
+    "sha256": "c381baa8cc7d8f3a73d19bbe650d872fa4d47ec6a1c0a839341304f6fddfb538",
+    "support": "The notion of a replica of a nontrivial in-tree is defined. A result enabling to determine whether an in-tree is a replica of another in-tree employing an injective mapping between some subsets of sources of these in-trees is presented. There are given necessary and sufficient conditions for the existence of a functional square root of a function from a finite set to itself through presenting necessary and sufficient conditions for the existence of a square root of a component of the functional graph for the function and for the existence of a square root of the union of two components of the functional graph for the function containing cycles of the same length using the concept of the replica.",
+    "limitation": "publisher abstract page only; no full-text receipt in this package"
+  },
+  "murugan_palanivel": {
+    "status": "publisher_abstract_verified",
+    "title": "Iterative roots of continuous functions and Hyers–Ulam stability",
+    "authors": [
+      "Murugan, Veerapazham",
+      "Palanivel, Rajendran"
+    ],
+    "publication_date": "2021/02",
+    "url": "https://link.springer.com/article/10.1007/s00010-020-00739-w",
+    "capture": "murugan_springer.html",
+    "sha256": "12cd4ae49006f74f598c8a9352b83db2c7af2135f979c3b9c8d0b784578fbb14",
+    "support": "In this paper, we prove that continuous non-PM functions with non-monotonicity height equal to 1 need not be strictly monotone on its range, unlike PM functions. An existence theorem is obtained for the iterative roots of such functions. We also discuss the Hyers–Ulam stability for the functional equation of the iterative root problem.",
+    "limitation": "publisher preview and abstract; results concern the stated restricted function class"
+  },
+  "gungor": {
+    "status": "arxiv_html_verified",
+    "title": "Notes on Lie Symmetry Group Methods for Differential Equations",
+    "authors": [
+      "F. Güngör"
+    ],
+    "version": "arXiv:1901.01543v11 (2025)",
+    "url": "https://arxiv.org/html/1901.01543",
+    "capture": "gungor_arxiv_html.html",
+    "sha256": "72cf1d7dcad0ed5464e2eab266cabcd5e61cc943e6427ce9bdb89c1485de6203",
+    "support": "Symmetry group of a partial differential equation (PDE) can be used to reduce the number of independent variables, to transform known simple solutions to new solutions. For an ordinary differential equation (ODE), even reduction in order can be made. Under some special structure of the symmetry group, reduction can even go all the way down to an algebraic equation, from which general solution can be obtained. The computation of the symmetry group of a system of differential equations can be computationally complica",
+    "limitation": "survey/lecture notes; does not validate this project or a universal automated reducer"
+  },
+  "brandstetter": {
+    "status": "pmlr_abstract_verified",
+    "title": "Lie Point Symmetry Data Augmentation for Neural PDE Solvers",
+    "authors": [
+      "Johannes Brandstetter",
+      "Max Welling",
+      "Daniel E. Worrall"
+    ],
+    "publication_date": "2022-06-28",
+    "url": "https://proceedings.mlr.press/v162/brandstetter22a.html",
+    "capture": "brandstetter.html",
+    "sha256": "699f40562e3c9d796fd4e9562ca98e3138edf651b696018a3a26269e3b244102",
+    "support": "PMLR abstract presents Lie point symmetry data augmentation to improve neural PDE solver sample complexity.",
+    "limitation": "data augmentation scope; not a universal PDE-to-ODE reduction system"
+  },
+  "mialon": {
+    "status": "arxiv_api_verified",
+    "title": "Self-Supervised Learning with Lie Symmetries for Partial Differential Equations",
+    "authors": [
+      "Grégoire Mialon",
+      "Quentin Garrido",
+      "Hannah Lawrence",
+      "Danyal Rehman",
+      "Yann LeCun",
+      "Bobak T. Kiani"
+    ],
+    "published": "2023-07-11T16:52:22Z",
+    "updated": "2024-02-14T14:59:38Z",
+    "url": "https://export.arxiv.org/api/query?id_list=2307.05432",
+    "capture": "mialon_arxiv_api.xml",
+    "sha256": "a187ae7744bf964af4adde45596252d40f48cf18fa397eb77fb7caa77bac96a5",
+    "support": "Machine learning for differential equations paves the way for computationally efficient alternatives to numerical solvers, with potentially broad impacts in science and engineering. Though current algorithms typically require simulated training data tailored to a given setting, one may instead wish to learn useful information from heterogeneous sources, or from real dynamical systems observations that are messy or incomplete. In this work, we learn general-purpose representations of PDEs from heterogeneous data by implementing joint embedding methods for self-supervised learning (SSL), a framework for unsupervised representation learning that has had notable success in computer vision. Our representation outperforms baseline approaches to invariant tasks, such as regressing the coefficients of a PDE, while also improving the time-stepping performance of neural solvers. We hope that our proposed methodology will prove useful in the eventual development of general-purpose foundation models for PDEs. Code: https://github.com/facebookresearch/SSLForPDEs.",
+    "limitation": "NeurIPS 2023 work; the 2024 date is the arXiv v2 update, not first publication"
+  },
+  "wang_supplement": {
+    "status": "official_supplement_verified",
+    "article": "Wang et al. 2021, DOI 10.1021/acscatal.1c01504",
+    "official_record": "https://api.figshare.com/v2/articles/16583585",
+    "official_download": "https://ndownloader.figshare.com/files/30694805",
+    "source_filename": "cs1c01504_si_001.pdf",
+    "bytes": 1899012,
+    "sha256": "c97b762532075c02c82e5a1f2088e8824c22bd13d6263e10eb4f5d97b14c391f",
+    "support": {
+      "page": 4,
+      "reactor": "fixed-bed reactor with internal diameter of 6 mm",
+      "feed": "3.25% Ar, 26.5% CO2, and 70.25% H2",
+      "reaction_conditions": "5.0 MPa and 320 deg C",
+      "verbatim_excerpt": "reactant gas mixture (gas composition, 3.25% Ar, 26.5% CO2, and 70.25% H2) was fed into the reactor. The reaction pressure and temperature were 5.0 MPa and 320 oC, respectively.",
+      "method_boundary": "the literature condition slice is a source example, not the Demo default or a cross-paper ranking basis"
+    },
+    "limitation": "ACS main article landing page returned 403; this receipt covers official metadata, abstract, and supplementary information only",
+    "pages": 29,
+    "verification_method": "official Figshare bytes opened in memory; PyMuPDF text extraction; no PDF persisted in the submission workspace"
+  }
+}

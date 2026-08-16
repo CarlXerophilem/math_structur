@@ -1,96 +1,48 @@
-﻿# Math Structurer
+# Math Structurer HTML5 工作台
 
-**Convincing, reusable target-matching skills for AI research agents.**
+Math Structurer 将自然语言科研目标转换为类型化目标、约束、相连空间、特定基算子和可验证子任务，再把结构、公式、证据、反例与不确定性投射到统一的二维／三维工作台。当前面板是可检查的最小原型，不是催化模拟器或通用数学求解器。
 
-将特定的自然语言科研目标解析为类型化目标、约束、基空间和可验证子任务，调用本地 AI harness 与专业求解插件生成候选，并将结构、公式、证据、反例和不确定性投射到统一的 2D/3D HTML5 工作台。EML 域/分支反例是当前已运行的最小科学切片；催化界面是广义接口压力测试。
+## 一行启动
 
-## 启动
+在项目根目录运行：
 
-```powershell
-Set-Location "D:\MATHs\scripts\公众号文章\分析\前沿探索AI for Research"
-python panel\serve_panel.py
-```
+~~~bash
+python3 run.py
+~~~
 
-打开 `http://127.0.0.1:8766/`。页面必须由本地服务器提供；不支持直接双击 `index.html`。
+Windows 也可使用 **python run.py**。离线结构检查：
 
-## 两个面板
+~~~bash
+python3 run.py --check
+~~~
 
-统一管线：
+默认催化切片仅使用 Python 标准库、相对路径和回环地址。符号分支调试需要可选的 SymPy；本地 Lean、Qwen3-8B、Codex 和 DeepSeek 不可用时会显式显示“不可用”，不会阻断默认面板或静默替换后端。
 
-```text
-用户目标
-  → AI 标准化：类型 + 逻辑 + KaTeX 公式
-  → 相连空间：N → S/B → C/Y → G → P
-  → 专业插件与 oracle
-  → 证据 / 反例 / unknown
-  → 2D/3D 投影
-```
-
-`N` 是自然语言空间，`S/B` 是化学计量核或注册基空间，`C/Y` 是候选与条件化测量空间，`G` 是几何商空间，`P` 是 Lean 命题空间。映射必须带类型和验证器；可视化不承担证明。
+## 两个工作区
 
 ### 广义分析器
 
-默认输入：
+默认输入为 **CO2gas+H2gas -- CH3CH2OHgas @best**。ReactionDecomposer 先审计物种、相态、配平和元素守恒，再把“最佳”转换为条件化目标 \(J(c;\theta)\)。由于温压、候选域和观测表没有冻结，精确内核拒绝排名，只列可跳转的文献候选。二维／三维视图均标注为示意构型、未经弛豫。
 
-```text
-CO2gas+H2gas -- CH3CH2OHgas @best
-```
+### 迭代与反逆调试
 
-本地精确内核首先返回 `input_balance=invalid`，再构造：
+当前特定基算子为
 
-```text
-2 CO2(g) + 6 H2(g) -> C2H5OH(g) + 3 H2O(g)
-ν=(-2,-6,+1,+3), Aν=0
-```
+\[
+B(u,v)=e^u-\operatorname{Log}v.
+\]
 
-`@best` 在没有冻结反应条件、候选空间和测量表时返回 `abstain`。界面列出四个真实文献候选，不作性能排名；只有 Pd1/Fe3O4 条目核对过摘要，其余三条仅核对元数据。2D/3D 图是可复现的示意界面构型，不是弛豫结构或机制证明。扩展固体不伪造 SMILES。
+它只在当前测试域 \(D_f\) 和已声明的复对数分支上运行，不被包装为统一代数。面板还支持有限域上的 \(g\circ g=f\) 穷举核验，以及一般反函数／迭代根的证明义务输出。固定 Lean 义务可编译；上游 prime-loop 项目把待证猜想显式声明为公理，因此整体仍标为“部分形式化”，不能冒充定理证明。
 
-插件顺序固定为：
+## 可选后端
 
-1. `ReactionDecomposer`：解析物种/相态/指令，配平，检查元素守恒，登记中间体槽位和目标指标；未知机理保持 `I?`。
-2. `ObjectiveStructurer`：只把可量化的评分、约束或迭代更新写成 (J(c;\theta))；没有条件化测量表时，“非平凡性”保持未验证并弃权。
-3. `alphaXiv/Codex`：可选地读取来源并返回 URL。
-4. `GeometryPlugin`：独立处理 `R^(3n)/SE(3)` 的坐标和 2D/3D 投影。
-5. `Lean4`：只核验明示假设下的固定命题。
+- **本地 Qwen3-8B**：通过 Ollama 的 **qwen3:8b**，每次最多一次语义解析；输出必须经过精确验证器。
+- **本机 Codex**：只读、无审批模式，可通过已配置的 alphaXiv MCP 读取论文。
+- **DeepSeek**：只在用户显式选择且凭证与 cross-verify harness 可用时调用。
+- **Lean 4**：核验明示命题，不把科学结论写成公理。
 
-EML 不处理反应配平、中间体或 3D 构型。它只可接收已经被前序插件判定为合格的标量解析子表达式；当前 Exp-Minus-Log 树仅作启发展开，代数结构尚未确认。
+## 验证边界
 
-非注册问题由选定 Harness 分解为有限基、机器问题、oracle、Lean 义务和几何 schema。所有输出使用 `textContent` 或 Canvas/SVG 渲染。
+本轮 Windows 实测为 **13 passed**；真实 Chrome 验收覆盖双工作区、KaTeX、守恒、文献跳转、二维／三维切换、390 px 布局、特定算子反例与 Lean 状态。浏览器验收期间外网请求为 0、模型调用为 0。Linux 与 macOS 使用同一入口，但在真实平台或持续集成复跑前仅标为“设计适配、未实测”。
 
-### 迭代・反逆调试
-
-- EML 白名单：`Log(x)`、`exp(x)`、恒等映射；
-- 有限 `g²=f`：先检查 `g(D)⊆D`，再穷举复合；
-- 一般 `f⁻¹` 或 `gⁿ=f`：只生成义务，不能判定时保持 `unknown`；
-- `x=-1` 的 EML `Log` 校准返回误差 `2π`；
-- 固定 Lean 检查包含反应守恒、本地函契约和上游 EML 文件。上游 `reconstruct_ln` 仍使用 `sorry`，整体状态为 `partial_formalization`。
-
-李代数只作为基选择类比：用有限结构生成元把搜索压到更小参数空间。界面保留 `Lie generator basis` 选项，但本轮没有实现李代数 oracle，也不把类比写成验证结果。
-
-## Harness
-
-| 选项 | 当前接口 | 边界 |
-|---|---|---|
-| local exact kernel | Python 固定算子 | 默认；0 次模型调用 |
-| local Codex CLI + alphaXiv MCP | `codex exec`，read-only、ephemeral、approval=never | 单次运行最多 1 次模型调用；模型后端沿用本机 Codex 配置，可能是远程/计费端点 |
-| DeepSeek cross-verify harness | `SolveIterativeFunctions\harness\hooks\cross-verify.sh` | 仅在服务器进程具有 `DEEPSEEK_API_KEY` 时启用；选择后可能产生费用 |
-| auto | Codex → DeepSeek → local | 只选择一个后端，不做模型链 |
-
-alphaXiv 使用 Codex MCP bridge，端点为 `https://api.alphaxiv.org/mcp/v1`。浏览器不直接连接 alphaXiv；本项目不下载或保存论文 PDF，只显示可点击的 alphaXiv、机构页或 DOI URL。`openresearch-cli` 仅是设计参考，本机尚未安装，界面不会伪报可用。
-
-## 验证
-
-```powershell
-python -m py_compile panel\serve_panel.py
-node --check panel\app.js
-python -m pytest -q panel\test_panel.py
-```
-
-真实 Chrome 验收：
-
-```powershell
-npm install --no-save playwright@1.61.0  # 仅验收脚本需要；面板运行不需要 Node 包
-node panel\browser_smoke.cjs
-```
-
-验收覆盖双标签、反应配平、`Aν=0`、四个候选、可点击来源、Pd/Fe/O 2D 图、可拖动 3D Canvas、EML `2π` 反例、Lean 的 `accepted_with_sorry` 边界、390 px 布局、控制台错误和外网请求。面板没有导出或下载操作。
+面板不提供导出、下载或 PDF 保存功能。检索失败不等于研究不存在；元数据不等于实验结论；示意图不等于弛豫结构；有限采样和 **sorry** 都不等于证明。

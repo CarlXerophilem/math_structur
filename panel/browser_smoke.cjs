@@ -6,9 +6,18 @@ const assert = require("node:assert/strict");
 const { chromium } = require("playwright");
 
 const baseURL = process.env.PANEL_URL || "http://127.0.0.1:8766/";
-const chromePath = process.env.CHROME_PATH || "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
 const artifactDir = process.env.PANEL_ARTIFACT_DIR || path.resolve(__dirname, "..", "artifacts", "panel");
 fs.mkdirSync(artifactDir, { recursive: true });
+
+function discoverChrome() {
+  const candidates = [
+    process.env.CHROME_PATH,
+    process.env.LOCALAPPDATA && path.join(process.env.LOCALAPPDATA, "Google", "Chrome", "Application", "chrome.exe"),
+    process.env.ProgramFiles && path.join(process.env.ProgramFiles, "Google", "Chrome", "Application", "chrome.exe"),
+    process.env["ProgramFiles(x86)"] && path.join(process.env["ProgramFiles(x86)"], "Google", "Chrome", "Application", "chrome.exe")
+  ].filter(Boolean);
+  return candidates.find(candidate => fs.existsSync(candidate)) || null;
+}
 
 async function main() {
   const receipt = {
@@ -22,7 +31,8 @@ async function main() {
     request_failures: []
   };
 
-  const browser = await chromium.launch({ executablePath: chromePath, headless: true });
+  const chromePath = discoverChrome();
+  const browser = await chromium.launch(chromePath ? { executablePath: chromePath, headless: true } : { channel: "chrome", headless: true });
   const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
   const page = await context.newPage();
 
@@ -35,7 +45,7 @@ async function main() {
 
   try {
     await page.goto(baseURL, { waitUntil: "networkidle" });
-    await page.locator("#general-status").filter({ hasText: "decomposed" }).waitFor({ timeout: 20000 });
+    await page.locator("#general-status").filter({ hasText: "已分解" }).waitFor({ timeout: 20000 });
     assert.equal(await page.locator("button.tab").count(), 2);
     assert.equal(await page.locator("button, a").filter({ hasText: /export|download|导出/i }).count(), 0);
     assert.match(await page.locator(".project-tagline").innerText(), /Convincing, reusable target-matching skills/);
@@ -43,18 +53,20 @@ async function main() {
     assert.ok(await page.locator("#target-function .katex").count() > 0);
     assert.equal(await page.locator("#space-chain > div").count(), 6);
     const pluginText = await page.locator("#plugin-route").innerText();
-    assert.match(pluginText, /ReactionDecomposer/);
-    assert.match(pluginText, /EMLExpander\s+not_invoked/);
-    assert.match(pluginText, /GeometryPlugin/);
-    assert.match(await page.locator("#objective-vector").innerText(), /nontriviality=unverified/);
+    assert.match(pluginText, /反应分解器/);
+    assert.match(pluginText, /特定基算子复合器\s+未调用/);
+    assert.match(pluginText, /几何插件/);
+    assert.match(await page.locator("#objective-vector").innerText(), /非平凡性=未核验/);
     assert.match(await page.locator("#reaction-language").innerText(), /当前只列候选，不排名/);
 
+    const originalEquation = (await page.locator("#input-equation").innerText()).trim();
     const equation = (await page.locator("#normalized-equation").innerText()).trim();
     const audit = (await page.locator("#input-audit").innerText()).trim();
     const kernel = (await page.locator("#basis-matrix > code").innerText()).trim();
-    assert.match(equation, /2 CO2\(g\) \+ 6 H2\(g\)/);
-    assert.match(audit, /input_balance=invalid/);
-    assert.match(audit, /@best=abstain/);
+    assert.match(originalEquation, /原始查询（未守恒）：CO2\(g\) \+ H2\(g\)/);
+    assert.match(equation, /配平结果（Aν=0）：2 CO2\(g\) \+ 6 H2\(g\)/);
+    assert.match(audit, /原始守恒检查=未通过/);
+    assert.match(audit, /@best=条件欠定，拒绝排名/);
     assert.match(kernel, /Aν = \(0, 0, 0\)/);
 
     const candidates = await page.locator("#candidate-list .candidate").count();
@@ -65,10 +77,23 @@ async function main() {
     assert.ok(atomLabels.includes("Pd"));
     assert.ok(atomLabels.includes("Fe"));
     assert.match(await page.locator("#geometry-smiles").innerText(), /ethanol=CCO/);
-    assert.match(await page.locator("#geometry-symmetry").innerText(), /no space-group claim/);
-    assert.equal(await page.locator("#reference-list a").count(), 7);
-    receipt.assertions.general = { equation, audit, kernel, candidates, atom_elements: [...new Set(atomLabels)], spaces: 6, plugins: ["ReactionDecomposer", "EMLExpander:not_invoked", "GeometryPlugin"], katex: true };
+    assert.match(await page.locator("#geometry-symmetry").innerText(), /不主张空间群/);
+    assert.ok(await page.locator("#reference-list a").count() >= 9);
+    receipt.assertions.general = { original_equation: originalEquation, balanced_equation: equation, audit, kernel, candidates, atom_elements: [...new Set(atomLabels)], spaces: 6, plugins: ["ReactionDecomposer", "BasisOperatorComposer:not_invoked", "GeometryPlugin"], katex: true };
     await page.screenshot({ path: path.join(artifactDir, "panel_desktop_general_2d.png"), fullPage: true });
+    await page.setViewportSize({ width: 1440, height: 1600 });
+    const equationBox = await page.locator(".equation-card").boundingBox();
+    const basisBox = await page.locator(".basis-card").boundingBox();
+    assert.ok(equationBox && basisBox);
+    const slice = {
+      x: Math.max(0, Math.min(equationBox.x, basisBox.x) - 10),
+      y: Math.max(0, Math.min(equationBox.y, basisBox.y) - 10),
+      width: Math.min(1440, Math.max(equationBox.x + equationBox.width, basisBox.x + basisBox.width) - Math.min(equationBox.x, basisBox.x) + 20),
+      height: Math.max(equationBox.y + equationBox.height, basisBox.y + basisBox.height) - Math.min(equationBox.y, basisBox.y) + 20
+    };
+    await page.screenshot({ path: path.join(artifactDir, "panel_desktop_general_slice.png"), clip: slice });
+    receipt.assertions.general.slice = Object.fromEntries(Object.entries(slice).map(([key, value]) => [key, Math.round(value)]));
+    await page.setViewportSize({ width: 1440, height: 1000 });
 
     await page.locator('[data-view="3d"]').click();
     assert.equal(await page.locator("#geometry-3d").isVisible(), true);
@@ -92,19 +117,28 @@ async function main() {
     receipt.assertions.geometry_3d = { visible: true, width: Math.round(box.width), height: Math.round(box.height), interaction: "drag", visibility };
 
     await page.locator('[data-mode="iterate"]').click();
-    assert.match(await page.locator(".expander-boundary").innerText(), /algebraic structure: unconfirmed/);
+    const operatorBoundary = await page.locator(".expander-boundary").innerText();
+    assert.match(operatorBoundary, /特定基算子复合器/);
+    assert.match(operatorBoundary, /B: ℂ × ℂ× → ℂ/);
+    assert.match(operatorBoundary, /Arg\(v\)∈\(−π,π\]/);
+    assert.match(await page.locator(".expander-boundary").innerText(), /不主张统一代数/);
+    assert.match(await page.locator("#domain-wrap").innerText(), /当前测试域 Df/);
+    assert.match(await page.locator(".ast-card h2").innerText(), /基算子复合表达树/);
     await page.locator("#iterate-form button[type=submit]").click();
-    await page.locator("#iterate-status").filter({ hasText: "mismatch" }).waitFor();
+    await page.locator("#iterate-status").filter({ hasText: "不匹配" }).waitFor();
     const iterateError = (await page.locator("#iterate-error").innerText()).trim();
     assert.equal(iterateError, "6.283185e+0");
     await page.locator("#lean-check-global").click();
     await page.locator("#lean-runtime-status").filter({ hasText: "partial_formalization" }).waitFor({ timeout: 70000 });
     const leanDetail = (await page.locator("#lean-detail").innerText()).trim();
-    assert.match(leanDetail, /accepted_with_sorry/);
+    assert.match(leanDetail, /source_contains_axiom/);
     receipt.assertions.iterate = {
       status: (await page.locator("#iterate-status").innerText()).trim(),
       absolute_error: iterateError,
-      lean: (await page.locator("#lean-runtime-status").innerText()).trim()
+      lean: (await page.locator("#lean-runtime-status").innerText()).trim(),
+      operator_contract: "B: C x C^times -> C; pointwise principal Log; Arg(v) in (-pi,pi]",
+      current_test_domain: (await page.locator("#iterate-domain option:checked").innerText()).trim(),
+      tree_label: (await page.locator(".ast-card h2").innerText()).trim()
     };
     await page.screenshot({ path: path.join(artifactDir, "panel_desktop_iterate.png"), fullPage: true });
 
@@ -130,7 +164,7 @@ async function main() {
     assert.deepEqual(receipt.request_failures, []);
     receipt.assertions.external_network_requests = 0;
     receipt.assertions.model_calls = (await page.locator("#call-budget").innerText()).trim();
-    assert.match(receipt.assertions.model_calls, /calls 0 \/ 1/);
+    assert.match(receipt.assertions.model_calls, /调用 0 \/ 1/);
     receipt.status = "passed";
   } catch (error) {
     receipt.status = "failed";

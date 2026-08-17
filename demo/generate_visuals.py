@@ -74,11 +74,11 @@ def page2_environment() -> None:
     ax.text(.025, .895, r"$b_i:X_i\rightharpoonup X_j,\quad z_{t+1}=b_{i_t}(z_t)$".replace("\\\\", "\\"), color=BLUE, fontsize=10.5, va="top")
 
     items = [
-        ("观察", "原始目标 q₀\n物种、相态、条件 θ\n候选域 Cθ、来源状态"),
-        ("行动", "配平与守恒\n补齐／收缩条件域\n检索、几何、证明义务"),
-        ("反馈", "通过／否证／未知\n缺失字段与守恒余量\n来源位置、反例、超时"),
-        ("记录", "目标与算子版本\n输入输出哈希、下一动作\n失败状态与证据轨迹"),
-        ("预算", "本地 Qwen3-8B ≤ 1 次\n远端后端显式选一\n文献 ≤ 8 次；探索 ≤ 6 轮"),
+        ("观察", "反应物 R、产物 P\n能量记录 ΔE 或 null\n文献／记录 ID\n带来源的空间坐标"),
+        ("行动", "查 DOI／alphaXiv\n查询公共数据库\n筛选与稳定排序\n绘制带记录 ID 坐标"),
+        ("反馈", "新增／冲突／不可用\n能量字段是否可比\n几何范围与许可\n接口状态"),
+        ("记录", "URL、记录 ID、时间\n单位／类型／方法\n参考态与坐标来源\n失败及下一查询"),
+        ("预算", "本地 Qwen ≤ 1 次\n快照外网 0 次\n实时接口逐项留据\n探索最多 6 轮"),
     ]
     n = len(items)
     gap = .018
@@ -100,7 +100,7 @@ def page2_environment() -> None:
     ax.text(.485, .16, "反馈必须改变下一轮算子、搜索区域或问题定义", color=ORANGE,
             fontsize=8.5, weight="bold", ha="center")
     ax.text(.025, .045,
-            "固定规则：未经配平不得排名；目标欠定不得补写“最佳”；无坐标来源只能显示示意构型；含占位符不得标为证明。",
+            "固定规则：@best 只改变检索顺序；无单位、类型、方法、参考态和来源的能量保持 null；仅绘制带记录 ID 的坐标。",
             color=GRAY, fontsize=7.6)
     save(fig, "page2_environment_interface.png")
 
@@ -111,17 +111,17 @@ def page3_discovery() -> None:
     ax.set_ylim(0, 1)
     ax.axis("off")
     fig.patch.set_facecolor("white")
-    ax.text(.025, .965, "发现不是材料名称，而是可被反驳的条件—结构关系", color=NAVY, fontsize=12, weight="bold", va="top")
+    ax.text(.025, .965, "发现信号：同一反应实体下可复核的能量—几何证据关系", color=NAVY, fontsize=12, weight="bold", va="top")
     ax.text(.025, .895,
-            r"$\mathcal{F}(\theta)=\{c\in C_\theta:A\nu=0,\ h_j(c;\theta)=0,\ q_i(c;\theta)\leq0\}$；"
-            r"$\mathcal{F}=\varnothing$ 即无可行解，$|\arg\max J|>1$ 即非唯一。".replace("\\\\", "\\"),
+            r"$\mathcal{R}_{R,P}=\{r:\mathrm{match}(r;R,P)=1,\ \mathrm{source}(r)\neq\emptyset\}$；"
+            r"$\Delta E_r=(v,u,k,m,s_0,URL)$，任一字段缺失即记为 unknown。",
             color=BLUE, fontsize=9.2, va="top")
 
     signals = [
-        ("正向", "冻结 θ、Cθ 与指标后，\n结构关系跨条件扰动复现"),
-        ("稳定负结果", "同预算下候选均违反\n同一条已声明约束"),
-        ("异常／反例", "预期可行的候选被守恒、\n来源或专业验证器否证"),
-        ("问题修正", "@best 因条件和测量缺失\n被改写为下一次可运行查询"),
+        ("正向", "至少两个独立来源支持同一\n结构—能量关系，且分层后复现"),
+        ("稳定负结果", "同预算记录均缺可比能量；\n明确数据缺口与下一接口"),
+        ("异常／反例", "同名能量实为不同 kind／\n参考态，或几何仅是体相支撑体"),
+        ("问题修正", "反馈把下一轮从性能猜测\n改为指定记录、字段或几何检索"),
     ]
     for i, (title, body) in enumerate(signals):
         x = .025 + i * .242
@@ -136,18 +136,18 @@ def page3_discovery() -> None:
     ax.add_patch(science)
     ax.text(.045, .375, "环境技术通过（不等于科学发现）", fontsize=8.6, weight="bold", color=NAVY, va="top")
     ax.text(.045, .315,
-            "文献穿透＋本地结构核验＋人工终审；\n零守恒错误、零无来源性能主张；至少一次反馈改变下一动作。",
+            "DOI／alphaXiv 与公共接口留收据；未知能量为 null；\n本地合同与人工终审通过；反馈改变下一查询。",
             fontsize=7.0, color=INK, va="top", linespacing=1.35)
     ax.text(.54, .375, "科学发现通过", fontsize=8.6, weight="bold", color=NAVY, va="top")
     ax.text(.54, .315,
-            "冻结 θ、Cθ、J 与预算后，出现确定性基线没有的\n可核验关系或稳定负结果，并经预注册扰动复现。",
+            "出现确定性检索基线没有的可核验结构—能量关系，\n或稳定数据缺口；经独立来源与方法／参考态分层复现。",
             fontsize=7.0, color=INK, va="top", linespacing=1.35)
 
     ax.text(.025, .105,
-            "当前 @best：只取得问题修正与接口信号；科学发现闸门未通过。",
+            "当前试跑：取得体相支撑体几何和文献候选，但无可比反应能量；下一轮转向授权记录查询。",
             fontsize=7.8, color=ORANGE, weight="bold")
     ax.text(.025, .045,
-            "明确失败：无条件排名、元数据冒充实验结论、反馈不改动作，或结果不超过同预算确定性基线。",
+            "明确失败：补写能量、把检索顺序冒充性能最佳、把体相支撑体冒充活性位，或反馈不改变下一查询。",
             fontsize=7.5, color=GRAY)
     save(fig, "page3_discovery_gates.png")
 

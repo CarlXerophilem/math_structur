@@ -93,25 +93,24 @@ async function detectRuntime() {
   }
 }
 
-$$('.weights input[type="range"]').forEach(input => {
-  const output = input.parentElement.querySelector("output");
-  const sync = () => { output.value = input.value; output.textContent = input.value; };
-  input.addEventListener("input", sync);
-  sync();
-});
-
 function generalPayload() {
+  const optionalValue = selector => {
+    const value = $(selector).value.trim();
+    return value || null;
+  };
   return {
     problem: $("#problem-input").value.trim(),
     domain: $("#problem-domain").value,
     basis: $("#basis-select").value,
     dimension: Number($("#basis-dimension").value),
     provider: $("#solver-provider").value,
-    weights: {
-      activity: Number($("#weight-activity").value),
-      selectivity: Number($("#weight-selectivity").value),
-      stability: Number($("#weight-stability").value),
-      cost: Number($("#weight-cost").value)
+    database_mode: $("#database-mode").value,
+    possibilities: {
+      temperature: optionalValue("#possibility-temperature"),
+      pressure: optionalValue("#possibility-pressure"),
+      candidate_domain: optionalValue("#possibility-candidate-domain"),
+      metrics: optionalValue("#possibility-metrics"),
+      baseline: optionalValue("#possibility-baseline")
     }
   };
 }
@@ -125,7 +124,7 @@ async function runGeneral() {
     renderGeneral(result);
   } catch (error) {
     badge($("#general-status"), "error", "bad");
-    $("#normalized-equation").textContent = String(error);
+    $("#reactants-products").textContent = String(error);
   } finally {
     button.disabled = false;
     detectRuntime();
@@ -138,20 +137,26 @@ $("#general-form").addEventListener("submit", event => {
 });
 
 function statusKind(value) {
-  if (["solved", "rendered", "passed", "proved_finite", "equivalent", "decomposed"].includes(value)) return "good";
+  if (["solved", "rendered", "passed", "proved_finite", "equivalent", "retrieved", "retrieved_and_sorted", "live_verified"].includes(value)) return "good";
   if (["invalid", "mismatch", "refuted", "failed", "error"].includes(value)) return "bad";
   return "unknown";
 }
 
 function statusLabel(value) {
   const labels = {
-    decomposed: "已分解", solved: "已求解", rendered: "已呈现", passed: "已通过",
+    retrieved: "已检索", retrieved_and_sorted: "已检索并排序", solved: "已求解", rendered: "已呈现", passed: "已通过",
     equivalent: "等价", mismatch: "不匹配", invalid: "无效", refuted: "已否证",
     unknown: "未知", underdetermined: "欠定", ready: "就绪", invoked: "已调用",
     not_invoked: "未调用", optional: "可选", fixed_obligation: "固定验证义务",
     gated: "受闸门约束", required: "必需", awaiting_typed_geometry: "等待类型化几何",
     obligation_only: "仅生成验证义务", partial_formalization: "部分形式化",
-    proved_finite: "有限域穷举通过", undefined: "未定义", error: "错误"
+    proved_finite: "有限域穷举通过", undefined: "未定义", error: "错误",
+    abstract_verified: "摘要已核验", metadata_only: "仅元数据", not_retrieved: "未取得记录",
+    unknown_no_comparable_record: "无可比来源记录", verified_snapshot: "已核验快照",
+    official_fields_verified_live_records_authorized: "官方字段已核验，实时记录需授权",
+    authentication_required_for_live_reading: "实时读取需认证",
+    download_contract_verified_not_loaded: "数据合同已核验，本轮未加载",
+    live_error_snapshot_retained: "实时接口失败，已保留快照"
   };
   return labels[value] || value || "未知";
 }
@@ -164,28 +169,29 @@ function renderGeneral(result) {
   const receipt = result.model_receipt || {};
   const recognizedDomain = recognition.domain || recognition.recognized_domain || normalized.type || "未识别";
   const recognizedIntent = recognition.intent || recognition.recognized_intent || normalized.directive || normalized.objective_state || "未识别";
-  const recognizedModel = recognition.model || recognition.model_name || receipt.model || (receipt.provider === "qwen" ? "Qwen3-8B-Jailbroken" : receipt.provider === "local_exact_kernel" || result.source === "local_exact_kernel" ? "本地精确内核（无模型调用）" : receipt.provider || "未调用模型");
+  const recognizedModel = recognition.model || recognition.model_name || receipt.model || (receipt.provider === "qwen" ? "Qwen3-8B-Jailbroken" : Number(receipt.calls || 0) === 0 ? "确定性检索内核（无模型调用）" : receipt.provider || "未调用模型");
   const gateStatus = recognition.gate?.status;
-  const exactValidation = recognition.exact_validation || recognition.exact_verification || recognition.validator_status || (gateStatus === "passed" && result.basis?.matrix?.check?.every(value => Number(value) === 0) ? "通过：识别闸门、配平与 Aν=0" : gateStatus === "rejected" ? "拒绝：模型识别与确定性提示不一致" : result.basis?.matrix?.check?.every(value => Number(value) === 0) ? "通过：配平与 Aν=0" : standardMath.status || "待核验");
+  const exactValidation = recognition.exact_validation || recognition.exact_verification || recognition.validator_status || (gateStatus === "passed" ? "通过：受限识别与确定性字段合同" : gateStatus === "rejected" ? "拒绝：模型识别与确定性提示不一致" : standardMath.status || "待核验");
   badge($("#general-status"), statusLabel(result.status), statusKind(result.status));
   $("#recognition-domain-intent").textContent = `识别域／意图：${recognizedDomain}／${recognizedIntent}`;
   $("#recognition-model").textContent = `模型：${recognizedModel}`;
   $("#recognition-validation").textContent = `精确核验：${exactValidation}`;
   renderMath($("#standard-formula"), standardMath.display || standardMath.logic, true);
-  $("#input-equation").textContent = normalized.input_equation
-    ? `原始查询（未守恒）：${normalized.input_equation}`
-    : `原始查询：${normalized.statement || result.input || "—"}`;
-  $("#normalized-equation").textContent = normalized.balanced_equation
-    ? `配平结果（Aν=0）：${normalized.balanced_equation}`
-    : "配平结果：等待专业分解器";
-  $("#input-audit").textContent = normalized.input_balance
-    ? `原始守恒检查=${normalized.input_balance === "invalid" ? "未通过" : statusLabel(normalized.input_balance)} · @best=${String(normalized.best_status || "").startsWith("abstain") ? "条件欠定，拒绝排名" : statusLabel(normalized.best_status)}`
-    : `类型=${normalized.type || "未解析"} · AI 接口=${result.source || "必需"}`;
-  const weights = normalized.objective || {};
+  $("#input-equation").textContent = `原始查询：${normalized.statement || result.input || "—"}`;
+  const reactants = result.reactants || normalized.reactants || [];
+  const products = result.products || normalized.products || [];
+  const entityText = entity => `${entity.formula || entity.token}${entity.phase ? `(${entity.phase})` : ""}${entity.pubchem_cid ? ` [CID ${entity.pubchem_cid}; SMILES ${entity.smiles || "—"}]` : ""}`;
+  $("#reactants-products").textContent = reactants.length && products.length
+    ? `反应物：${reactants.map(entityText).join(" + ")}  →  产物：${products.map(entityText).join(" + ")}`
+    : "反应物／产物：等待受限实体识别";
+  const energy = result.reaction_energy || {};
+  $("#reaction-energy").textContent = energy.value === null || energy.value === undefined
+    ? "反应能量：—（暂无同时含数值、单位、能量类型、方法、参考态和来源的记录）"
+    : `反应能量：${energy.value} ${energy.unit} · ${energy.kind} · ${energy.method} · ${energy.reference_state} · ${energy.source_record}`;
+  const sort = result.sort || {};
+  $("#sort-semantics").textContent = `@best：${sort.requested ? "已按检索相关性与数据完备度排序" : "未请求，保留来源顺序"}；不表示催化性能最佳；证据等级不变`;
   renderMath($("#target-function"), targetFunction.display || "J:\\mathcal X\\to\\mathbb R\\cup\\{\\mathrm{unknown}\\}", false);
-  $("#objective-vector").textContent = Object.keys(weights).length
-    ? `w = (${Object.entries(weights).map(([key, value]) => `${key}:${value}`).join(", ")}) · 非平凡性=${targetFunction.nontriviality === "unverified_on_candidate_set_without_conditioned_measurements" ? "未核验：缺少条件化观测" : statusLabel(targetFunction.nontriviality)}`
-    : `目标=${normalized.objective || "未解析"} · 非平凡性=${statusLabel(targetFunction.nontriviality)}`;
+  renderPossibilities(result.possibilities || {});
   $("#reaction-language").textContent = normalized.reaction_natural_language || "—";
 
   const basis = result.basis || {};
@@ -196,6 +202,8 @@ function renderGeneral(result) {
   renderMatrix(basis.matrix);
   renderTasks(result.machine_problems || []);
   renderCandidates(result.search_targets || []);
+  renderDatabases(result.database_connectors || [], result.database_receipt || {});
+  renderDiscovery(result.discovery_signal || {});
   renderGeometry(result.geometry || { nodes: [], edges: [] });
   renderReferences(result.references || []);
 
@@ -210,6 +218,29 @@ function renderGeneral(result) {
   }
   $("#lean-detail").textContent = JSON.stringify(result.model_receipt || { provider: result.source || "local", calls: 0 }, null, 2);
   $("#call-budget").textContent = `调用 ${receipt.calls || 0} / ${receipt.max_calls || 1}`;
+}
+
+function renderDiscovery(signal) {
+  badge($("#discovery-status"), signal.scientific_discovery ? "科学发现" : "过程信号，不等于科学发现", signal.status === "observed" ? "unknown" : "bad");
+  $("#discovery-observation").textContent = signal.observation || signal.type || "—";
+  $("#discovery-process").textContent = signal.process_signal || "—";
+  $("#discovery-next-action").textContent = signal.next_action || "—";
+  $("#discovery-falsification").textContent = signal.falsification || "—";
+}
+
+function renderPossibilities(possibilities) {
+  const host = $("#possibility-list");
+  clear(host);
+  const labels = { temperature: "温度", pressure: "压力", candidate_domain: "候选域", metrics: "观测指标", baseline: "比较基线" };
+  for (const [key, label] of Object.entries(labels)) {
+    const item = possibilities[key] || {};
+    const token = document.createElement("code");
+    token.textContent = `${label}=${item.value ?? "未指定（可选）"}`;
+    host.appendChild(token);
+  }
+  const boundary = document.createElement("code");
+  boundary.textContent = "blocking=false";
+  host.appendChild(boundary);
 }
 
 function renderSpaces(spaces) {
@@ -253,7 +284,7 @@ function renderMatrix(matrix) {
   const host = $("#basis-matrix");
   clear(host);
   if (!matrix || !Array.isArray(matrix.A)) {
-    host.textContent = "—";
+    host.textContent = "当前检索空间由类型化字段与来源记录定义，不使用数值矩阵。";
     return;
   }
   const table = document.createElement("table");
@@ -281,9 +312,6 @@ function renderMatrix(matrix) {
     table.appendChild(tr);
   });
   host.appendChild(table);
-  const kernel = document.createElement("code");
-  kernel.textContent = `ν = (${(matrix.nu || []).join(", ")}); Aν = (${(matrix.check || []).join(", ")})`;
-  host.appendChild(kernel);
 }
 
 function renderTasks(tasks) {
@@ -311,7 +339,7 @@ function renderCandidates(candidates) {
     const row = document.createElement("div");
     row.className = "candidate";
     const name = candidate.url ? document.createElement("a") : document.createElement("b");
-    name.textContent = candidate.label || candidate.name || "candidate";
+    name.textContent = `${candidate.rank ? `${candidate.rank}. ` : ""}${candidate.label || candidate.name || "candidate"}`;
     if (candidate.url) {
       name.href = candidate.url;
       name.target = "_blank";
@@ -319,10 +347,34 @@ function renderCandidates(candidates) {
     }
     const state = document.createElement("span");
     const candidateState = candidate.state || candidate.status || "query";
-    state.textContent = ({ "abstract-verified": "摘要已核验", "metadata-only": "仅元数据", query: "待检索" })[candidateState] || statusLabel(candidateState);
+    state.textContent = statusLabel(candidateState);
     const query = document.createElement("code");
-    query.textContent = candidate.query || candidate.evidence || "—";
+    const energy = candidate.reaction_energy || {};
+    query.textContent = `${candidate.query || candidate.evidence || "—"}；证据=${candidateState}；能量=${energy.value ?? "null"}`;
     row.append(name, state, query);
+    host.appendChild(row);
+  }
+}
+
+function renderDatabases(connectors, receipt) {
+  const host = $("#database-list");
+  clear(host);
+  badge($("#database-mode-receipt"), `${receipt.mode_used || receipt.mode_requested || "—"} · 请求 ${receipt.external_requests ?? 0}`, receipt.errors?.length ? "bad" : "unknown");
+  for (const connector of connectors) {
+    const row = document.createElement("div");
+    row.className = "database-row";
+    const name = document.createElement("a");
+    name.href = connector.url;
+    name.target = "_blank";
+    name.rel = "noopener noreferrer";
+    name.textContent = connector.name || connector.id;
+    const state = document.createElement("span");
+    state.textContent = statusLabel(connector.status);
+    const scope = document.createElement("small");
+    scope.textContent = connector.scope || "—";
+    const fields = document.createElement("code");
+    fields.textContent = (connector.fields || connector.schema_fields_present || []).join(" · ") || "字段未取得";
+    row.append(name, state, scope, fields);
     host.appendChild(row);
   }
 }
@@ -357,10 +409,10 @@ function renderReferences(references) {
 function renderGeometry(value) {
   geometry = value;
   $("#geometry-title").textContent = value.title || value.kind || "—";
-  $("#geometry-quotient").textContent = value.quotient || "R^(3n)/SE(3)";
+  $("#geometry-quotient").textContent = value.quotient || "坐标不可用";
   $("#geometry-count").textContent = `|V|=${value.nodes?.length || 0}; |E|=${value.edges?.length || 0}`;
-  $("#geometry-symmetry").textContent = value.symmetry || "symmetry=unresolved";
-  $("#geometry-smiles").textContent = value.smiles || "SMILES=N/A";
+  $("#geometry-symmetry").textContent = value.symmetry || "对称信息未取得，不作推断";
+  $("#geometry-smiles").textContent = value.smiles || "结构标识=N/A";
   draw2D();
   draw3D();
 }

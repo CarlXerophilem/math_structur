@@ -17,7 +17,7 @@
       <p>GOAI · OPEN EXPLORATION</p>
       <h1>Math <span>Structurer</span></h1>
       <strong class="project-tagline">Convincing, reusable target-matching skills for AI research agents.</strong>
-      <code>target → type + constraints + basis → tasks → oracle → 2D/3D</code>
+      <code>target → reactants/products → literature + public DB → ΔE + geometry → order</code>
     </div>
     <div class="runtime" aria-live="polite">
       <div><span id="server-dot" class="dot"></span><b id="server-status">connecting</b></div>
@@ -34,7 +34,7 @@
 
   <nav class="tabs" aria-label="工具模式">
     <button class="tab is-active" data-mode="general" aria-selected="true">
-      <span>01</span><b>广义分析器</b><small>分解 · 基空间 · 催化 · 2D/3D</small>
+      <span>01</span><b>广义分析器</b><small>文献 · 公共数据库 · 催化 · 2D/3D</small>
     </button>
     <button class="tab" data-mode="iterate" aria-selected="false">
       <span>02</span><b>迭代 · 反逆调试</b><small>特定基算子 · f⁻¹ · gⁿ=f · Lean</small>
@@ -58,9 +58,9 @@
               <option value="mathematics">mathematics</option>
             </select>
           </label>
-          <label>基空间
+          <label>分析空间
             <select id="basis-select">
-              <option value="stoichiometric_kernel">ker(A) + graph</option>
+              <option value="literature_energy_geometry_space">文献 × 能量 × 几何</option>
               <option value="symmetry_invariants">symmetry invariants</option>
               <option value="spectral_graph">spectral graph basis</option>
               <option value="lie_generators">Lie generator basis</option>
@@ -69,6 +69,12 @@
           </label>
           <label>维数
             <input id="basis-dimension" type="number" min="1" max="12" value="4">
+          </label>
+          <label>数据库模式
+            <select id="database-mode">
+              <option value="verified_snapshot" selected>已核验快照（零外网）</option>
+              <option value="live_public">实时公共接口（失败保留收据）</option>
+            </select>
           </label>
           <label>求解后端
             <select id="solver-provider">
@@ -81,13 +87,16 @@
           </label>
         </div>
 
-        <fieldset class="weights">
-          <legend>目标权重 w</legend>
-          <label>活性 <input id="weight-activity" type="range" min="0" max="100" value="25"><output>25</output></label>
-          <label>选择性 <input id="weight-selectivity" type="range" min="0" max="100" value="35"><output>35</output></label>
-          <label>稳定性 <input id="weight-stability" type="range" min="0" max="100" value="25"><output>25</output></label>
-          <label>成本 <input id="weight-cost" type="range" min="0" max="100" value="15"><output>15</output></label>
-        </fieldset>
+        <details class="possibility-controls">
+          <summary>可选检索可能性（留空不阻止检索或排序）</summary>
+          <div class="form-grid">
+            <label>温度<input id="possibility-temperature" placeholder="可选"></label>
+            <label>压力<input id="possibility-pressure" placeholder="可选"></label>
+            <label>候选域<input id="possibility-candidate-domain" placeholder="可选"></label>
+            <label>观测指标<input id="possibility-metrics" placeholder="可选"></label>
+            <label>比较基线<input id="possibility-baseline" placeholder="可选"></label>
+          </div>
+        </details>
 
         <div class="run-row">
           <button class="run-button" type="submit">运行</button>
@@ -104,18 +113,19 @@
             <code id="recognition-model">模型：—</code>
             <code id="recognition-validation">精确核验：—</code>
           </div>
-          <code id="solver-contract" class="contract-line">用户目标 → 类型与逻辑 → 相连空间 → 专业插件 → 验证器</code>
+          <code id="solver-contract" class="contract-line">用户目标 → 反应物／产物 → 文献／公共数据库 → 来源化能量与几何 → 稳定排序</code>
           <div id="standard-formula" class="formula-display" aria-label="标准数学公式">—</div>
           <div id="input-equation" class="math-line">原始查询：—</div>
-          <div class="equation" id="normalized-equation">配平结果：—</div>
-          <code id="input-audit">—</code>
+          <div class="equation" id="reactants-products">反应物／产物：—</div>
+          <code id="reaction-energy">反应能量：—</code>
+          <code id="sort-semantics">排序：—</code>
           <div id="target-function" class="formula-inline" aria-label="目标函数">—</div>
-          <div id="objective-vector" class="math-line">J = —</div>
+          <div id="possibility-list" class="token-row" aria-label="可选可能性"></div>
           <p id="reaction-language" class="reaction-language">—</p>
         </section>
 
         <section class="card basis-card">
-          <header><h2>相连空间与有限基</h2><span id="basis-state" class="badge">—</span></header>
+          <header><h2>相连空间与类型化映射</h2><span id="basis-state" class="badge">—</span></header>
           <code id="basis-operator">Π<sub>B</sub> : X → ℝᵏ</code>
           <div id="space-chain" class="space-chain"></div>
           <div id="plugin-route" class="plugin-route"></div>
@@ -128,13 +138,26 @@
         </section>
 
         <section class="card candidates-card">
-          <header><h2>催化剂文献候选（未排名）</h2><span id="candidate-count" class="badge">0</span></header>
+          <header><h2>文献候选（排序结果，不等于发现）</h2><span id="candidate-count" class="badge">0</span></header>
           <div id="candidate-list" class="candidate-list"></div>
+        </section>
+
+        <section class="card database-card">
+          <header><h2>公共数据库与文献接口</h2><span id="database-mode-receipt" class="badge">—</span></header>
+          <div id="database-list" class="database-list"></div>
+        </section>
+
+        <section class="card discovery-card">
+          <header><h2>本轮发现信号与下一行动</h2><span id="discovery-status" class="badge">—</span></header>
+          <p id="discovery-observation">—</p>
+          <code id="discovery-process">—</code>
+          <div class="discovery-next"><b>下一行动</b><span id="discovery-next-action">—</span></div>
+          <div class="discovery-falsification"><b>否证／缩小条件</b><span id="discovery-falsification">—</span></div>
         </section>
 
         <section class="card geometry-card">
           <header>
-            <div><h2>二维／三维示意构型</h2><code id="geometry-title">—</code></div>
+            <div><h2>公共数据库二维／三维构型</h2><code id="geometry-title">—</code></div>
             <div class="segmented" role="group" aria-label="几何维度">
               <button class="is-active" data-view="2d" type="button">2D</button>
               <button data-view="3d" type="button">3D</button>
@@ -156,7 +179,7 @@
         </section>
 
         <section class="card references-card">
-          <header><h2>可跳转文献</h2><span class="badge">alphaXiv／DOI</span></header>
+          <header><h2>文献与数据源跳转</h2><span class="badge">alphaXiv／DOI／API</span></header>
           <ol id="reference-list"></ol>
         </section>
       </div>
@@ -230,7 +253,7 @@
     </section>
   </main>
 
-  <footer><code>Aν=0 · bᵢ:Xᵢ⇀Xⱼ · R<sup>3n</sup>/SE(3) · g∘g=f · Lean</code><span>Math Structurer v0.5</span></footer>
+  <footer><code>(R,P) · ΔE(source) · geometry(record) · stable order · bᵢ:Xᵢ⇀Xⱼ · Lean</code><span>Math Structurer v0.6</span></footer>
   <script src="vendor/katex/katex.min.js"></script>
   <script src="app.js"></script>
 </body>

@@ -29,14 +29,17 @@ def test_check_is_path_independent_and_offline(tmp_path: Path) -> None:
     )
     assert completed.returncode == 0, completed.stderr
     receipt = json.loads(completed.stdout.strip().splitlines()[-1])
-    assert receipt == {
-        "element_conservation": "passed",
-        "external_network_requests": 0,
-        "local_kernel": "passed",
-        "model_calls": 0,
-        "panel_http": 200,
-        "status": "passed",
-    }
+    assert receipt["status"] == "passed"
+    assert receipt["panel_http"] == 200
+    assert receipt["local_kernel"] == "passed"
+    assert receipt["core_reaction_fields"] == "passed"
+    assert receipt["reaction_energy"] is None
+    assert receipt["sort_semantics"] == "sort_only"
+    assert receipt["possibilities_blocking"] is False
+    assert receipt["geometry_scope"] == "support_only"
+    assert receipt["database_external_requests"] == 0
+    assert receipt["model_calls"] == 0
+    assert receipt["external_network_requests"] == 0
 
 
 def test_help_documents_the_one_line_modes(tmp_path: Path) -> None:
@@ -93,7 +96,8 @@ def test_default_server_starts_from_another_directory_without_site_packages(tmp_
         stdout, stderr = process.communicate(timeout=5)
 
     assert f"http://127.0.0.1:{port}/" in stdout
-    assert "no catalyst simulation or unconditional ranking" in stdout
+    assert "literature and public-database evidence retrieval" in stdout
+    assert "@best changes order only" in stdout
     assert stderr == ""
 
 

@@ -1,0 +1,54 @@
+{
+  "status": "passed",
+  "mode": "live_public_with_explicit_snapshot_fallbacks",
+  "external_requests_recorded_by_bundle": 7,
+  "connector_status": {
+    "alphaxiv": "authentication_required_for_live_reading",
+    "pubchem": "live_verified",
+    "optimade_mp": "live_verified",
+    "catalysis_hub": "live_schema_verified_records_not_queried",
+    "oc20": "download_contract_verified_not_loaded",
+    "crossref": "live_verified",
+    "openalex": "live_verified"
+  },
+  "catalysis_record_query_http": 401,
+  "alphaxiv_unauthenticated_http": 401,
+  "pubchem_cids": [
+    280,
+    702,
+    783
+  ],
+  "optimade_record": {
+    "id": "mp-19306",
+    "formula": "Fe3O4",
+    "site_count": 14,
+    "scope": "support_only"
+  },
+  "literature_metadata": [
+    {
+      "source": "Crossref+OpenAlex live",
+      "doi": "10.1021/acscatal.1c01504",
+      "title": "Direct Conversion of CO<sub>2</sub> to Ethanol Boosted by Intimacy-Sensitive Multifunctional Catalysts",
+      "year": 2021,
+      "openalex_id": "https://openalex.org/W3196838305",
+      "status": "live_metadata_verified"
+    }
+  ],
+  "reaction_energy_records": [],
+  "errors": [],
+  "assertions": {
+    "live_mode_used": true,
+    "pubchem_live": true,
+    "optimade_live": true,
+    "crossref_live": true,
+    "openalex_live": true,
+    "catalysis_schema_live": true,
+    "catalysis_record_requires_key": true,
+    "alphaxiv_requires_authorization": true,
+    "pubchem_entities_exact": true,
+    "optimade_support_exact": true,
+    "literature_metadata_live": true,
+    "no_reaction_energy_record_obtained": true
+  },
+  "boundary": "Live metadata and geometry access do not establish catalytic performance; no comparable reaction-energy record was obtained."
+}

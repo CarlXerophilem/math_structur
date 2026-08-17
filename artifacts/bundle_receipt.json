@@ -1,21 +1,24 @@
 {
-  "generated_at": "2026-08-17T03:57:08.281952+09:00",
+  "generated_at": "2026-08-17T12:45:28.347511+09:00",
   "bundle": "AI4R_OPEN_team_id.zip",
-  "bytes": 4394827,
-  "sha256": "99fc1ee54ae5932df32de0abe20f09c222d5e36f22465f95a8e7839f1a9ebde4",
+  "bytes": 4475438,
+  "sha256": "0ca4045c21a3e4a8fdab36a26052ee19afadd74abd6754495e5b3b4d0c096f94",
   "zip_integrity": "passed",
-  "zip_members": 114,
+  "zip_members": 118,
   "pdf_members": 0,
   "nested_zip_members": 0,
   "unsafe_path_members": 0,
   "forbidden_text_hits": {
-    "legacy_eml_term": 0,
     "absolute_windows_host_path": 0,
     "codex_thread_id": 0,
     "private_host_marker": 0,
-    "credential_assignment": 0
+    "credential_assignment": 0,
+    "deprecated_balance_field": 0,
+    "deprecated_balance_contract": 0,
+    "deprecated_balance_claim_zh": 0
   },
-  "manifest_sha256": "5a13a5b0e70d59e37378e707fbd0cf1880a42eb299261309164f9d427212db66",
-  "word_sha256": "55aa3463d85ee305f5b377c8ddef53f2c0c89a242a4579240519fd496bb82ea8",
-  "word_pages": 4
+  "manifest_sha256": "4b273d43dc8d86c78905499b533cb1298e2dfab2ad6553c10e7f715019795095",
+  "word_sha256": "081d61d21ff05de9cd087c2b26d9fbfe14d02dfc4d25e77d28cc62534a7856ed",
+  "word_pages": 4,
+  "scientific_discovery": false
 }

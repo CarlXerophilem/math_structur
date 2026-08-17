@@ -38,6 +38,8 @@ VALIDATION_ARTIFACTS = [
     "quick_check.json",
     "qwen_recognition_acceptance.json",
     "qwen_recognition_browser_acceptance.json",
+    "public_database_snapshot_acceptance.json",
+    "public_database_live_acceptance.json",
     "validation_summary.json",
     "word_validation.json",
 ]
@@ -54,12 +56,12 @@ EVIDENCE_FILES = [
     "murugan_springer.html",
     "openalex_acscatal.json",
     "primary_source_receipts.json",
+    "public_database_evidence_ledger.json",
     "verification_receipt.json",
 ]
 
 TEXT_SUFFIXES = {".css", ".html", ".js", ".json", ".md", ".py", ".txt", ".xml"}
 FORBIDDEN_TEXT = {
-    "legacy_eml_term": re.compile(r"\bEML\b", re.IGNORECASE),
     "absolute_windows_host_path": re.compile(
         r"\b[A-Za-z]:\\(?:Users|MATHs|Program Files|Windows)(?:\\|\b)", re.IGNORECASE
     ),
@@ -68,6 +70,9 @@ FORBIDDEN_TEXT = {
     "credential_assignment": re.compile(
         r"(?i)(api[_-]?key|access[_-]?token|password|private[_-]?key)\s*[:=]\s*['\"][A-Za-z0-9_./+\-=]{8,}"
     ),
+    "deprecated_balance_field": re.compile("element_" + "conservation", re.IGNORECASE),
+    "deprecated_balance_contract": re.compile("Reaction" + "Balance", re.IGNORECASE),
+    "deprecated_balance_claim_zh": re.compile("\u914d" + "\u5e73|\u5143\u7d20" + "\u5b88\u6052"),
 }
 
 
@@ -119,30 +124,37 @@ def build() -> None:
     if missing:
         raise FileNotFoundError(f"missing required files: {missing}")
 
-    files = selected_files()
-    text_audit = audit_text(files)
-    pdfs = [path.relative_to(ROOT).as_posix() for path in files if path.suffix.lower() == ".pdf"]
-    if pdfs:
-        raise RuntimeError(f"PDF files are forbidden in the submission bundle: {pdfs}")
-
     word_validation = json.loads((ROOT / "artifacts" / "word_validation.json").read_text("utf-8"))
     browser = json.loads((ROOT / "artifacts" / "panel" / "browser_acceptance.json").read_text("utf-8"))
     qwen = json.loads((ROOT / "artifacts" / "qwen_recognition_acceptance.json").read_text("utf-8"))
     qwen_browser = json.loads(
         (ROOT / "artifacts" / "qwen_recognition_browser_acceptance.json").read_text("utf-8")
     )
+    quick_check = json.loads((ROOT / "artifacts" / "quick_check.json").read_text("utf-8"))
+    public_snapshot = json.loads(
+        (ROOT / "artifacts" / "public_database_snapshot_acceptance.json").read_text("utf-8")
+    )
+    public_live = json.loads(
+        (ROOT / "artifacts" / "public_database_live_acceptance.json").read_text("utf-8")
+    )
     pytest_text = (ROOT / "artifacts" / "panel" / "pytest.txt").read_text("utf-8").strip()
     pytest_summary = next(
         (line.strip() for line in reversed(pytest_text.splitlines()) if " passed" in line),
         "",
     )
-    if word_validation.get("pages") != 4:
+    word_pages = word_validation.get("pages_word_com", word_validation.get("pages"))
+    if word_pages != 4:
         raise RuntimeError("Word validation is not exactly four pages")
     hyperlink_count = word_validation.get(
-        "external_hyperlink_relationships", word_validation.get("external_hyperlinks", 0)
+        "hyperlinks",
+        word_validation.get(
+            "external_hyperlink_relationships", word_validation.get("external_hyperlinks", 0)
+        ),
     )
     if hyperlink_count < 7:
         raise RuntimeError("Word validation does not contain the required clickable references")
+    if word_validation.get("inline_shapes", 0) < 2 or len(word_validation.get("media_entries", [])) < 2:
+        raise RuntimeError("Word validation does not contain both required screenshots")
     if browser.get("status") != "passed":
         raise RuntimeError("browser acceptance did not pass")
     if qwen.get("status") != "passed":
@@ -159,11 +171,20 @@ def build() -> None:
     required_qwen_assertions = {
         "exact_model_selected",
         "digest_recorded",
+        "domain_recognized",
+        "intent_recognized",
         "recognition_gate_passed",
         "recognition_only",
         "one_model_call",
-        "element_conservation",
-        "unconditional_ranking_rejected",
+        "core_entities_preserved",
+        "optional_fields_not_missing_requirements",
+        "reaction_energy_unknown",
+        "best_is_sort_only",
+        "possibilities_nonblocking",
+        "verified_snapshot_offline",
+        "support_geometry_scoped",
+        "five_source_candidates",
+        "discovery_is_process_signal",
         "no_scientific_answer_fields",
     }
     failed_qwen_assertions = sorted(
@@ -173,8 +194,112 @@ def build() -> None:
         raise RuntimeError(f"Qwen acceptance assertions failed: {failed_qwen_assertions}")
     if qwen_browser.get("provider") != "qwen":
         raise RuntimeError("Qwen browser receipt did not use the Qwen provider")
-    if not pytest_summary:
-        raise RuntimeError("pytest receipt has no passing summary")
+    if not pytest_summary.startswith("19 passed"):
+        raise RuntimeError(f"pytest receipt is not the accepted 19-test run: {pytest_summary!r}")
+    if quick_check.get("status") != "passed" or quick_check.get("reaction_energy") is not None:
+        raise RuntimeError("offline quick check did not preserve the unknown-energy contract")
+    if quick_check.get("sort_semantics") != "sort_only":
+        raise RuntimeError("offline quick check changed @best semantics")
+    snapshot_assertions = public_snapshot.get("assertions", {})
+    required_snapshot_assertions = {
+        "snapshot_mode",
+        "zero_external_requests",
+        "connector_contracts_present",
+        "pubchem_entities_present",
+        "support_record_present",
+        "reaction_energy_records_empty",
+        "core_entities_preserved",
+        "reaction_energy_unknown",
+        "sort_only",
+        "possibilities_nonblocking",
+        "geometry_is_support_only",
+        "five_candidates_with_unknown_energy",
+        "discovery_is_process_signal",
+        "zero_model_calls",
+    }
+    failed_snapshot = sorted(
+        name for name in required_snapshot_assertions if snapshot_assertions.get(name) is not True
+    )
+    if public_snapshot.get("status") != "passed" or failed_snapshot:
+        raise RuntimeError(f"public-database snapshot acceptance failed: {failed_snapshot}")
+    live_assertions = public_live.get("assertions", {})
+    required_live_assertions = {
+        "live_mode_used",
+        "pubchem_live",
+        "optimade_live",
+        "crossref_live",
+        "openalex_live",
+        "catalysis_schema_live",
+        "catalysis_record_requires_key",
+        "alphaxiv_requires_authorization",
+        "pubchem_entities_exact",
+        "optimade_support_exact",
+        "literature_metadata_live",
+        "no_reaction_energy_record_obtained",
+    }
+    failed_live = sorted(
+        name for name in required_live_assertions if live_assertions.get(name) is not True
+    )
+    if public_live.get("status") != "passed" or failed_live:
+        raise RuntimeError(f"public-database live acceptance failed: {failed_live}")
+    discovery = qwen.get("exact_validation", {}).get("discovery_signal", {})
+    if discovery.get("scientific_discovery") is not False:
+        raise RuntimeError("scientific discovery boundary was not preserved")
+
+    validation_summary = {
+        "generated_at": datetime.now().astimezone().isoformat(),
+        "version": "v0.6",
+        "status": "technical_environment_passed_scientific_discovery_not_established",
+        "python_tests": pytest_summary,
+        "offline_check": {
+            "status": quick_check["status"],
+            "model_calls": quick_check.get("model_calls"),
+            "external_network_requests": quick_check.get("external_network_requests"),
+            "reaction_energy": quick_check.get("reaction_energy"),
+            "sort_semantics": quick_check.get("sort_semantics"),
+        },
+        "browser": browser.get("status"),
+        "qwen_recognition": {
+            "status": qwen.get("status"),
+            "model": qwen.get("model"),
+            "model_digest": qwen.get("model_digest"),
+            "calls": 1,
+            "scope": "recognition_only",
+        },
+        "public_databases": {
+            "snapshot": public_snapshot.get("status"),
+            "live": public_live.get("status"),
+            "catalysis_hub_record_http": public_live.get("catalysis_record_query_http"),
+            "alphaxiv_unauthenticated_http": public_live.get("alphaxiv_unauthenticated_http"),
+            "comparable_reaction_energy_records": len(public_live.get("reaction_energy_records", [])),
+            "geometry_scope": public_live.get("optimade_record", {}).get("scope"),
+        },
+        "word": {
+            "pages": word_pages,
+            "hyperlinks": hyperlink_count,
+            "screenshots": word_validation.get("inline_shapes"),
+        },
+        "scientific_discovery": False,
+        "known_negative": (
+            "No comparable reaction-energy record or active-site geometry was obtained; "
+            "mp-19306 is an Fe3O4 bulk/support record only."
+        ),
+        "platforms": {
+            "Windows 11": "tested",
+            "Linux": "designed, not tested",
+            "macOS": "designed, not tested",
+        },
+    }
+    (ROOT / "artifacts" / "validation_summary.json").write_text(
+        json.dumps(validation_summary, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+    files = selected_files()
+    text_audit = audit_text(files)
+    pdfs = [path.relative_to(ROOT).as_posix() for path in files if path.suffix.lower() == ".pdf"]
+    if pdfs:
+        raise RuntimeError(f"PDF files are forbidden in the submission bundle: {pdfs}")
 
     entries = [
         {
@@ -188,20 +313,27 @@ def build() -> None:
         "generated_at": datetime.now().astimezone().isoformat(),
         "project": "Math Structurer — Convincing, reusable target-matching skills for AI research agents.",
         "claim_boundary": (
-            "The current discovery signal is a problem-definition revision: the unconditioned catalyst "
-            "ranking is underdetermined. No catalyst activity simulation, catalyst ranking, new mechanism, "
-            "universal algebra, automatic PDE reduction, or general iterative-root proof is claimed."
+            "@best is a deterministic retrieval-order directive only. The accepted run contains five "
+            "traceable literature candidates, zero comparable reaction-energy records, one Fe3O4 "
+            "bulk/support geometry and no active-site geometry; scientific_discovery is false. No catalyst "
+            "performance ranking, new mechanism, universal algebra, automatic PDE reduction, or general "
+            "iterative-root proof is claimed."
         ),
         "validation": {
             "python": pytest_summary,
             "quick_check": "passed; loopback only; model calls 0; external requests 0",
             "browser": "passed; desktop and 390px; 2D/3D; model calls 0; external requests 0",
             "qwen_recognition": (
-                "passed; exact checkpoint and digest; one recognition-only call; deterministic gate passed; "
-                "unconditional catalyst ranking rejected"
+                "passed; exact checkpoint and digest; one recognition-only call; @best remained sort-only; "
+                "reaction energy remained null"
             ),
             "qwen_browser": "passed; isolated Chrome; provider qwen; browser external requests 0",
-            "word": "Microsoft Word 16.0; exactly 4 pages",
+            "public_databases": (
+                "snapshot passed with 0 external calls; live metadata/geometry checks passed; "
+                "Catalysis-Hub record query and alphaXiv reading require authorization; "
+                "0 comparable reaction-energy records"
+            ),
+            "word": "Microsoft Word 16.0; exactly 4 pages; 2 embedded screenshots",
             "platforms": {
                 "Windows 11": "tested",
                 "Linux": "designed, not tested",
@@ -254,7 +386,8 @@ def build() -> None:
         "forbidden_text_hits": text_audit,
         "manifest_sha256": sha256(MANIFEST),
         "word_sha256": sha256(word),
-        "word_pages": 4,
+        "word_pages": word_pages,
+        "scientific_discovery": False,
     }
     RECEIPT.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(receipt, ensure_ascii=False, indent=2))

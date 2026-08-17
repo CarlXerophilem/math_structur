@@ -27,7 +27,7 @@ def _post(url: str, payload: dict) -> dict:
 
 
 def test_static_delivery_has_exactly_two_panels_and_no_export_surface():
-    for name in ("index.html", "styles.css", "app.js", "solver_output.schema.json", "lean/ReactionBalance.lean", "lean/IterationContract.lean", "vendor/katex/katex.min.js", "vendor/katex/katex.min.css", "vendor/katex/LICENSE"):
+    for name in ("index.html", "styles.css", "app.js", "solver_output.schema.json", "lean/IterationContract.lean", "vendor/katex/katex.min.js", "vendor/katex/katex.min.css", "vendor/katex/LICENSE"):
         assert (PANEL / name).is_file()
     assert len(list((PANEL / "vendor" / "katex" / "fonts").glob("*"))) >= 50
     assert not (PANEL / "data.js").exists()
@@ -39,7 +39,7 @@ def test_static_delivery_has_exactly_two_panels_and_no_export_surface():
     assert 'data-panel="iterate"' in html
     assert 'data-panel="mapping"' not in html
     assert "CO2gas+H2gas -- CH3CH2OHgas @best" in html
-    assert "用户目标 → 类型与逻辑 → 相连空间 → 专业插件 → 验证器" in html
+    assert "用户目标 → 反应物／产物 → 文献／公共数据库 → 来源化能量与几何 → 稳定排序" in html
     assert "ReactionDecomposer" not in html
     assert "vendor/katex/katex.min.js" in html
     assert "特定基算子复合器" in html
@@ -70,47 +70,70 @@ def test_javascript_syntax_and_browser_code_is_local_only():
     assert "fetch('http" not in source
 
 
-def test_catalyst_demo_fails_closed_then_balances_exactly():
-    result = serve_panel.analyze_general({
-        "problem": "CO2gas+H2gas -- CH3CH2OHgas @best",
-        "basis": "stoichiometric_kernel",
-        "dimension": 4,
-        "weights": {"activity": 25, "selectivity": 35, "stability": 25, "cost": 15},
-    })
-    normalized = result["normalized_problem"]
-    matrix = result["basis"]["matrix"]
-    assert result["status"] == "decomposed"
-    assert normalized["input_balance"] == "invalid"
-    assert normalized["balanced_equation"] == "2 CO2(g) + 6 H2(g) -> C2H5OH(g) + 3 H2O(g)"
-    assert normalized["best_status"].startswith("abstain")
-    assert matrix["nu"] == [-2, -6, 1, 3]
-    assert matrix["check"] == [0, 0, 0]
-    assert len(result["search_targets"]) == 4
-    assert result["search_targets"][0]["state"] == "abstract-verified"
-    assert all(item["state"] in {"abstract-verified", "metadata-only"} for item in result["search_targets"])
-    assert result["standard_math"]["status"] == "typed_but_objective_underdetermined"
-    assert "A\\nu=0" in result["standard_math"]["display"]
-    assert "冻结前未定义" in result["standard_math"]["display"]
-    assert result["target_function"]["nontriviality"] == "unverified_on_candidate_set_without_conditioned_measurements"
-    assert result["intermediates"]["status"] == "unknown"
-    routes = {item["plugin"]: item for item in result["plugin_route"]}
-    assert routes["ReactionDecomposer"]["status"] == "invoked"
-    assert routes["BasisOperatorComposer"]["status"] == "not_invoked"
-    assert routes["BasisOperatorComposer"]["label"] == "特定基算子复合器"
-    assert "不进入标量算子复合" in routes["GeometryPlugin"]["scope"]
-    assert [space["id"] for space in result["spaces"]] == ["N", "S", "C", "Y", "G", "P"]
+def test_catalyst_demo_exposes_core_records_and_best_changes_order_only():
+    base_problem = "CO2gas+H2gas -- CH3CH2OHgas"
+    source_order = serve_panel.analyze_general({"problem": base_problem})
+    sorted_result = serve_panel.analyze_general({"problem": base_problem + " @best"})
+
+    for result in (source_order, sorted_result):
+        assert [item["formula"] for item in result["reactants"]] == ["CO2", "H2"]
+        assert [item["formula"] for item in result["products"]] == ["C2H6O"]
+        assert result["reaction_energy"]["value"] is None
+        assert result["reaction_energy"]["unit"] is None
+        assert result["reaction_energy"]["status"] == "unknown_no_comparable_record"
+        assert result["possibilities"]["blocking"] is False
+        for name in ("temperature", "pressure", "candidate_domain", "metrics", "baseline"):
+            assert result["possibilities"][name]["value"] is None
+        assert result["database_receipt"]["external_requests"] == 0
+        assert {item["id"] for item in result["database_connectors"]} >= {
+            "pubchem", "optimade_mp", "catalysis_hub", "oc20", "crossref", "openalex"
+        }
+        assert len(result["search_targets"]) == 5
+        assert all(item["reaction_energy"]["value"] is None for item in result["search_targets"])
+        assert all(item["state"] in {"abstract_verified", "metadata_only"} for item in result["search_targets"])
+        signal = result["discovery_signal"]
+        assert signal["type"] == "source_coverage_gap_and_problem_definition_revision"
+        assert signal["scientific_discovery"] is False
+        assert "Catalysis-Hub" in signal["next_action"]
+    assert "拒绝或缩小" in signal["falsification"]
+
+    assert source_order["status"] == "retrieved"
+    assert source_order["sort"]["requested"] is False
+    assert source_order["sort"]["status"] == "source_order"
+    assert sorted_result["status"] == "retrieved_and_sorted"
+    assert sorted_result["sort"]["requested"] is True
+    assert sorted_result["sort"]["directive"] == "@best"
+    assert sorted_result["sort"]["status"] == "applied"
+    assert sorted_result["sort"]["scientific_optimum_claim"] is False
+    assert sorted_result["sort"]["changes_evidence_grade"] is False
+
+    source_by_id = {
+        item["id"]: {key: value for key, value in item.items() if key != "rank"}
+        for item in source_order["search_targets"]
+    }
+    sorted_by_id = {
+        item["id"]: {key: value for key, value in item.items() if key != "rank"}
+        for item in sorted_result["search_targets"]
+    }
+    assert source_by_id == sorted_by_id
+    assert [item["id"] for item in source_order["search_targets"]] != [
+        item["id"] for item in sorted_result["search_targets"]
+    ]
+    assert [space["id"] for space in sorted_result["spaces"]] == ["N", "RP", "L", "D", "EG", "S"]
 
 
-def test_geometry_is_schematic_pd_fe_interface_with_honest_smiles_boundary():
+def test_geometry_is_a_traceable_support_record_and_not_an_active_site_prediction():
     result = serve_panel.analyze_general({"problem": "CO2gas+H2gas -- CH3CH2OHgas @best"})
     geometry = result["geometry"]
     elements = {node["element"] for node in geometry["nodes"]}
-    assert {"Pd", "Fe", "O", "C", "H"}.issubset(elements)
-    assert geometry["coordinate_status"] == "illustrative_not_relaxed"
-    assert "不主张空间群" in geometry["symmetry"]
-    assert "ethanol=CCO" in geometry["smiles"]
-    assert "catalyst=N/A" in geometry["smiles"]
-    assert "Manim" in geometry["render_contract"]
+    assert elements == {"Fe", "O"}
+    assert geometry["record_id"] == "mp-19306"
+    assert geometry["source_database"] == "Materials Project OPTIMADE"
+    assert geometry["source_url"].startswith("https://optimade.materialsproject.org/")
+    assert geometry["coordinate_status"] == "public_database_record_support_only"
+    assert "不是 Pd 活性位构型" in geometry["title"]
+    assert "scope=support-only" in geometry["smiles"]
+    assert all(node["group"] == "public_crystal_record" for node in geometry["nodes"])
 
 
 def test_references_are_clickable_primary_or_doi_entries_without_pdf_paths():
@@ -122,6 +145,25 @@ def test_references_are_clickable_primary_or_doi_entries_without_pdf_paths():
     assert serve_panel.REFERENCES[0]["evidence_status"] == "abstract_verified"
 
 
+def test_verified_public_database_snapshot_is_offline_and_source_bounded(monkeypatch):
+    def forbidden_request(*_args, **_kwargs):
+        raise AssertionError("snapshot mode attempted an external request")
+
+    monkeypatch.setattr(serve_panel, "_json_request", forbidden_request)
+    before = serve_panel.MODEL_CALLS
+    snapshot = serve_panel.public_database_bundle("verified_snapshot")
+    assert snapshot["mode_used"] == "verified_snapshot"
+    assert snapshot["external_requests"] == 0
+    assert snapshot["errors"] == []
+    assert snapshot["reaction_energy_records"] == []
+    assert {item["cid"] for item in snapshot["molecules"]} == {280, 702, 783}
+    assert len(snapshot["catalyst_structures"]) == 1
+    structure = snapshot["catalyst_structures"][0]
+    assert structure["id"] == "mp-19306"
+    assert structure["source_url"].startswith("https://optimade.materialsproject.org/")
+    assert serve_panel.MODEL_CALLS == before
+
+
 def test_unregistered_general_request_requires_harness_without_inventing_geometry():
     result = serve_panel.analyze_general({
         "problem": "molecule A binds protein B; infer a post-binding structure",
@@ -130,12 +172,18 @@ def test_unregistered_general_request_requires_harness_without_inventing_geometr
         "dimension": 5,
     })
     assert result["status"] == "needs_harness"
-    assert result["normalized_problem"]["objective"] == "unresolved"
+    assert result["reactants"] == []
+    assert result["products"] == []
+    assert result["reaction_energy"]["value"] is None
+    assert result["possibilities"]["blocking"] is False
+    assert result["database_receipt"]["external_requests"] == 0
     assert result["geometry"]["nodes"] == []
     assert result["search_targets"] == []
     assert result["model_receipt"]["calls"] == 0
-    assert result["standard_math"]["status"] == "harness_required"
-    assert {item["plugin"] for item in result["plugin_route"]} == {"AIHarness", "BasisOperatorComposer", "GeometryPlugin", "Lean4"}
+    assert result["standard_math"]["status"] == "entity_extraction_required"
+    assert {item["plugin"] for item in result["plugin_route"]} == {
+        "AIHarness", "PublicDatabaseRouter", "GeometryPlugin"
+    }
 
 
 def test_local_codex_alphaxiv_and_lean_interfaces_are_detected_without_calling_models():
@@ -181,7 +229,7 @@ def test_qwen_recognition_is_schema_limited_and_deterministically_gated():
         "intent": "catalyst_search",
         "entities": ["CO2gas", "H2gas", "CH3CH2OHgas"],
         "constraints": [],
-        "missing_fields": ["temperature", "pressure", "candidate_space", "objective_measurements", "baseline"],
+        "missing_fields": [],
         "confidence": 0.95,
     })
     gate = serve_panel._recognition_gate(
@@ -252,8 +300,8 @@ def test_fixed_lean_files_compile_with_honest_axiom_boundary():
         pytest.skip("optional pinned Lean toolchain or prime-loop source unavailable")
     result = serve_panel.lean_check()
     assert result["status"] == "partial_formalization"
-    assert result["results"]["reaction_balance"]["status"] == "passed"
-    assert result["results"]["function_contract"]["status"] == "passed"
+    assert result["results"]["iteration_contract"]["status"] == "passed"
+    assert result["results"]["retrieval_sort_contract"]["status"] == "passed"
     assert result["results"]["upstream_basis_reconstruction"]["status"] == "source_contains_axiom"
 
 
@@ -273,8 +321,14 @@ def test_http_server_serves_local_analysis_health_and_references():
         result = _post(base + "/api/solver/run", {
             "provider": "local",
             "problem": "CO2gas+H2gas -- CH3CH2OHgas @best",
+            "database_mode": "verified_snapshot",
         })
-        assert result["normalized_problem"]["input_balance"] == "invalid"
+        assert [item["formula"] for item in result["reactants"]] == ["CO2", "H2"]
+        assert [item["formula"] for item in result["products"]] == ["C2H6O"]
+        assert result["reaction_energy"]["value"] is None
+        assert result["sort"]["requested"] is True
+        assert result["possibilities"]["blocking"] is False
+        assert result["database_receipt"]["external_requests"] == 0
         assert result["model_receipt"]["calls"] == 0
     finally:
         server.shutdown()

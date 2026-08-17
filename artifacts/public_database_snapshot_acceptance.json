@@ -1,0 +1,63 @@
+{
+  "status": "passed",
+  "query": "CO2gas+H2gas -- CH3CH2OHgas @best",
+  "mode": "verified_snapshot",
+  "external_requests": 0,
+  "model_calls": 0,
+  "connector_ids": [
+    "alphaxiv",
+    "catalysis_hub",
+    "crossref",
+    "oc20",
+    "openalex",
+    "optimade_mp",
+    "pubchem"
+  ],
+  "pubchem_cids": [
+    280,
+    702,
+    783
+  ],
+  "reaction_energy": null,
+  "geometry": {
+    "record_id": "mp-19306",
+    "source_database": "Materials Project OPTIMADE",
+    "source_scope": "support_only",
+    "elements": [
+      "Fe",
+      "O"
+    ]
+  },
+  "candidate_ids": [
+    "CAT1",
+    "CAT0",
+    "CAT2",
+    "CAT4",
+    "CAT3"
+  ],
+  "discovery_signal": {
+    "status": "observed",
+    "type": "source_coverage_gap_and_problem_definition_revision",
+    "scientific_discovery": false,
+    "observation": "返回五条可追溯文献候选；可比反应能量记录为零；仅取得一条 Fe3O4 体相支撑体几何，未取得活性位几何。",
+    "process_signal": "能量保持 null，几何范围保持 support_only；下一查询必须指定记录级能量类型，并寻找带来源的活性位坐标。",
+    "next_action": "向已授权的 Catalysis-Hub 记录接口提交类型化反应物／产物，保存能量类型、方法与参考态，再请求对应体系坐标；否则只检查预索引的 OC20 子集，不把它称为完整反应网络。",
+    "falsification": "若固定预算内反复查询仍不能把可比能量记录与带来源活性位几何联结，则拒绝或缩小当前反应切片，不推断性能。"
+  },
+  "assertions": {
+    "snapshot_mode": true,
+    "zero_external_requests": true,
+    "connector_contracts_present": true,
+    "pubchem_entities_present": true,
+    "support_record_present": true,
+    "reaction_energy_records_empty": true,
+    "core_entities_preserved": true,
+    "reaction_energy_unknown": true,
+    "sort_only": true,
+    "possibilities_nonblocking": true,
+    "geometry_is_support_only": true,
+    "five_candidates_with_unknown_energy": true,
+    "discovery_is_process_signal": true,
+    "zero_model_calls": true
+  }
+}

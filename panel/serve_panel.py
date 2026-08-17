@@ -14,7 +14,8 @@ import shutil
 import subprocess
 import tempfile
 from typing import Any
-from urllib.parse import urlparse
+from urllib.error import HTTPError, URLError
+from urllib.parse import quote, urlparse
 from urllib.request import Request, urlopen
 
 
@@ -169,6 +170,54 @@ REFERENCES = [
         "evidence_status": "metadata_only",
     },
     {
+        "id": "DB-PUBCHEM",
+        "title": "PubChem PUG REST",
+        "year": 2026,
+        "url": "https://pubchem.ncbi.nlm.nih.gov/docs/pug-rest",
+        "role": "public compound identifiers, formulae and SMILES; not catalyst performance",
+        "evidence_status": "live_api_verified",
+    },
+    {
+        "id": "DB-OPTIMADE",
+        "title": "Materials Project OPTIMADE",
+        "year": 2026,
+        "url": "https://optimade.materialsproject.org/v1/info",
+        "role": "public crystal records with lattice vectors and Cartesian site positions",
+        "evidence_status": "live_api_verified",
+    },
+    {
+        "id": "DB-CATHUB",
+        "title": "Catalysis-Hub GraphQL API",
+        "year": 2026,
+        "url": "https://api.catalysis-hub.org/graphql",
+        "role": "schema exposes reactants, products, reactionEnergy and atomistic systems; record access is not assumed",
+        "evidence_status": "schema_verified_record_access_gated",
+    },
+    {
+        "id": "DB-OC20",
+        "title": "Open Catalyst 2020 dataset documentation",
+        "year": 2026,
+        "url": "https://github.com/facebookresearch/fairchem/blob/main/docs/catalysts/datasets/oc20.md",
+        "role": "downloadable adsorbate-catalyst structures, relaxed energies and trajectories; no exact demo record loaded",
+        "evidence_status": "repository_documentation_verified",
+    },
+    {
+        "id": "DB-CROSSREF",
+        "title": "Crossref REST API",
+        "year": 2026,
+        "url": "https://api.crossref.org/works/10.1021/acscatal.1c01504",
+        "role": "live DOI metadata endpoint; metadata is not an experimental result",
+        "evidence_status": "live_api_verified",
+    },
+    {
+        "id": "DB-OPENALEX",
+        "title": "OpenAlex Works API",
+        "year": 2026,
+        "url": "https://api.openalex.org/works/https://doi.org/10.1021/acscatal.1c01504",
+        "role": "live bibliographic metadata and source graph; not reaction-energy evidence",
+        "evidence_status": "live_api_verified",
+    },
+    {
         "id": "AXMCP",
         "title": "MCP Server Documentation | alphaXiv",
         "year": 2026,
@@ -211,201 +260,639 @@ REFERENCES = [
 ]
 
 
-def _geometry() -> dict[str, Any]:
-    nodes = [
-        {"id": "fe0", "element": "Fe", "x": -2.1, "y": -0.8, "z": 0.0, "group": "support"},
-        {"id": "ox0", "element": "O", "x": -1.4, "y": 0.0, "z": 0.05, "group": "support"},
-        {"id": "fe1", "element": "Fe", "x": -0.7, "y": -0.8, "z": 0.0, "group": "support"},
-        {"id": "ox1", "element": "O", "x": 0.0, "y": 0.0, "z": 0.05, "group": "support"},
-        {"id": "fe2", "element": "Fe", "x": 0.7, "y": -0.8, "z": 0.0, "group": "support"},
-        {"id": "ox2", "element": "O", "x": 1.4, "y": 0.0, "z": 0.05, "group": "support"},
-        {"id": "fe3", "element": "Fe", "x": 2.1, "y": -0.8, "z": 0.0, "group": "support"},
-        {"id": "pd0", "element": "Pd", "x": 0.0, "y": 0.25, "z": 0.78, "group": "single_atom"},
-        {"id": "c0", "element": "C", "x": 0.0, "y": 0.3, "z": 1.72, "group": "adsorbate"},
-        {"id": "o0", "element": "O", "x": -0.78, "y": 0.3, "z": 2.02, "group": "adsorbate"},
-        {"id": "o1", "element": "O", "x": 0.78, "y": 0.3, "z": 2.02, "group": "adsorbate"},
-        {"id": "h0", "element": "H", "x": -1.7, "y": 0.45, "z": 1.28, "group": "reactant"},
-        {"id": "h1", "element": "H", "x": -1.25, "y": 0.45, "z": 1.28, "group": "reactant"},
-    ]
-    edges = [
-        ["fe0", "ox0"], ["ox0", "fe1"], ["fe1", "ox1"], ["ox1", "fe2"],
-        ["fe2", "ox2"], ["ox2", "fe3"], ["fe1", "pd0"], ["ox1", "pd0"],
-        ["fe2", "pd0"], ["pd0", "c0"], ["c0", "o0"], ["c0", "o1"], ["h0", "h1"],
-    ]
+OPTIMADE_MP19306_URL = (
+    "https://optimade.materialsproject.org/v1/structures?"
+    "filter=id%3D%22mp-19306%22&page_limit=1&response_fields="
+    "id,chemical_formula_reduced,lattice_vectors,cartesian_site_positions,species_at_sites"
+)
+
+OPTIMADE_MP19306 = {
+    "id": "mp-19306",
+    "chemical_formula_reduced": "Fe3O4",
+    "lattice_vectors": [
+        [1.72398624, 4.87541165, 2.98673909],
+        [-0.00078192, 0.000298, 5.97028591],
+        [5.17085494, 0.0004307, 2.98395144],
+    ],
+    "cartesian_site_positions": [
+        [6.032796126878078, 4.265945003654114, 10.449609753973009],
+        [2.584426137930351, 0.0005523940713869999, 4.476984919332381],
+        [3.4470088829577348, 2.436882737554841, 5.97163516842986],
+        [0.8622246729742374, 0.6088249175888105, 1.4938457517702834],
+        [3.4485588472614723, 2.437649938592831, 2.9864161401453266],
+        [6.032458138749329, 2.43891900104457, 7.4623953912467105],
+        [2.6734039235320997, 3.626005069927609, 7.461811772356357],
+        [2.585213494579853, 3.5633556795421417, 4.476720122213099],
+        [1.7674947700613524, 1.2521015696557984, 3.0606367107170787],
+        [4.308462802318762, 1.3122249283899534, 7.462241205763924],
+        [1.766295554538987, 1.249601961984088, 5.894770275322708],
+        [5.127425505699409, 3.6265890628431956, 8.880061910602882],
+        [4.221504241496019, 1.2502360406167004, 4.477077450636655],
+        [5.124965239199261, 3.6264643711651576, 6.046094597606704],
+    ],
+    "species_at_sites": ["Fe", "Fe", "Fe", "Fe", "Fe", "Fe", "O", "O", "O", "O", "O", "O", "O", "O"],
+    "space_group_symbol_hermann_mauguin": None,
+    "source_url": OPTIMADE_MP19306_URL,
+    "snapshot_checked_at": "2026-08-17",
+}
+
+PUBCHEM_SNAPSHOT = [
+    {
+        "role": "reactant",
+        "query_name": "carbon dioxide",
+        "cid": 280,
+        "formula": "CO2",
+        "smiles": "C(=O)=O",
+        "url": "https://pubchem.ncbi.nlm.nih.gov/compound/280",
+    },
+    {
+        "role": "reactant",
+        "query_name": "hydrogen",
+        "cid": 783,
+        "formula": "H2",
+        "smiles": "[HH]",
+        "url": "https://pubchem.ncbi.nlm.nih.gov/compound/783",
+    },
+    {
+        "role": "product",
+        "query_name": "ethanol",
+        "cid": 702,
+        "formula": "C2H6O",
+        "smiles": "CCO",
+        "url": "https://pubchem.ncbi.nlm.nih.gov/compound/702",
+    },
+]
+
+PUBLIC_DATABASE_CONNECTORS = [
+    {
+        "id": "alphaxiv",
+        "name": "alphaXiv MCP/API",
+        "url": "https://api.alphaxiv.org/mcp/v1",
+        "status": "authentication_required_for_live_reading",
+        "fields": ["paper metadata", "AI intermediate report", "full text when explicitly requested"],
+        "scope": "文献穿透式读取；默认 AI 中间报告不等于原文，未认证时不声称已读取",
+        "authentication": "OAuth2_or_API_key",
+    },
+    {
+        "id": "pubchem",
+        "name": "PubChem PUG REST",
+        "url": "https://pubchem.ncbi.nlm.nih.gov/docs/pug-rest",
+        "status": "verified_snapshot",
+        "fields": ["CID", "MolecularFormula", "SMILES"],
+        "scope": "反应物／产物标识；不提供催化性能",
+        "authentication": "none_observed",
+    },
+    {
+        "id": "optimade_mp",
+        "name": "Materials Project OPTIMADE",
+        "url": "https://optimade.materialsproject.org/v1/info",
+        "status": "verified_snapshot",
+        "fields": ["id", "lattice_vectors", "cartesian_site_positions", "species_at_sites"],
+        "scope": "公共晶体几何；当前记录仅是 Fe3O4 支撑体，不是 Pd 活性位",
+        "authentication": "none_observed",
+    },
+    {
+        "id": "catalysis_hub",
+        "name": "Catalysis-Hub GraphQL",
+        "url": "https://api.catalysis-hub.org/graphql",
+        "status": "official_fields_verified_live_records_authorized",
+        "fields": ["reactants", "products", "reactionEnergy", "surfaceComposition", "systems.positions"],
+        "scope": "反应能量与原子体系字段合同；没有取得记录就保持空值",
+        "authentication": "API_key_via_ORCID_for_POST_queries",
+    },
+    {
+        "id": "oc20",
+        "name": "Open Catalyst 2020",
+        "url": "https://github.com/facebookresearch/fairchem/blob/main/docs/catalysts/datasets/oc20.md",
+        "status": "download_contract_verified_not_loaded",
+        "fields": ["adsorbate-catalyst structure", "energy", "forces", "relaxed structure"],
+        "scope": "公共下载数据集；本次未下载大体量 LMDB，也未声称命中当前反应",
+        "authentication": "public_download",
+    },
+    {
+        "id": "crossref",
+        "name": "Crossref REST",
+        "url": "https://api.crossref.org/works/10.1021/acscatal.1c01504",
+        "status": "verified_snapshot",
+        "fields": ["DOI", "title", "publisher", "published"],
+        "scope": "文献元数据；不等于正文或实验结论",
+        "authentication": "none_observed",
+    },
+    {
+        "id": "openalex",
+        "name": "OpenAlex Works",
+        "url": "https://api.openalex.org/works/https://doi.org/10.1021/acscatal.1c01504",
+        "status": "verified_snapshot",
+        "fields": ["id", "doi", "display_name", "publication_year"],
+        "scope": "文献图谱元数据；不提供反应能量",
+        "authentication": "none_observed",
+    },
+]
+
+
+def _json_request(url: str, *, payload: dict[str, Any] | None = None, timeout: int = 25) -> dict[str, Any]:
+    data = None if payload is None else json.dumps(payload).encode("utf-8")
+    headers = {
+        "Accept": "application/json, application/vnd.api+json",
+        "User-Agent": "MathStructurer/0.6 (research prototype)",
+    }
+    if data is not None:
+        headers["Content-Type"] = "application/json"
+    request = Request(url, data=data, headers=headers, method="POST" if data is not None else "GET")
+    with urlopen(request, timeout=timeout) as response:
+        return json.loads(response.read().decode("utf-8"))
+
+
+def _connector(connectors: list[dict[str, Any]], connector_id: str) -> dict[str, Any]:
+    return next(item for item in connectors if item["id"] == connector_id)
+
+
+def _public_database_snapshot() -> dict[str, Any]:
     return {
-        "kind": "surface_reaction_graph",
-        "title": "Pd₁/Fe₃O₄ 界面与 CO₂、H₂ 的示意构型（未经弛豫）",
-        "nodes": nodes,
-        "edges": edges,
-        "quotient": "R^(3n) / SE(3)",
-        "symmetry": "示意界面图；不主张空间群或实验构型",
-        "smiles": "CO2=O=C=O; H2=[H][H]; ethanol=CCO; catalyst=N/A (extended solid)",
-        "coordinate_status": "illustrative_not_relaxed",
-        "render_contract": "nodes+edges -> Manim VGroup / HTML5 SVG+Canvas",
+        "mode_requested": "verified_snapshot",
+        "mode_used": "verified_snapshot",
+        "snapshot_checked_at": "2026-08-17",
+        "external_requests": 0,
+        "connectors": json.loads(json.dumps(PUBLIC_DATABASE_CONNECTORS)),
+        "molecules": json.loads(json.dumps(PUBCHEM_SNAPSHOT)),
+        "catalyst_structures": [json.loads(json.dumps(OPTIMADE_MP19306))],
+        "literature_metadata": [
+            {
+                "source": "Crossref/OpenAlex",
+                "doi": "10.1021/acscatal.1c01504",
+                "title": "Direct Conversion of CO2 to Ethanol Boosted by Intimacy-Sensitive Multifunctional Catalysts",
+                "year": 2021,
+                "status": "metadata_verified",
+            }
+        ],
+        "reaction_energy_records": [],
+        "errors": [],
     }
 
 
-def _weights(payload: dict[str, Any]) -> dict[str, float]:
-    raw = payload.get("weights") or {}
-    keys = ("activity", "selectivity", "stability", "cost")
-    values = {key: max(0.0, float(raw.get(key, 0.25))) for key in keys}
-    total = sum(values.values()) or 1.0
-    return {key: round(value / total, 4) for key, value in values.items()}
+def public_database_bundle(mode: str = "verified_snapshot") -> dict[str, Any]:
+    result = _public_database_snapshot()
+    result["mode_requested"] = mode
+    if mode != "live_public":
+        return result
+
+    result["mode_used"] = "live_public_with_explicit_snapshot_fallbacks"
+
+    def attempt(connector_id: str, operation: Any) -> Any:
+        result["external_requests"] += 1
+        connector = _connector(result["connectors"], connector_id)
+        try:
+            value = operation()
+            connector["status"] = "live_verified"
+            connector["error"] = None
+            return value
+        except (HTTPError, URLError, TimeoutError, ValueError, json.JSONDecodeError) as exc:
+            connector["status"] = "live_error_snapshot_retained"
+            connector["error"] = _portable_text(exc)[:180]
+            result["errors"].append({"connector": connector_id, "error": connector["error"]})
+            return None
+
+    live_molecules: list[dict[str, Any]] = []
+    for snapshot in PUBCHEM_SNAPSHOT:
+        name = quote(snapshot["query_name"])
+        url = (
+            f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/{name}/"
+            "property/CanonicalSMILES,IsomericSMILES,MolecularFormula/JSON"
+        )
+        payload = attempt("pubchem", lambda url=url: _json_request(url))
+        if payload:
+            item = payload["PropertyTable"]["Properties"][0]
+            live_molecules.append(
+                {
+                    **snapshot,
+                    "cid": int(item["CID"]),
+                    "formula": item["MolecularFormula"],
+                    "smiles": item.get("SMILES") or item.get("ConnectivitySMILES"),
+                    "source_mode": "live_public",
+                }
+            )
+    if len(live_molecules) == len(PUBCHEM_SNAPSHOT):
+        result["molecules"] = live_molecules
+
+    optimade = attempt("optimade_mp", lambda: _json_request(OPTIMADE_MP19306_URL))
+    if optimade and optimade.get("data"):
+        record = optimade["data"][0]
+        result["catalyst_structures"] = [
+            {
+                "id": record["id"],
+                **record["attributes"],
+                "source_url": OPTIMADE_MP19306_URL,
+                "source_mode": "live_public",
+            }
+        ]
+
+    crossref = attempt(
+        "crossref",
+        lambda: _json_request("https://api.crossref.org/works/10.1021/acscatal.1c01504"),
+    )
+    openalex = attempt(
+        "openalex",
+        lambda: _json_request("https://api.openalex.org/works/https://doi.org/10.1021/acscatal.1c01504"),
+    )
+    if crossref and openalex:
+        message = crossref["message"]
+        result["literature_metadata"] = [
+            {
+                "source": "Crossref+OpenAlex live",
+                "doi": message.get("DOI"),
+                "title": (message.get("title") or [openalex.get("display_name")])[0],
+                "year": openalex.get("publication_year"),
+                "openalex_id": openalex.get("id"),
+                "status": "live_metadata_verified",
+            }
+        ]
+
+    cathub_query = {
+        "query": "{__type(name:\"Reaction\"){fields{name}}}",
+    }
+    cathub = attempt(
+        "catalysis_hub",
+        lambda: _json_request("https://api.catalysis-hub.org/graphql", payload=cathub_query),
+    )
+    if cathub:
+        fields = sorted(item["name"] for item in cathub["data"]["__type"]["fields"])
+        required = {"reactants", "products", "reactionEnergy", "surfaceComposition", "systems"}
+        connector = _connector(result["connectors"], "catalysis_hub")
+        connector["status"] = "live_schema_verified_records_not_queried"
+        connector["schema_fields_present"] = sorted(required.intersection(fields))
+        connector["record_access"] = "not_assumed_without_authorization"
+
+    return result
+
+
+def _geometry_from_optimade(record: dict[str, Any], mode: str) -> dict[str, Any]:
+    positions = record.get("cartesian_site_positions") or []
+    species = record.get("species_at_sites") or []
+    if not positions or len(positions) != len(species):
+        return {
+            "kind": "public_database_geometry_unavailable",
+            "title": "公共数据库未返回可绘制坐标",
+            "nodes": [],
+            "edges": [],
+            "coordinate_status": "unavailable",
+            "source_scope": "unavailable",
+        }
+    center = [sum(point[axis] for point in positions) / len(positions) for axis in range(3)]
+    span = max(max(point[axis] for point in positions) - min(point[axis] for point in positions) for axis in range(3)) or 1.0
+    scale = 3.4 / span
+    nodes = []
+    for index, (element, point) in enumerate(zip(species, positions)):
+        nodes.append(
+            {
+                "id": f"atom{index}",
+                "element": element,
+                "x": round((point[0] - center[0]) * scale, 6),
+                "y": round((point[1] - center[1]) * scale, 6),
+                "z": round((point[2] - center[2]) * scale, 6),
+                "raw_position_angstrom": point,
+                "group": "public_crystal_record",
+            }
+        )
+    edges: list[list[str]] = []
+    for left in range(len(positions)):
+        for right in range(left + 1, len(positions)):
+            distance = math.dist(positions[left], positions[right])
+            if distance <= 2.2:
+                edges.append([f"atom{left}", f"atom{right}"])
+    return {
+        "kind": "optimade_crystal_record",
+        "title": "Fe₃O₄ 支撑体公共晶体记录 mp-19306（不是 Pd 活性位构型）",
+        "record_id": record.get("id"),
+        "source_database": "Materials Project OPTIMADE",
+        "source_url": record.get("source_url", OPTIMADE_MP19306_URL),
+        "source_mode": mode,
+        "source_scope": "support_only",
+        "nodes": nodes,
+        "edges": edges,
+        "lattice_vectors_angstrom": record.get("lattice_vectors"),
+        "quotient": "Cartesian Å；显示时仅居中缩放",
+        "symmetry": "OPTIMADE 标准空间群字段为空；不推断对称群",
+        "smiles": "record=mp-19306；formula=Fe3O4；scope=support-only",
+        "coordinate_status": "public_database_record_support_only",
+        "edge_policy": "非周期欧氏距离≤2.2 Å，仅供显示；不补周期邻居",
+        "render_contract": "OPTIMADE positions -> centered nodes -> HTML5 SVG/Canvas",
+    }
+
+
+def _literature_candidates(sort_requested: bool) -> list[dict[str, Any]]:
+    candidates = [
+        {
+            "id": "CAT0",
+            "label": "Na-Fe@C + K-CuZnAl multifunctional catalyst",
+            "year": 2021,
+            "state": "abstract_verified",
+            "url": "https://doi.org/10.1021/acscatal.1c01504",
+            "reaction_match": True,
+            "reaction_energy": {"value": None, "unit": None, "status": "not_retrieved"},
+            "geometry": {"status": "not_machine_readable_in_current_sources", "record_id": None},
+        },
+        {
+            "id": "CAT1",
+            "label": "Pd1/Fe3O4 single-atom interface",
+            "year": 2018,
+            "state": "abstract_verified",
+            "url": "https://hdl.handle.net/2117/118190",
+            "reaction_match": True,
+            "reaction_energy": {"value": None, "unit": None, "status": "not_retrieved"},
+            "geometry": {"status": "public_support_record_only", "record_id": "mp-19306"},
+        },
+        {
+            "id": "CAT2",
+            "label": "Cu@Na-Beta",
+            "year": 2020,
+            "state": "metadata_only",
+            "url": "https://doi.org/10.1016/j.chempr.2020.07.001",
+            "reaction_match": True,
+            "reaction_energy": {"value": None, "unit": None, "status": "not_retrieved"},
+            "geometry": {"status": "not_retrieved", "record_id": None},
+        },
+        {
+            "id": "CAT3",
+            "label": "ordered Pd-Cu nanoparticles",
+            "year": 2017,
+            "state": "metadata_only",
+            "url": "https://doi.org/10.1021/jacs.7b03101",
+            "reaction_match": True,
+            "reaction_energy": {"value": None, "unit": None, "status": "not_retrieved"},
+            "geometry": {"status": "not_retrieved", "record_id": None},
+        },
+        {
+            "id": "CAT4",
+            "label": "Ir1-In2O3 single-atom catalyst",
+            "year": 2020,
+            "state": "metadata_only",
+            "url": "https://doi.org/10.1021/jacs.0c08607",
+            "reaction_match": True,
+            "reaction_energy": {"value": None, "unit": None, "status": "not_retrieved"},
+            "geometry": {"status": "not_retrieved", "record_id": None},
+        },
+    ]
+    for candidate in candidates:
+        candidate["reaction_energy"].update(
+            {
+                "kind": None,
+                "method": None,
+                "reference_state": None,
+                "source_record": None,
+            }
+        )
+        abstract = candidate["state"] == "abstract_verified"
+        geometry = candidate["geometry"]["record_id"] is not None
+        comparable_energy = candidate["reaction_energy"]["value"] is not None
+        candidate["retrieval_score"] = 50 + 25 * int(abstract) + 15 * int(geometry) + 10 * int(comparable_energy)
+        candidate["sort_features"] = {
+            "reaction_entity_match": 1,
+            "abstract_verified": int(abstract),
+            "public_geometry_link": int(geometry),
+            "comparable_energy_record": int(comparable_energy),
+        }
+        energy_label = "未取得" if candidate["reaction_energy"]["value"] is None else "有来源数值"
+        geometry_label = {
+            "public_support_record_only": "公开支撑体记录",
+            "not_machine_readable_in_current_sources": "当前来源无机器可读坐标",
+            "not_retrieved": "未取得",
+        }.get(candidate["geometry"]["status"], candidate["geometry"]["status"])
+        candidate["query"] = f"检索匹配分={candidate['retrieval_score']}；能量记录={energy_label}；几何={geometry_label}"
+    if sort_requested:
+        candidates.sort(key=lambda item: (-item["retrieval_score"], -item["year"], item["id"]))
+    for index, candidate in enumerate(candidates, start=1):
+        candidate["rank"] = index
+    return candidates
+
+
+def _possibilities(payload: dict[str, Any] | None = None) -> dict[str, Any]:
+    payload = payload or {}
+    supplied = payload.get("possibilities") if isinstance(payload.get("possibilities"), dict) else {}
+
+    def item(name: str, role: str) -> dict[str, Any]:
+        value = supplied.get(name, payload.get(name))
+        if isinstance(value, str):
+            value = value.strip() or None
+        return {
+            "value": value,
+            "status": "provided" if value is not None else "unspecified_optional",
+            "role": role,
+        }
+
+    return {
+        "temperature": item("temperature", "optional_filter_or_future_sort_key"),
+        "pressure": item("pressure", "optional_filter_or_future_sort_key"),
+        "candidate_domain": item("candidate_domain", "optional_query_expansion"),
+        "metrics": item("metrics", "optional_future_comparison"),
+        "baseline": item("baseline", "optional_future_comparison"),
+        "blocking": False,
+    }
 
 
 def analyze_general(payload: dict[str, Any]) -> dict[str, Any]:
     problem = str(payload.get("problem", "")).strip()
-    basis_name = str(payload.get("basis", "stoichiometric_kernel"))
-    dimension = max(1, min(12, int(payload.get("dimension", 3))))
-    weights = _weights(payload)
     compact = re.sub(r"\s+", "", problem).lower()
-    is_demo = "co2gas+h2gas--ch3ch2ohgas@best" in compact
+    sort_requested = "@best" in compact
+    is_demo = "co2gas+h2gas--ch3ch2ohgas" in compact
+    database_mode = str(payload.get("database_mode", "verified_snapshot"))
+    if database_mode not in {"verified_snapshot", "live_public"}:
+        raise ValueError("database_mode must be verified_snapshot or live_public")
+    database = public_database_bundle(database_mode)
 
     if not is_demo:
         return {
             "status": "needs_harness",
-            "source": "local_typed_kernel",
+            "source": "local_retrieval_contract",
             "input": problem,
             "normalized_problem": {
                 "type": str(payload.get("domain", "auto")),
                 "statement": problem,
-                "objective": "unresolved",
-                "reaction_natural_language": "awaiting typed decomposition",
+                "reactants": [],
+                "products": [],
+                "directive": "@best" if sort_requested else None,
+                "reaction_natural_language": "等待 AI 提取反应物与产物；温压等只作为可选可能性。",
             },
             "standard_math": {
-                "display": r"q_{NL}\xrightarrow{\mathrm{AI\;parse}}(T,C,B,M,O,G)",
-                "logic": r"\exists T,C,B,M,O,G\;\;\mathrm{Typed}(q_{NL},T,C,B,M,O,G)",
-                "status": "harness_required",
+                "display": r"q_{NL}\to(R,P),\quad \mathcal C=\mathcal L(R,P)\cup\mathcal D(R,P)",
+                "logic": r"R\neq\varnothing\land P\neq\varnothing\Rightarrow\mathrm{Retrieve}(R,P)",
+                "status": "entity_extraction_required",
             },
             "target_function": {
-                "display": r"J:\mathcal X\to\mathbb R\cup\{\mathrm{unknown}\}",
-                "nontriviality": "unresolved",
-                "status": "harness_required",
+                "display": r"\Delta E_{record}\in\mathbb R\cup\{\mathrm{unknown}\}",
+                "nontriviality": "source_record_required",
+                "status": "unknown",
             },
+            "reactants": [],
+            "products": [],
+            "reaction_energy": {
+                "value": None,
+                "unit": None,
+                "kind": None,
+                "method": None,
+                "reference_state": None,
+                "source_record": None,
+                "status": "unknown_no_record",
+            },
+            "sort": {
+                "requested": sort_requested,
+                "key": "retrieval_match_and_data_coverage",
+                "status": "waiting_for_candidates",
+                "semantics": "sort_only",
+                "scientific_optimum_claim": False,
+            },
+            "possibilities": _possibilities(payload),
             "basis": {
-                "name": basis_name,
-                "display_name": "候选基空间",
-                "dimension": dimension,
-                "operator": "Pi_B : X -> R^k",
-                "state": "candidate",
+                "name": "literature_energy_geometry_space",
+                "display_name": "文献×能量×几何字段空间",
+                "dimension": 4,
+                "operator": "(R,P) → literature ∪ public DB → (ΔE, geometry) → stable sort",
             },
             "machine_problems": [
-                {"id": "M0", "operator": "type(problem)", "status": "ready", "oracle": "schema"},
-                {"id": "M1", "operator": "choose(B from registered_dictionary)", "status": "ready", "oracle": "baseline comparison"},
-                {"id": "M2", "operator": "alphaXiv.agentic_paper_retrieval(q)", "status": "harness_required", "oracle": "source URL"},
-                {"id": "M3", "operator": "geometry -> R^(3n)/SE(3)", "status": "input_required", "oracle": "coordinate contract"},
-                {"id": "M4", "operator": "Lean.check(assumptions -> proposition)", "status": "obligation_only", "oracle": "Lean kernel"},
+                {"id": "M0", "operator": "AI.extract(reactants, products)", "status": "required"},
+                {"id": "M1", "operator": "LiteratureConnector.search(R,P)", "status": "waiting"},
+                {"id": "M2", "operator": "PublicDatabaseRouter.lookup(R,P)", "status": "waiting"},
             ],
             "spaces": [
-                {"id": "N", "label": "自然语言目标", "map": "语义解析"},
-                {"id": "T", "label": "类型化目标与逻辑", "map": "约束编译"},
-                {"id": "B", "label": "已登记基空间", "map": "基选择"},
-                {"id": "M", "label": "机器子任务", "map": "插件路由"},
-                {"id": "O", "label": "验证器与证据", "map": "反馈修订"},
-                {"id": "G", "label": "二维／三维投影", "map": "几何插件"},
+                {"id": "N", "label": "自然语言目标", "map": "实体抽取"},
+                {"id": "RP", "label": "反应物／产物", "map": "规范化"},
+                {"id": "L", "label": "文献记录", "map": "DOI/API"},
+                {"id": "D", "label": "公共数据库", "map": "字段映射"},
+                {"id": "EG", "label": "能量／几何", "map": "来源核验"},
+                {"id": "S", "label": "排序结果", "map": "稳定排序"},
             ],
             "plugin_route": [
-                {"plugin": "AIHarness", "label": "AI 语义接口", "status": "required", "scope": "类型化目标与显式逻辑"},
-                {"plugin": "BasisOperatorComposer", "label": "特定基算子复合器", "status": "gated", "scope": "只接受声明了输入类型、当前测试域与验证器的算子"},
-                {"plugin": "GeometryPlugin", "label": "几何插件", "status": "awaiting_typed_geometry", "scope": "二维／三维坐标；不进入标量算子复合"},
-                {"plugin": "Lean4", "label": "Lean 4 验证器", "status": "obligation_only", "scope": "仅核验显式假设下的命题"},
+                {"plugin": "AIHarness", "label": "目标识别", "status": "required", "scope": "只抽取实体与排序指令"},
+                {"plugin": "PublicDatabaseRouter", "label": "公共数据库路由", "status": "ready", "scope": "不把空值补成结论"},
+                {"plugin": "GeometryPlugin", "label": "几何插件", "status": "waiting", "scope": "只绘制有来源坐标"},
             ],
-            "search_targets": [],
-            "geometry": {"kind": "empty", "nodes": [], "edges": []},
-            "references": REFERENCES[-5:],
-            "lean": {
-                "assumptions": ["D is declared", "B belongs to the registered basis dictionary"],
-                "proposition": "reduction_preserves declared invariants",
-                "status": "not_instantiated",
+            "database_connectors": database["connectors"],
+            "database_receipt": database,
+            "discovery_signal": {
+                "status": "waiting_for_entity_extraction",
+                "type": "not_observed",
+                "scientific_discovery": False,
+                "next_action": "先抽取反应物与产物，再查询指定的文献或公共数据库接口。",
+                "falsification": "若在声明的接口预算内仍不能返回可追溯记录，则当前切片不成立。",
             },
-            "model_receipt": {"provider": "local_typed_kernel", "calls": 0},
+            "search_targets": [],
+            "geometry": {"kind": "empty", "nodes": [], "edges": [], "source_scope": "unavailable"},
+            "references": [item for item in REFERENCES if item["id"].startswith(("CAT", "DB-"))],
+            "lean": {
+                "assumptions": ["没有来源记录时，反应能量保持 null"],
+                "proposition": "排序只改变次序，不改变证据内容",
+                "status": "data_contract_only",
+            },
+            "model_receipt": {"provider": "local_retrieval_contract", "calls": 0},
         }
 
-    matrix = {
-        "rows": ["C", "H", "O"],
-        "columns": ["CO2", "H2", "C2H5OH", "H2O"],
-        "A": [[1, 0, 2, 0], [0, 2, 6, 2], [2, 0, 1, 1]],
-        "nu": [-2, -6, 1, 3],
-        "check": [0, 0, 0],
-    }
+    reactants = [
+        {"token": "CO2gas", "formula": "CO2", "phase": "gas", "pubchem_cid": 280, "smiles": "C(=O)=O"},
+        {"token": "H2gas", "formula": "H2", "phase": "gas", "pubchem_cid": 783, "smiles": "[HH]"},
+    ]
+    products = [
+        {"token": "CH3CH2OHgas", "formula": "C2H6O", "phase": "gas", "pubchem_cid": 702, "smiles": "CCO"},
+    ]
+    candidates = _literature_candidates(sort_requested)
+    geometry = _geometry_from_optimade(database["catalyst_structures"][0], database["mode_used"])
     return {
-        "status": "decomposed",
-        "source": "local_exact_kernel",
+        "status": "retrieved_and_sorted" if sort_requested else "retrieved",
+        "source": "local_literature_public_database_kernel",
         "input": problem,
         "normalized_problem": {
-            "type": "heterogeneous_catalysis_search",
-            "input_equation": "CO2(g) + H2(g) -> C2H5OH(g)",
-            "input_balance": "invalid",
-            "balanced_equation": "2 CO2(g) + 6 H2(g) -> C2H5OH(g) + 3 H2O(g)",
-            "directive": "@best",
-            "objective": weights,
-            "objective_state": "multiobjective_without_observation_table",
-            "best_status": "abstain_until_conditions_candidate_space_and_measurements_are_fixed",
-            "retrieval_query": "gas-phase CO2 hydrogenation with H2 to ethanol heterogeneous catalyst",
-            "retrieval_exclusions": ["electrochemical CO2 reduction", "ethanol reforming", "methanol-only studies"],
-            "reaction_natural_language": "在尚未补齐温度、压力、空速和观测表的条件下，检索将二氧化碳与氢气转化为乙醇并伴生水的文献催化剂；当前只列候选，不排名。",
+            "type": "catalyst_literature_database_search",
+            "reactants": reactants,
+            "products": products,
+            "directive": "@best" if sort_requested else None,
+            "sort_semantics": "stable retrieval relevance and evidence-coverage order; not catalytic optimality",
+            "reaction_natural_language": "检索 CO2、H2 到乙醇的文献与公共数据库记录；温度、压力等保持为可选可能性，不阻止返回候选。",
         },
+        "reactants": reactants,
+        "products": products,
         "standard_math": {
-            "display": r"\begin{aligned} &\nu=(-2,-6,1,3)\in\ker_{\mathbb Z}(A),\qquad A\nu=0,\\ &J(c;\theta)=w^{\mathsf T}y(c\mid\theta),\qquad c\in C_\theta,\\ &\operatorname*{arg\,max}_{c\in C_\theta}J(c;\theta)\;\text{在 }\theta,C_\theta\text{ 与观测表冻结前未定义。}\end{aligned}",
-            "logic": r"\exists c\in\mathcal C_{\mathrm{lit}}:\;\mathrm{Conserved}(\nu)\land\mathrm{Measured}(y,c,\theta)\land\mathrm{Feasible}(c,\theta)",
-            "status": "typed_but_objective_underdetermined",
+            "display": r"R=\{CO_2(g),H_2(g)\},\quad P=\{C_2H_6O(g)\},\quad \mathcal C=\mathcal L(R,P)\cup\mathcal D(R,P)",
+            "logic": r"\pi_{best}=\operatorname{StableSort}(\mathcal C;s),\quad \pi_{best}\neq\operatorname*{arg\,max}_{c}\mathrm{Performance}(c)",
+            "status": "typed_retrieval_contract",
         },
         "target_function": {
-            "display": r"J(c;\theta)=0.25y_{act}+0.35y_{sel}+0.25y_{stab}-0.15y_{cost}",
-            "nontriviality": "unverified_on_candidate_set_without_conditioned_measurements",
-            "status": "abstain",
+            "display": r"\Delta E_{record}\in\mathbb R\cup\{\mathrm{unknown}\};\quad \Delta E\text{ 仅由带单位、方法与来源的数据库记录给出}",
+            "nontriviality": "record_level_quantity_not_inferred_from_shorthand",
+            "status": "unknown_no_comparable_record",
         },
+        "reaction_energy": {
+            "value": None,
+            "unit": None,
+            "kind": None,
+            "status": "unknown_no_comparable_record",
+            "method": None,
+            "reference_state": None,
+            "source_record": None,
+            "rule": "never infer a number from the shorthand or from an LLM; compare only source records with explicit units, methods and reference states",
+        },
+        "sort": {
+            "requested": sort_requested,
+            "directive": "@best" if sort_requested else None,
+            "key": "retrieval_match_and_data_coverage",
+            "formula": "50*reaction_match + 25*abstract_verified + 15*public_geometry_link + 10*comparable_energy_record",
+            "status": "applied" if sort_requested else "source_order",
+            "semantics": "sort_only",
+            "scientific_optimum_claim": False,
+            "changes_evidence_grade": False,
+        },
+        "possibilities": _possibilities(payload),
         "basis": {
-            "name": basis_name,
-            "display_name": "整数守恒核",
-            "dimension": dimension,
-            "operator": "整数守恒核 ker_Z(A) ＋ 图／对称坐标",
-            "matrix": matrix,
-            "coordinates": ["stoichiometry", "site_graph", "SE(3)-quotient", "condition vector"],
+            "name": "literature_energy_geometry_space",
+            "display_name": "反应实体×文献×能量×几何",
+            "dimension": 4,
+            "operator": "(R,P) → Literature/API → (ΔE_record, G_catalyst) → stable sort",
+            "coordinates": ["reactants/products", "literature metadata", "reaction-energy record", "catalyst geometry"],
         },
         "machine_problems": [
-            {"id": "M0", "operator": "ReactionDecomposer.parse(species, phases, directive)", "status": "solved", "output": "typed reaction + invalid input audit", "oracle": "species schema"},
-            {"id": "M1", "operator": "primitive_integer_kernel(A)", "status": "solved", "output": "nu=(-2,-6,+1,+3)", "oracle": "A nu = 0"},
-            {"id": "M2", "operator": "ReactionDecomposer.intermediate_slots()", "status": "unknown", "output": "I?; no mechanism asserted", "oracle": "mechanism source or microkinetic plugin"},
-            {"id": "M3", "operator": "ObjectiveStructurer.audit(argmax_c J(c|theta))", "status": "underdetermined", "output": "abstain", "oracle": "fixed candidate table + condition + measurements"},
-            {"id": "M4", "operator": "alphaXiv.agentic_paper_retrieval(q)", "status": "ready", "output": "clickable metadata", "oracle": "URL + paper span"},
-            {"id": "M5", "operator": "GeometryPlugin.Phi(c) in R^(3n)/SE(3)", "status": "rendered", "output": "2D/3D graph", "oracle": "coordinate and bond schema"},
-            {"id": "M6", "operator": "Lean.check(element_conservation)", "status": "fixed_obligation", "output": "panel/lean/ReactionBalance.lean", "oracle": "Lean kernel"},
+            {"id": "M0", "operator": "ReactionEntityParser.extract(R,P)", "status": "solved", "output": "2 reactants + 1 product", "oracle": "typed entity schema"},
+            {"id": "M1", "operator": "PubChem.lookup(CID,SMILES)", "status": "ready", "output": "CID 280/783/702", "oracle": "PUG REST record"},
+            {"id": "M2", "operator": "Crossref+OpenAlex.lookup(DOI)", "status": "ready", "output": "traceable metadata", "oracle": "DOI/API response"},
+            {"id": "M3", "operator": "CatalysisHub.map(reactants,products,reactionEnergy,systems)", "status": "schema_only", "output": "energy stays null", "oracle": "GraphQL schema + authorized record"},
+            {"id": "M4", "operator": "OPTIMADE.structure(mp-19306)", "status": "rendered", "output": "Fe3O4 support coordinates", "oracle": "record id + Cartesian positions"},
+            {"id": "M5", "operator": "StableSort(candidates,evidence_coverage)", "status": "applied" if sort_requested else "not_requested", "output": "order only", "oracle": "deterministic feature tuple"},
         ],
         "spaces": [
-            {"id": "N", "label": "反应自然语言", "map": "反应分解器"},
-            {"id": "S", "label": "守恒核 ker_Z(A)", "map": "整数核"},
-            {"id": "C", "label": "文献候选集", "map": "结构化检索"},
-            {"id": "Y", "label": "条件化观测空间", "map": "目标验证器"},
-            {"id": "G", "label": "几何 R^(3n)/SE(3)", "map": "几何插件"},
-            {"id": "P", "label": "证明义务 Prop", "map": "Lean 4"},
+            {"id": "N", "label": "自然语言目标", "map": "实体抽取"},
+            {"id": "RP", "label": "反应物／产物", "map": "PubChem"},
+            {"id": "L", "label": "文献记录", "map": "DOI API"},
+            {"id": "D", "label": "公共数据库", "map": "字段映射"},
+            {"id": "EG", "label": "能量／几何", "map": "来源核验"},
+            {"id": "S", "label": "排序结果", "map": "稳定排序"},
         ],
         "plugin_route": [
-            {"plugin": "ReactionDecomposer", "label": "反应分解器", "status": "invoked", "scope": "配平、元素守恒、中间体槽位与目标指标"},
-            {"plugin": "BasisOperatorComposer", "label": "特定基算子复合器", "status": "not_invoked", "scope": "只处理已声明输入类型、当前测试域与验证器的标量算子"},
-            {"plugin": "GeometryPlugin", "label": "几何插件", "status": "invoked", "scope": "二维／三维示意坐标；不进入标量算子复合"},
-            {"plugin": "alphaXiv/Codex", "label": "文献检索", "status": "optional", "scope": "来源检索；每次最多选择一个模型后端"},
-            {"plugin": "Lean4", "label": "Lean 4 验证器", "status": "fixed_obligation", "scope": "仅核验元素守恒命题"},
+            {"plugin": "ReactionEntityParser", "label": "反应实体解析器", "status": "invoked", "scope": "只抽取输入中的反应物与产物，不增补机理产物"},
+            {"plugin": "LiteratureConnector", "label": "文献分析", "status": "ready", "scope": "Crossref/OpenAlex/DOI/alphaXiv；元数据与正文分级"},
+            {"plugin": "PublicDatabaseRouter", "label": "公共数据库路由", "status": "ready", "scope": "PubChem/OPTIMADE/Catalysis-Hub/OC20 字段合同"},
+            {"plugin": "GeometryPlugin", "label": "几何插件", "status": "rendered", "scope": "只绘制 mp-19306 支撑体坐标，不伪造 Pd 活性位"},
+            {"plugin": "StableSorter", "label": "@best 排序器", "status": "applied" if sort_requested else "not_requested", "scope": "只改顺序，不改证据等级，不声称性能最优"},
         ],
-        "intermediates": {
-            "status": "unknown",
-            "slots": ["CO2 + H2", "I?", "C2H5OH + H2O"],
-            "claim": "no intermediate mechanism is asserted by the local kernel",
+        "database_connectors": database["connectors"],
+        "database_receipt": database,
+        "discovery_signal": {
+            "status": "observed",
+            "type": "source_coverage_gap_and_problem_definition_revision",
+            "scientific_discovery": False,
+            "observation": "返回五条可追溯文献候选；可比反应能量记录为零；仅取得一条 Fe3O4 体相支撑体几何，未取得活性位几何。",
+            "process_signal": "能量保持 null，几何范围保持 support_only；下一查询必须指定记录级能量类型，并寻找带来源的活性位坐标。",
+            "next_action": "向已授权的 Catalysis-Hub 记录接口提交类型化反应物／产物，保存能量类型、方法与参考态，再请求对应体系坐标；否则只检查预索引的 OC20 子集，不把它称为完整反应网络。",
+            "falsification": "若固定预算内反复查询仍不能把可比能量记录与带来源活性位几何联结，则拒绝或缩小当前反应切片，不推断性能。",
         },
-        "search_targets": [
-            {"label": "Na-Fe@C + K-CuZnAl multifunctional catalyst", "state": "abstract-verified", "query": "CO2 hydrogenation to ethanol catalyst proximity", "url": "https://doi.org/10.1021/acscatal.1c01504"},
-            {"label": "Pd1/Fe3O4 single-atom interface", "state": "abstract-verified", "query": "gas-phase CO2 hydrogenation to ethanol", "url": "https://hdl.handle.net/2117/118190"},
-            {"label": "Cu@Na-Beta", "state": "metadata-only", "query": "CO2 hydrogenation to ethanol", "url": "https://doi.org/10.1016/j.chempr.2020.07.001"},
-            {"label": "ordered Pd-Cu nanoparticles", "state": "metadata-only", "query": "CO2 hydrogenation to ethanol", "url": "https://doi.org/10.1021/jacs.7b03101"},
-        ],
-        "geometry": _geometry(),
-        "references": REFERENCES,
+        "search_targets": candidates,
+        "geometry": geometry,
+        "references": [item for item in REFERENCES if item["id"].startswith(("CAT", "DB-"))],
         "lean": {
-            "assumptions": ["species atom counts are Nat-valued", "reaction coefficients are nonnegative integers"],
-            "proposition": "2 CO2 + 6 H2 and C2H5OH + 3 H2O have equal C/H/O counts",
-            "status": "fixed_obligation",
+            "assumptions": [
+                "反应能量数值必须同时有单位、方法、参考态和来源记录",
+                "未知值保持 null",
+                "@best 只改变次序",
+            ],
+            "proposition": "排序保持每条候选的证据记录不变",
+            "status": "data_contract_not_formalized",
         },
-        "model_receipt": {"provider": "local_exact_kernel", "calls": 0},
+        "model_receipt": {"provider": "local_exact_retrieval_kernel", "calls": 0, "max_calls": 1},
     }
 
 
@@ -565,8 +1052,8 @@ def lean_check() -> dict[str, Any]:
     lean = _lean_executable()
     if lean is None:
         return {"status": "unavailable", "summary": "pinned Lean toolchain not found", "results": {}}
-    reaction = _run([str(lean), str(PANEL / "lean" / "ReactionBalance.lean")], ROOT, 30)
     contract = _run([str(lean), str(PANEL / "lean" / "IterationContract.lean")], ROOT, 30)
+    retrieval = _run([str(lean), str(PANEL / "lean" / "RetrievalSortContract.lean")], ROOT, 30)
     imported_source = PRIME_REPO / "PrimeLoopVerification" / "Basic.lean"
     has_axiom = imported_source.is_file() and "axiom prime_loop_conjecture" in imported_source.read_text("utf-8", errors="ignore")
     upstream = {
@@ -576,11 +1063,12 @@ def lean_check() -> dict[str, Any]:
     }
     upstream_status = "source_contains_axiom" if has_axiom else "source_unavailable"
     results = {
-        "reaction_balance": {"status": "passed" if reaction["returncode"] == 0 else "failed", **reaction},
-        "function_contract": {"status": "passed" if contract["returncode"] == 0 else "failed", **contract},
+        "iteration_contract": {"status": "passed" if contract["returncode"] == 0 else "failed", **contract},
+        "retrieval_sort_contract": {"status": "passed" if retrieval["returncode"] == 0 else "failed", **retrieval},
         "upstream_basis_reconstruction": {"status": upstream_status, **upstream},
     }
-    overall = "partial_formalization" if results["reaction_balance"]["status"] == "passed" and results["function_contract"]["status"] == "passed" and upstream_status == "source_contains_axiom" else "passed" if all(item["status"] == "passed" for item in results.values()) else "failed"
+    contracts_pass = all(results[name]["status"] == "passed" for name in ("iteration_contract", "retrieval_sort_contract"))
+    overall = "partial_formalization" if contracts_pass and upstream_status == "source_contains_axiom" else "passed" if all(item["status"] == "passed" for item in results.values()) else "failed"
     return {
         "status": overall,
         "toolchain": "leanprover/lean4:v4.29.0-rc6",
@@ -685,18 +1173,20 @@ def harness_status() -> dict[str, Any]:
 def _solver_prompt(payload: dict[str, Any]) -> str:
     return f"""You are the structured solver adapter for Math Structurer.
 Return exactly one JSON object conforming to the supplied output schema.
-Translate the natural-language target into typed targets, explicit logic, constraints, connected spaces, a registered finite basis, and machine-checkable subproblems.
-Use alphaXiv MCP for literature reading when available. Do not download or save PDFs. Return clickable source URLs.
-Do not call a catalyst 'best' unless candidate space, conditions, objective, measurements, and baseline are all explicit.
+Translate the natural-language target into typed reactants, products, source-qualified reaction-energy records, catalyst geometry, literature records, public-database records, optional possibilities, and machine-checkable subproblems.
+Use alphaXiv MCP for literature reading when authenticated. Do not download or save PDFs. Distinguish its default AI intermediate report from full text and return clickable canonical URLs.
+Treat @best only as a stable retrieval-order directive. It must not become a global or catalytic-performance optimum and must not change evidence grades.
+Temperature, pressure, candidate domain, observation metrics, and baselines are optional possibilities: missing values never block retrieval or ordering.
+Never invent a reaction-energy number. A value is usable only with an explicit unit, energy kind, method, reference state, and source record; otherwise return null/unknown.
+Extract only the reactants and products supplied by the user. Do not add water, intermediates, coefficients, or a reaction mechanism.
 Lean may validate only a stated formal proposition under listed assumptions; never assert the scientific conclusion as an axiom.
 Use only concrete basis operators with declared input type, output space, current test domain, and validator. The current scalar example is B: C x C^times -> C, B(u,v)=exp(u)-Log(v), with pointwise principal-value Log and Arg(v) in (-pi,pi]; it is discontinuous across the two sides of the negative real axis and is not a universal algebra. Never route reaction decomposition or 3D geometry through scalar composition.
-Use ReactionDecomposer before BasisOperatorComposer, and route coordinates independently to GeometryPlugin.
+Route literature and database lookup independently from GeometryPlugin and from the scalar BasisOperatorComposer.
 Problem: {payload.get('problem', '')}
 Domain: {payload.get('domain', 'auto')}
 Basis: {payload.get('basis', 'hybrid')}
 Dimension: {payload.get('dimension', 3)}
-Weights: {json.dumps(_weights(payload), ensure_ascii=False)}
-The exact demo string must first undergo atom-balance and objective-completeness checks.
+Database mode: {payload.get('database_mode', 'verified_snapshot')}
 """
 
 
@@ -721,8 +1211,8 @@ def _recognition_prompt(payload: dict[str, Any]) -> str:
     return f"""You are a bounded scientific-target recognizer inside Math Structurer.
 Do not solve the research problem, recommend a catalyst, predict a molecular structure, or assert a theorem.
 Return only the requested JSON classification. Extract only entities and constraints that are explicit in the input.
-Use missing_fields for conditions required before the target becomes machine-checkable.
-For a reaction followed by @best, use domain=reaction and intent=catalyst_search; temperature, pressure, candidate_space, objective_measurements, and baseline are missing unless explicitly supplied.
+Use missing_fields only when reactants or products cannot be identified. Temperature, pressure, candidate domain, observation metrics, and baselines are optional possibilities and must not be reported as missing requirements.
+For a reaction followed by @best, use domain=reaction and intent=catalyst_search. @best means retrieval ordering only; it is not permission to recommend a catalyst or infer performance.
 The output will be rejected unless a deterministic gate agrees with the domain and intent.
 
 Input: {str(payload.get('problem', '')).strip()}
@@ -853,6 +1343,21 @@ def _run_qwen(payload: dict[str, Any]) -> dict[str, Any]:
     output_channel = "response" if response_text else "thinking_fallback"
     parsed = _validate_recognition(_parse_json(response_text or thinking_text))
     problem = str(payload.get("problem", "")).strip()
+    raw_missing_fields = list(parsed["missing_fields"])
+    optional_markers = (
+        "temperature", "pressure", "candidate", "domain", "metric", "measurement", "baseline",
+        "温度", "压力", "候选", "指标", "观测", "基线",
+    )
+    optional_possibilities = [
+        item for item in raw_missing_fields if any(marker in item.lower() for marker in optional_markers)
+    ]
+    parsed["missing_fields"] = [
+        item for item in raw_missing_fields
+        if item not in optional_possibilities
+        and any(marker in item.lower() for marker in ("reactant", "product", "反应物", "产物"))
+    ]
+    parsed["optional_possibilities_reported_by_model"] = optional_possibilities
+    parsed["model_reported_missing_fields_raw"] = raw_missing_fields
     gate = _recognition_gate(problem, parsed)
     exact_result = analyze_general(payload)
     exact_result["recognition"] = {
@@ -930,7 +1435,7 @@ def health() -> dict[str, Any]:
     return {
         "status": "ok",
         "python": os.sys.version.split()[0],
-        "panel": "math-structurer.v0.5",
+        "panel": "math-structurer.v0.6",
         "qwen_ready": harness["qwen_local"]["ready"],
         "qwen_model": harness["qwen_local"].get("model"),
         "qwen_model_digest": harness["qwen_local"].get("digest"),
@@ -943,7 +1448,7 @@ def health() -> dict[str, Any]:
 
 
 class Handler(SimpleHTTPRequestHandler):
-    server_version = "MathStructurerPanel/0.5"
+    server_version = "MathStructurerPanel/0.6"
 
     def __init__(self, *args: Any, **kwargs: Any):
         super().__init__(*args, directory=str(PANEL), **kwargs)

@@ -1,6 +1,6 @@
 # Math Structurer HTML5 工作台
 
-Math Structurer 将自然语言科研目标转换为类型化目标、约束、相连空间、特定基算子和可验证子任务，再把结构、公式、证据、反例与不确定性投射到统一的二维／三维工作台。当前面板是可检查的最小原型，不是催化模拟器或通用数学求解器。
+Math Structurer 将自然语言科研目标转换为类型化字段、文献与公共数据库查询、空间表示和可追溯反馈。当前面板是可检查的最小原型，不是催化性能模拟器，也不会把数据库候选包装为科学发现。
 
 ## 一行启动
 
@@ -10,39 +10,47 @@ Math Structurer 将自然语言科研目标转换为类型化目标、约束、�
 python3 run.py
 ~~~
 
-Windows 也可使用 **python run.py**。离线结构检查：
+Windows 也可使用 **python run.py**。零模型结构检查为：
 
 ~~~bash
 python3 run.py --check
 ~~~
 
-零模型核验切片仅使用 Python 标准库、相对路径和回环地址。默认交互识别需要本机 Ollama 的 Qwen3-8B-Jailbroken；符号分支调试需要可选的 SymPy。Lean、模型或其他后端不可用时会显式显示“不可用”，不会静默替换后端。
+入口只使用相对路径与回环地址。本地 Qwen3-8B-Jailbroken 用于受限目标识别；符号分支调试按需使用 SymPy。后端不可用时必须显示真实状态，不得静默替换。
 
 ## 两个工作区
 
 ### 广义分析器
 
-默认输入为 **CO2gas+H2gas -- CH3CH2OHgas @best**。ReactionDecomposer 先审计物种、相态、配平和元素守恒，再把“最佳”转换为条件化目标 \(J(c;\theta)\)。由于温压、候选域和观测表没有冻结，精确内核拒绝排名，只列可跳转的文献候选。二维／三维视图均标注为示意构型、未经弛豫。
+默认输入为 **CO2gas+H2gas -- CH3CH2OHgas @best**。主分析显示：
+
+1. 反应物与相态；
+2. 产物与相态；
+3. 带数值定义、单位、方法和来源的反应能量；若未取得可核验数据则显示 `—`；
+4. 来自文献和公共数据库的催化剂候选、记录标识与证据层级；
+5. 催化剂二维／三维空间几何及其坐标来源状态。
+
+`@best` 只按 `50*reaction_match + 25*abstract_verified + 15*public_geometry_link + 10*comparable_energy_record` 稳定排列候选，不表示性能最优。温度、压力、候选范围、观测指标和参照方法都是可选 **possibilities**，缺失时不阻止查询。每条候选必须保留可点击来源；只有元数据时只能陈述元数据，不能推断能量、活性、选择性或机理。当前几何来自 Materials Project OPTIMADE `mp-19306` 的 Fe₃O₄ 体相坐标，只标为 `support-only`，不是 Pd 活性位。
 
 ### 迭代与反逆调试
 
 当前特定基算子为
 
 \[
-B(u,v)=e^u-\operatorname{Log}v.
+B:\mathbb C\times\mathbb C^\times\to\mathbb C,\qquad B(u,v)=e^u-\operatorname{Log}v.
 \]
 
-它只在当前测试域 \(D_f\) 和已声明的复对数分支上运行，不被包装为统一代数。面板还支持有限域上的 \(g\circ g=f\) 穷举核验，以及一般反函数／迭代根的证明义务输出。固定 Lean 义务可编译；上游 prime-loop 项目把待证猜想显式声明为公理，因此整体仍标为“部分形式化”，不能冒充定理证明。
+它只在当前测试域和已声明的主值复对数约定下复合，不被包装为统一代数。面板另支持有限域上的函数复合核验和一般反逆义务输出；含公理或证明占位符的结果继续标为“部分形式化”。
 
 ## 可选后端
 
-- **本地 Qwen3-8B-Jailbroken**：通过 Ollama 的 **hf.co/mradermacher/Qwen3-8B-Jailbroken-GGUF:Q4_K_M**，每次最多一次目标识别；只允许返回域、意图、实体、约束和缺项，输出必须经过确定性验证器。`Jailbroken` 仅为检查点名称，不构成可信或科学验证保证。
-- **本机 Codex**：只读、无审批模式，可通过已配置的 alphaXiv MCP 读取论文。
-- **DeepSeek**：只在用户显式选择且凭证与 cross-verify harness 可用时调用。
-- **Lean 4**：核验明示命题，不把科学结论写成公理。
+- **本地 Qwen3-8B-Jailbroken**：Ollama 检查点 `hf.co/mradermacher/Qwen3-8B-Jailbroken-GGUF:Q4_K_M`，每次至多一次受限识别；检查点名称不构成可信保证。
+- **本机 Codex**：只读模式，可通过已配置的 alphaXiv 接口读取论文记录。
+- **DeepSeek**：仅在用户显式选择且本地接入条件齐备时调用。
+- **Lean 4**：核验明示的数学命题，不承担化学性能判断。
 
 ## 验证边界
 
-本轮 Windows 回归测试为 **18 passed**。零模型 Chrome 基准覆盖双工作区、KaTeX、守恒、文献跳转、二维／三维切换、390 px 布局、特定算子反例与 Lean 状态，期间外网请求为 0、模型调用为 0。另一次隔离 Chrome 验收真实调用上述 Qwen 检查点一次，确认受限识别字段、精确模型摘要、确定性闸门、配平与拒绝无条件排名均可见；浏览器侧外网请求仍为 0。对应收据分别为 `artifacts/panel/browser_acceptance.json`、`artifacts/qwen_recognition_acceptance.json` 和 `artifacts/qwen_recognition_browser_acceptance.json`。Linux 与 macOS 使用同一入口，但在真实平台或持续集成复跑前仅标为“设计适配、未实测”。
+Windows 本地收据覆盖双工作区、KaTeX、文献跳转、二维／三维切换、移动视口、特定算子反例和模型调用预算。最新计数以 `artifacts/` 中随提交包生成的收据为准。Linux 与 macOS 使用同一入口，但在真实平台或持续集成复跑前仅标为“设计适配、未实测”。
 
-面板不提供导出、下载或 PDF 保存功能。检索失败不等于研究不存在；元数据不等于实验结论；示意图不等于弛豫结构；有限采样和 **sorry** 都不等于证明。
+面板不提供 PDF 保存功能。公共数据库接口不可用不等于记录不存在；能量空值不等于零；排序结果不等于性能结论；支撑体体相坐标不等于活性位结构；有限采样和 **sorry** 也不等于证明。

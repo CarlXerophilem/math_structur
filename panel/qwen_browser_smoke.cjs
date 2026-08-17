@@ -44,7 +44,7 @@ async function main() {
     const url = new URL(baseURL);
     url.searchParams.set("provider", "qwen");
     await page.goto(url.toString(), { waitUntil: "domcontentloaded" });
-    await page.locator("#general-status").filter({ hasText: "已分解" }).waitFor({ timeout: 240000 });
+    await page.locator("#general-status").filter({ hasText: "已检索并排序" }).waitFor({ timeout: 240000 });
     assert.equal(await page.locator("#solver-provider").inputValue(), "qwen");
     const domainIntent = (await page.locator("#recognition-domain-intent").innerText()).trim();
     const model = (await page.locator("#recognition-model").innerText()).trim();
@@ -52,11 +52,37 @@ async function main() {
     const budget = (await page.locator("#call-budget").innerText()).trim();
     assert.match(domainIntent, /reaction／catalyst_search/);
     assert.match(model, /Qwen3-8B-Jailbroken/);
-    assert.match(validation, /通过：识别闸门、配平与 Aν=0/);
+    assert.match(validation, /通过：受限识别与确定性字段合同/);
     assert.match(budget, /调用 1 \/ 1/);
-    const inputAudit = (await page.locator("#input-audit").innerText()).trim();
-    assert.match(inputAudit, /未通过/);
-    assert.match(inputAudit, /拒绝排名/);
+    const originalQuery = (await page.locator("#input-equation").innerText()).trim();
+    const entities = (await page.locator("#reactants-products").innerText()).trim();
+    const reactionEnergy = (await page.locator("#reaction-energy").innerText()).trim();
+    const sortSemantics = (await page.locator("#sort-semantics").innerText()).trim();
+    const possibilities = (await page.locator("#possibility-list").innerText()).trim();
+    const geometryTitle = (await page.locator("#geometry-title").innerText()).trim();
+    const geometryRecord = (await page.locator("#geometry-smiles").innerText()).trim();
+    const discoveryStatus = (await page.locator("#discovery-status").innerText()).trim();
+    const nextAction = (await page.locator("#discovery-next-action").innerText()).trim();
+    const falsification = (await page.locator("#discovery-falsification").innerText()).trim();
+    const candidates = await page.locator("#candidate-list .candidate").count();
+    assert.equal(originalQuery, "原始查询：CO2gas+H2gas -- CH3CH2OHgas @best");
+    assert.match(entities, /CO2\(gas\) \[CID 280;/);
+    assert.match(entities, /H2\(gas\) \[CID 783;/);
+    assert.match(entities, /C2H6O\(gas\) \[CID 702;/);
+    assert.match(reactionEnergy, /^反应能量：—/);
+    assert.match(sortSemantics, /已按检索相关性与数据完备度排序/);
+    assert.match(sortSemantics, /不表示催化性能最佳；证据等级不变/);
+    assert.match(possibilities, /温度=未指定（可选）/);
+    assert.match(possibilities, /比较基线=未指定（可选）/);
+    assert.match(possibilities, /blocking=false/);
+    assert.match(geometryTitle, /Fe₃O₄ 支撑体公共晶体记录 mp-19306/);
+    assert.match(geometryTitle, /不是 Pd 活性位构型/);
+    assert.match(geometryRecord, /scope=support-only/);
+    assert.match(discoveryStatus, /过程信号，不等于科学发现/);
+    assert.match(nextAction, /Catalysis-Hub/);
+assert.match(falsification, /拒绝或缩小/);
+    assert.equal(candidates, 5);
+    assert.match(await page.locator("#candidate-list").innerText(), /能量=null/);
     await page.screenshot({ path: path.join(artifactDir, "panel_desktop_qwen_recognition.png"), fullPage: true });
     const nonLocal = receipt.requests.filter(entry => !["127.0.0.1", "localhost"].includes(new URL(entry.url).hostname));
     assert.deepEqual(nonLocal, []);
@@ -68,7 +94,16 @@ async function main() {
       model,
       exact_validation: validation,
       model_calls: budget,
-      input_audit: inputAudit,
+      original_query: originalQuery,
+      entities,
+      reaction_energy: null,
+      sort_semantics: "sort_only",
+      possibilities_blocking: false,
+      candidates,
+      geometry_record: "mp-19306",
+      geometry_scope: "support_only",
+      scientific_discovery: false,
+      next_action: nextAction,
       external_browser_requests: 0
     };
     receipt.status = "passed";

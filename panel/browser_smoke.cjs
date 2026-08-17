@@ -50,7 +50,7 @@ async function main() {
     await page.locator("#solver-provider").selectOption("local");
     await page.waitForLoadState("networkidle");
     assert.equal(await page.locator("#solver-provider").inputValue(), "local");
-    await page.locator("#general-status").filter({ hasText: "已分解" }).waitFor({ timeout: 20000 });
+    await page.locator("#general-status").filter({ hasText: "已检索并排序" }).waitFor({ timeout: 20000 });
     assert.equal(await page.locator("button.tab").count(), 2);
     assert.equal(await page.locator("button, a").filter({ hasText: /export|download|导出/i }).count(), 0);
     assert.match(await page.locator(".project-tagline").innerText(), /Convincing, reusable target-matching skills/);
@@ -58,36 +58,121 @@ async function main() {
     assert.ok(await page.locator("#target-function .katex").count() > 0);
     assert.equal(await page.locator("#space-chain > div").count(), 6);
     const pluginText = await page.locator("#plugin-route").innerText();
-    assert.match(pluginText, /反应分解器/);
-    assert.match(pluginText, /特定基算子复合器\s+未调用/);
+    assert.match(pluginText, /反应实体解析器/);
+    assert.match(pluginText, /文献分析/);
+    assert.match(pluginText, /公共数据库路由/);
     assert.match(pluginText, /几何插件/);
-    assert.match(await page.locator("#objective-vector").innerText(), /非平凡性=未核验/);
-    assert.match(await page.locator("#reaction-language").innerText(), /当前只列候选，不排名/);
+    assert.match(pluginText, /@best 排序器/);
+    assert.match(pluginText, /只改顺序，不改证据等级/);
+    assert.match(await page.locator("#reaction-language").innerText(), /温度、压力等保持为可选可能性，不阻止返回候选/);
     assert.match(await page.locator("#recognition-domain-intent").innerText(), /识别域／意图/);
-    assert.match(await page.locator("#recognition-model").innerText(), /本地精确内核（无模型调用）/);
-    assert.match(await page.locator("#recognition-validation").innerText(), /通过：配平与 Aν=0/);
+    assert.match(await page.locator("#recognition-model").innerText(), /确定性检索内核（无模型调用）/);
+    assert.match(await page.locator("#recognition-validation").innerText(), /typed_retrieval_contract/);
 
     const originalEquation = (await page.locator("#input-equation").innerText()).trim();
-    const equation = (await page.locator("#normalized-equation").innerText()).trim();
-    const audit = (await page.locator("#input-audit").innerText()).trim();
-    const kernel = (await page.locator("#basis-matrix > code").innerText()).trim();
-    assert.match(originalEquation, /原始查询（未守恒）：CO2\(g\) \+ H2\(g\)/);
-    assert.match(equation, /配平结果（Aν=0）：2 CO2\(g\) \+ 6 H2\(g\)/);
-    assert.match(audit, /原始守恒检查=未通过/);
-    assert.match(audit, /@best=条件欠定，拒绝排名/);
-    assert.match(kernel, /Aν = \(0, 0, 0\)/);
+    const entities = (await page.locator("#reactants-products").innerText()).trim();
+    const energy = (await page.locator("#reaction-energy").innerText()).trim();
+    const sortSemantics = (await page.locator("#sort-semantics").innerText()).trim();
+    const possibilities = (await page.locator("#possibility-list").innerText()).trim();
+    const kernel = (await page.locator("#basis-matrix").innerText()).trim();
+    assert.equal(originalEquation, "原始查询：CO2gas+H2gas -- CH3CH2OHgas @best");
+    assert.match(entities, /反应物：CO2\(gas\) \[CID 280;/);
+    assert.match(entities, /H2\(gas\) \[CID 783;/);
+    assert.match(entities, /产物：C2H6O\(gas\) \[CID 702;/);
+    assert.match(energy, /^反应能量：—/);
+    assert.match(energy, /数值、单位、能量类型、方法、参考态和来源/);
+    assert.match(sortSemantics, /@best：已按检索相关性与数据完备度排序/);
+    assert.match(sortSemantics, /不表示催化性能最佳；证据等级不变/);
+    assert.match(possibilities, /温度=未指定（可选）/);
+    assert.match(possibilities, /比较基线=未指定（可选）/);
+    assert.match(possibilities, /blocking=false/);
+    assert.equal(kernel, "当前检索空间由类型化字段与来源记录定义，不使用数值矩阵。");
+
+    const contract = await page.evaluate(async () => {
+      const response = await fetch("/api/solver/run", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          provider: "local",
+          problem: "CO2gas+H2gas -- CH3CH2OHgas @best",
+          domain: "reaction",
+          basis: "literature_energy_geometry_space",
+          dimension: 4,
+          database_mode: "verified_snapshot"
+        })
+      });
+      if (!response.ok) throw new Error(`solver HTTP ${response.status}`);
+      return response.json();
+    });
+    assert.deepEqual(contract.reactants.map(item => item.formula), ["CO2", "H2"]);
+    assert.deepEqual(contract.products.map(item => item.formula), ["C2H6O"]);
+    for (const key of ["value", "unit", "kind", "method", "reference_state", "source_record"]) {
+      assert.equal(contract.reaction_energy[key], null);
+    }
+    assert.equal(contract.sort.semantics, "sort_only");
+    assert.equal(contract.sort.scientific_optimum_claim, false);
+    assert.equal(contract.sort.changes_evidence_grade, false);
+    assert.equal(contract.possibilities.blocking, false);
+    for (const key of ["temperature", "pressure", "candidate_domain", "metrics", "baseline"]) {
+      assert.equal(contract.possibilities[key].value, null);
+    }
+    assert.equal(contract.database_receipt.mode_used, "verified_snapshot");
+    assert.equal(contract.database_receipt.external_requests, 0);
+    assert.deepEqual(contract.database_receipt.reaction_energy_records, []);
+    assert.equal(contract.model_receipt.calls, 0);
+    assert.equal(contract.geometry.record_id, "mp-19306");
+    assert.equal(contract.geometry.source_database, "Materials Project OPTIMADE");
+    assert.equal(contract.geometry.source_scope, "support_only");
+    assert.equal(contract.geometry.coordinate_status, "public_database_record_support_only");
+    assert.deepEqual([...new Set(contract.geometry.nodes.map(node => node.element))].sort(), ["Fe", "O"]);
+    assert.equal(contract.search_targets.length, 5);
+    assert.ok(contract.search_targets.every(item => item.reaction_energy.value === null));
+    assert.equal(contract.discovery_signal.type, "source_coverage_gap_and_problem_definition_revision");
+    assert.equal(contract.discovery_signal.scientific_discovery, false);
+    assert.match(contract.discovery_signal.next_action, /Catalysis-Hub/);
+assert.match(contract.discovery_signal.falsification, /拒绝或缩小/);
 
     const candidates = await page.locator("#candidate-list .candidate").count();
-    assert.equal(candidates, 4);
+    assert.equal(candidates, 5);
     assert.match(await page.locator("#candidate-list").innerText(), /Pd1\/Fe3O4/);
-    assert.equal(await page.locator("#candidate-list a").count(), 4);
+    assert.match(await page.locator("#candidate-list").innerText(), /检索匹配分=90/);
+    assert.match(await page.locator("#candidate-list").innerText(), /能量=null/);
+    assert.equal(await page.locator("#candidate-list a").count(), 5);
+    assert.equal(await page.locator("#database-list a").count(), 7);
+    const databaseText = await page.locator("#database-list").innerText();
+    for (const label of ["alphaXiv MCP/API", "PubChem PUG REST", "Materials Project OPTIMADE", "Catalysis-Hub GraphQL", "Open Catalyst 2020", "Crossref REST", "OpenAlex Works"]) {
+      assert.match(databaseText, new RegExp(label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+    }
     const atomLabels = await page.locator("#geometry-2d text").allTextContents();
-    assert.ok(atomLabels.includes("Pd"));
-    assert.ok(atomLabels.includes("Fe"));
-    assert.match(await page.locator("#geometry-smiles").innerText(), /ethanol=CCO/);
-    assert.match(await page.locator("#geometry-symmetry").innerText(), /不主张空间群/);
-    assert.ok(await page.locator("#reference-list a").count() >= 9);
-    receipt.assertions.general = { original_equation: originalEquation, balanced_equation: equation, audit, kernel, candidates, atom_elements: [...new Set(atomLabels)], spaces: 6, plugins: ["ReactionDecomposer", "BasisOperatorComposer:not_invoked", "GeometryPlugin"], katex: true };
+    assert.deepEqual([...new Set(atomLabels)].sort(), ["Fe", "O"]);
+    assert.match(await page.locator("#geometry-title").innerText(), /mp-19306/);
+    assert.match(await page.locator("#geometry-title").innerText(), /不是 Pd 活性位构型/);
+    assert.match(await page.locator("#geometry-smiles").innerText(), /record=mp-19306/);
+    assert.match(await page.locator("#geometry-smiles").innerText(), /scope=support-only/);
+    assert.match(await page.locator("#geometry-symmetry").innerText(), /不推断对称群/);
+    assert.match(await page.locator("#discovery-status").innerText(), /过程信号，不等于科学发现/);
+    assert.match(await page.locator("#discovery-next-action").innerText(), /Catalysis-Hub/);
+assert.match(await page.locator("#discovery-falsification").innerText(), /拒绝或缩小/);
+    assert.ok(await page.locator("#reference-list a").count() >= 10);
+    receipt.assertions.general = {
+      original_query: originalEquation,
+      entities,
+      reaction_energy: null,
+      sort_semantics: "sort_only",
+      possibilities_blocking: false,
+      kernel,
+      candidates,
+      database_connectors: 7,
+      geometry_record: "mp-19306",
+      geometry_scope: "support_only",
+      scientific_discovery: false,
+      next_action: contract.discovery_signal.next_action,
+      atom_elements: [...new Set(atomLabels)].sort(),
+      spaces: 6,
+      plugins: ["ReactionEntityParser", "LiteratureConnector", "PublicDatabaseRouter", "GeometryPlugin", "StableSorter"],
+      katex: true,
+      verified_snapshot_external_requests: 0
+    };
     await page.screenshot({ path: path.join(artifactDir, "panel_desktop_general_2d.png"), fullPage: true });
     await page.setViewportSize({ width: 1440, height: 1600 });
     const equationBox = await page.locator(".equation-card").boundingBox();

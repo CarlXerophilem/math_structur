@@ -1,31 +1,98 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Math Structurer literature and public-database result",
   "type": "object",
   "required": [
     "status",
+    "source",
+    "input",
+    "reactants",
+    "products",
     "normalized_problem",
     "standard_math",
     "target_function",
+    "reaction_energy",
+    "sort",
+    "possibilities",
     "basis",
     "machine_problems",
     "spaces",
     "plugin_route",
+    "database_connectors",
+    "database_receipt",
+    "discovery_signal",
+    "search_targets",
     "geometry",
     "references",
-    "lean"
+    "lean",
+    "model_receipt"
   ],
+  "$defs": {
+    "entity": {
+      "type": "object",
+      "required": ["token", "formula", "phase"],
+      "properties": {
+        "token": {"type": "string"},
+        "formula": {"type": "string"},
+        "phase": {"type": ["string", "null"]},
+        "pubchem_cid": {"type": ["integer", "null"]},
+        "smiles": {"type": ["string", "null"]}
+      },
+      "additionalProperties": true
+    },
+    "energy": {
+      "type": "object",
+      "required": ["value", "unit", "kind", "method", "reference_state", "source_record", "status"],
+      "properties": {
+        "value": {"type": ["number", "null"]},
+        "unit": {"type": ["string", "null"]},
+        "kind": {"type": ["string", "null"]},
+        "method": {"type": ["string", "null"]},
+        "reference_state": {"type": ["string", "null"]},
+        "source_record": {"type": ["string", "null"]},
+        "status": {"type": "string"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"value": {"type": "number"}}, "required": ["value"]},
+          "then": {
+            "properties": {
+              "unit": {"type": "string", "minLength": 1},
+              "kind": {"type": "string", "minLength": 1},
+              "method": {"type": "string", "minLength": 1},
+              "reference_state": {"type": "string", "minLength": 1},
+              "source_record": {"type": "string", "minLength": 1}
+            }
+          }
+        }
+      ],
+      "additionalProperties": true
+    },
+    "possibility": {
+      "type": "object",
+      "required": ["value", "status", "role"],
+      "properties": {
+        "value": {},
+        "status": {"type": "string"},
+        "role": {"type": "string"}
+      },
+      "additionalProperties": false
+    }
+  },
   "properties": {
-    "status": { "type": "string" },
-    "source": { "type": "string" },
-    "input": { "type": "string" },
-    "normalized_problem": { "type": "object" },
+    "status": {"type": "string"},
+    "source": {"type": "string"},
+    "input": {"type": "string"},
+    "reactants": {"type": "array", "items": {"$ref": "#/$defs/entity"}},
+    "products": {"type": "array", "items": {"$ref": "#/$defs/entity"}},
+    "normalized_problem": {"type": "object"},
     "standard_math": {
       "type": "object",
       "required": ["display", "status"],
       "properties": {
-        "display": { "type": "string" },
-        "logic": { "type": "string" },
-        "status": { "type": "string" }
+        "display": {"type": "string"},
+        "logic": {"type": "string"},
+        "status": {"type": "string"}
       },
       "additionalProperties": true
     },
@@ -33,39 +100,93 @@
       "type": "object",
       "required": ["display", "nontriviality", "status"],
       "properties": {
-        "display": { "type": "string" },
-        "nontriviality": { "type": "string" },
-        "status": { "type": "string" }
+        "display": {"type": "string"},
+        "nontriviality": {"type": "string"},
+        "status": {"type": "string"}
       },
       "additionalProperties": true
     },
-    "basis": { "type": "object" },
+    "reaction_energy": {"$ref": "#/$defs/energy"},
+    "sort": {
+      "type": "object",
+      "required": ["requested", "key", "status", "semantics", "scientific_optimum_claim"],
+      "properties": {
+        "requested": {"type": "boolean"},
+        "directive": {"type": ["string", "null"]},
+        "key": {"type": "string"},
+        "formula": {"type": "string"},
+        "status": {"type": "string"},
+        "semantics": {"const": "sort_only"},
+        "scientific_optimum_claim": {"const": false},
+        "changes_evidence_grade": {"const": false}
+      },
+      "additionalProperties": true
+    },
+    "possibilities": {
+      "type": "object",
+      "required": ["temperature", "pressure", "candidate_domain", "metrics", "baseline", "blocking"],
+      "properties": {
+        "temperature": {"$ref": "#/$defs/possibility"},
+        "pressure": {"$ref": "#/$defs/possibility"},
+        "candidate_domain": {"$ref": "#/$defs/possibility"},
+        "metrics": {"$ref": "#/$defs/possibility"},
+        "baseline": {"$ref": "#/$defs/possibility"},
+        "blocking": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "basis": {"type": "object"},
     "machine_problems": {
       "type": "array",
       "items": {
         "type": "object",
         "required": ["id", "operator", "status"],
         "properties": {
-          "id": { "type": "string" },
-          "operator": { "type": "string" },
-          "status": { "type": "string" },
+          "id": {"type": "string"},
+          "operator": {"type": "string"},
+          "status": {"type": "string"},
           "output": {},
-          "oracle": { "type": "string" }
+          "oracle": {"type": "string"}
         },
         "additionalProperties": true
       }
     },
-    "search_targets": { "type": "array", "items": { "type": "object" } },
-    "spaces": { "type": "array", "items": { "type": "object" } },
-    "plugin_route": { "type": "array", "items": { "type": "object" } },
+    "spaces": {"type": "array", "items": {"type": "object"}},
+    "plugin_route": {"type": "array", "items": {"type": "object"}},
+    "database_connectors": {"type": "array", "items": {"type": "object"}},
+    "database_receipt": {"type": "object"},
+    "discovery_signal": {
+      "type": "object",
+      "required": ["status", "type", "scientific_discovery", "next_action", "falsification"],
+      "properties": {
+        "status": {"type": "string"},
+        "type": {"type": "string"},
+        "scientific_discovery": {"const": false},
+        "next_action": {"type": "string"},
+        "falsification": {"type": "string"}
+      },
+      "additionalProperties": true
+    },
+    "search_targets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "state", "url", "reaction_energy", "geometry"],
+        "properties": {
+          "reaction_energy": {"$ref": "#/$defs/energy"}
+        },
+        "additionalProperties": true
+      }
+    },
     "geometry": {
       "type": "object",
-      "required": ["kind", "nodes", "edges"],
+      "required": ["kind", "nodes", "edges", "source_scope"],
       "properties": {
-        "kind": { "type": "string" },
-        "title": { "type": "string" },
-        "nodes": { "type": "array", "items": { "type": "object" } },
-        "edges": { "type": "array", "items": { "type": "array" } }
+        "kind": {"type": "string"},
+        "title": {"type": "string"},
+        "source_scope": {"enum": ["support_only", "unavailable"]},
+        "nodes": {"type": "array", "items": {"type": "object"}},
+        "edges": {"type": "array", "items": {"type": "array", "minItems": 2, "maxItems": 2}}
       },
       "additionalProperties": true
     },
@@ -75,16 +196,17 @@
         "type": "object",
         "required": ["title", "url"],
         "properties": {
-          "id": { "type": "string" },
-          "title": { "type": "string" },
-          "url": { "type": "string" },
-          "role": { "type": "string" }
+          "id": {"type": "string"},
+          "title": {"type": "string"},
+          "url": {"type": "string"},
+          "role": {"type": "string"}
         },
         "additionalProperties": true
       }
     },
-    "lean": { "type": "object" },
-    "model_receipt": { "type": "object" }
+    "lean": {"type": "object"},
+    "recognition": {"type": "object"},
+    "model_receipt": {"type": "object"}
   },
   "additionalProperties": true
 }

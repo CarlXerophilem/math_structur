@@ -1,28 +1,23 @@
 {
-  "checked_at": "2026-08-17T03:53:18.759627+09:00",
   "file": "GOAI_四页提交稿_Math_Structurer.docx",
-  "sha256": "55aa3463d85ee305f5b377c8ddef53f2c0c89a242a4579240519fd496bb82ea8",
-  "bytes": 716496,
-  "application": "Microsoft Word 16.0",
-  "method": "Document.Repaginate + ComputeStatistics(wdStatisticPages)",
-  "repaginated": true,
-  "pages": 4,
-  "words": 3476,
-  "characters": 4274,
-  "characters_with_spaces": 4523,
-  "hyperlink_elements": 19,
-  "external_hyperlink_relationships": 7,
-  "unique_hyperlink_targets": 7,
-  "hyperlink_targets": [
-    "https://arxiv.org/abs/1901.01543",
-    "https://arxiv.org/abs/2307.05432",
-    "https://arxiv.org/abs/2408.07818",
-    "https://doi.org/10.1007/s00010-020-00739-w",
-    "https://doi.org/10.1021/acscatal.1c01504",
-    "https://doi.org/10.20429/tag.2021.080108",
-    "https://proceedings.mlr.press/v162/brandstetter22a.html"
+  "sha256": "081d61d21ff05de9cd087c2b26d9fbfe14d02dfc4d25e77d28cc62534a7856ed",
+  "pages_word_com": 4,
+  "section_start_pages": {
+    "Page 1": 1,
+    "Page 2": 2,
+    "Page 3": 3,
+    "Page 4": 4
+  },
+  "tables": 6,
+  "hyperlinks": 41,
+  "inline_shapes": 2,
+  "media_entries": [
+    "word/media/image1.png",
+    "word/media/image2.png"
   ],
-  "pdf_exported": false,
-  "generation_source": "build_word.py with current artifacts/visuals",
-  "status": "passed_exactly_four_pages"
+  "forbidden_hits": [],
+  "manual_page_breaks": 3,
+  "validated_at": "2026-08-17T12:45:27.636592+09:00",
+  "note": "Word COM confirmed exactly four pages after embedding the v0.6 Page 1 and Page 4 screenshots.",
+  "verification_method": "independent Microsoft Word COM repagination; read-only open"
 }

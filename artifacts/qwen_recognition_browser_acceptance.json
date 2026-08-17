@@ -1,71 +1,80 @@
 {
-  "checked_at": "2026-08-16T18:52:38.754Z",
+  "checked_at": "2026-08-17T03:28:47.990Z",
   "browser": "system Chrome via Playwright; isolated profile",
   "provider": "qwen",
   "assertions": {
     "domain_intent": "识别域／意图：reaction／catalyst_search",
     "model": "模型：hf.co/mradermacher/Qwen3-8B-Jailbroken-GGUF:Q4_K_M",
-    "exact_validation": "精确核验：通过：识别闸门、配平与 Aν=0",
+    "exact_validation": "精确核验：通过：受限识别与确定性字段合同",
     "model_calls": "调用 1 / 1",
-    "input_audit": "原始守恒检查=未通过 · @best=条件欠定，拒绝排名",
+    "original_query": "原始查询：CO2gas+H2gas -- CH3CH2OHgas @best",
+    "entities": "反应物：CO2(gas) [CID 280; SMILES C(=O)=O] + H2(gas) [CID 783; SMILES [HH]] → 产物：C2H6O(gas) [CID 702; SMILES CCO]",
+    "reaction_energy": null,
+    "sort_semantics": "sort_only",
+    "possibilities_blocking": false,
+    "candidates": 5,
+    "geometry_record": "mp-19306",
+    "geometry_scope": "support_only",
+    "scientific_discovery": false,
+    "next_action": "向已授权的 Catalysis-Hub 记录接口提交类型化反应物／产物，保存能量类型、方法与参考态，再请求对应体系坐标；否则只检查预索引的 OC20 子集，不把它称为完整反应网络。",
     "external_browser_requests": 0
   },
   "requests": [
     {
       "method": "GET",
-      "url": "http://127.0.0.1:8766/?provider=qwen"
+      "url": "http://127.0.0.1:8767/?provider=qwen"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:8766/vendor/katex/katex.min.css"
+      "url": "http://127.0.0.1:8767/vendor/katex/katex.min.css"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:8766/styles.css"
+      "url": "http://127.0.0.1:8767/styles.css"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:8766/vendor/katex/katex.min.js"
+      "url": "http://127.0.0.1:8767/vendor/katex/katex.min.js"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:8766/app.js"
+      "url": "http://127.0.0.1:8767/app.js"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:8766/api/health"
+      "url": "http://127.0.0.1:8767/api/health"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:8766/api/harness/status"
+      "url": "http://127.0.0.1:8767/api/harness/status"
     },
     {
       "method": "POST",
-      "url": "http://127.0.0.1:8766/api/solver/run"
+      "url": "http://127.0.0.1:8767/api/solver/run"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:8766/vendor/katex/fonts/KaTeX_Math-Italic.woff2"
+      "url": "http://127.0.0.1:8767/vendor/katex/fonts/KaTeX_Main-Regular.woff2"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:8766/vendor/katex/fonts/KaTeX_Main-Regular.woff2"
+      "url": "http://127.0.0.1:8767/vendor/katex/fonts/KaTeX_Math-Italic.woff2"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:8766/vendor/katex/fonts/KaTeX_AMS-Regular.woff2"
+      "url": "http://127.0.0.1:8767/vendor/katex/fonts/KaTeX_AMS-Regular.woff2"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:8766/vendor/katex/fonts/KaTeX_SansSerif-Regular.woff2"
+      "url": "http://127.0.0.1:8767/vendor/katex/fonts/KaTeX_Caligraphic-Regular.woff2"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:8766/api/health"
+      "url": "http://127.0.0.1:8767/api/health"
     },
     {
       "method": "GET",
-      "url": "http://127.0.0.1:8766/api/harness/status"
+      "url": "http://127.0.0.1:8767/api/harness/status"
     }
   ],
   "console_errors": [],

@@ -1,0 +1,118 @@
+{
+  "accessed_at": "2026-08-17",
+  "scope": "literature analysis and public-database interfaces for reaction entities, source-qualified energy, and catalyst geometry",
+  "evidence": [
+    {
+      "id": "S1",
+      "status": "verified",
+      "title": "Catalysis-Hub.Org; CatHub Tutorial; Catalysis-Hub GraphQL",
+      "author_or_institution": "SUNCAT Center / Catalysis-Hub",
+      "date": "tutorial commit 2022-08-25; dynamic service checked 2026-08-17",
+      "urls": [
+        "https://www.catalysis-hub.org/",
+        "https://api.catalysis-hub.org/graphql",
+        "https://api.catalysis-hub.org/auth/login",
+        "https://github.com/SUNCAT-Center/CatHub/blob/master/tutorial.md"
+      ],
+      "support": "Official material exposes reactants, products, reaction_energy, facet, reaction_id and optional ASE atom records. The service describes periodic plane-wave DFT reaction energies and some optimized geometries.",
+      "live_receipt": "GET GraphQL interface 200; unauthenticated POST 401 Missing API key; login page 200 and ties a free key to ORCID.",
+      "limitations": "reaction_energy can be adsorption energy; records can differ in functional and reference state; not every record has geometry; no cross-record performance ranking is justified. A data-record licence must be checked per publication."
+    },
+    {
+      "id": "S2",
+      "status": "verified",
+      "title": "Open Catalyst 2020 (OC20)",
+      "author_or_institution": "FAIR Chemistry / Open Catalyst Project",
+      "date": "dataset paper 2021; current documentation checked 2026-08-17",
+      "urls": [
+        "https://github.com/facebookresearch/fairchem/blob/main/docs/catalysts/datasets/oc20.md",
+        "https://opencatalystproject.org/"
+      ],
+      "support": "S2EF provides structures, energies and forces; IS2RS/IS2RE provide initial and relaxed structures and relaxed energies. Mapping fields include bulk_mpid, Miller index and adsorption-site coordinates.",
+      "live_receipt": "Official GitHub documentation 200; a dataset-document link from the project site returned 404, so the repository document is the recorded fallback.",
+      "limitations": "OC20 is distributed as large archives rather than a light query API. It does not encode the complete CO2 plus H2 to ethanol reaction network, and adsorption or relaxed-structure energies are not experimental catalyst performance. Data are CC-BY-4.0; software is MIT."
+    },
+    {
+      "id": "S3",
+      "status": "verified",
+      "title": "Materials Project API and structure schema",
+      "author_or_institution": "Materials Project",
+      "date": "dynamic specification checked 2026-08-17",
+      "urls": [
+        "https://api.materialsproject.org/openapi.json",
+        "https://api.materialsproject.org/docs",
+        "https://docs.materialsproject.org/downloading-data/using-the-api/getting-started"
+      ],
+      "support": "The schema exposes material identifiers, bulk structure, formation and hull-related energies, lattice and site coordinates. structure is the lowest-energy bulk structure.",
+      "live_receipt": "OpenAPI 200; unauthenticated materials summary request 401; the regular API requires X-API-KEY and limits a request to 1000 records.",
+      "limitations": "Bulk structure is not an adsorbate-active-site interface. equilibrium_reaction_energy_per_atom is a hull quantity, not the arbitrary user reaction energy. The separate anonymous OPTIMADE snapshot mp-19306 is used only as an Fe3O4 support record."
+    },
+    {
+      "id": "S4",
+      "status": "verified",
+      "title": "Crossref REST API",
+      "author_or_institution": "Crossref",
+      "date": "documentation updated 2020-04-08; API checked 2026-08-17",
+      "urls": [
+        "https://www.crossref.org/documentation/retrieve-metadata/rest-api/",
+        "https://api.crossref.org/works/10.1021/acscatal.1c01504"
+      ],
+      "support": "The open REST service returns deposited DOI metadata including title, authors, dates, publisher and landing links.",
+      "live_receipt": "The target ACS DOI endpoint returned 200. The record has no abstract; automated access to the publisher page was 403.",
+      "limitations": "Metadata and a PDF link do not grant full-text access or redistribution rights. Crossref supplies neither reaction energy nor geometry, and citation counts are dynamic metadata rather than scientific evidence."
+    },
+    {
+      "id": "S5",
+      "status": "verified",
+      "title": "OpenAlex Works API and Work attributes",
+      "author_or_institution": "OpenAlex",
+      "date": "dynamic documentation checked 2026-08-17",
+      "urls": [
+        "https://api.openalex.org/works/https://doi.org/10.1021/acscatal.1c01504",
+        "https://help.openalex.org/data/works/attributes.md",
+        "https://help.openalex.org/api/authentication.md"
+      ],
+      "support": "A Work can expose DOI, authorships, locations, open-access state and an abstract inverted index. OpenAlex metadata are CC0.",
+      "live_receipt": "The target DOI returned 200 with primary DOI landing page, closed OA status, pdf_url null, best_oa_location null and has_fulltext false.",
+      "limitations": "An abstract index is not full text; topics are algorithmic labels. OpenAlex metadata do not make closed publisher content open and contain no reaction-energy or catalyst-coordinate record."
+    },
+    {
+      "id": "S6",
+      "status": "verified",
+      "title": "alphaXiv MCP Server Documentation",
+      "author_or_institution": "alphaXiv",
+      "date": "page undated; checked 2026-08-17",
+      "urls": [
+        "https://alphaxiv.org/docs/mcp",
+        "https://api.alphaxiv.org/mcp/v1"
+      ],
+      "support": "The Streamable HTTP MCP endpoint offers paper discovery, content retrieval and page-qualified queries. get_paper_content defaults to an AI-generated intermediate report; fullText=true is required to request extracted original text.",
+      "live_receipt": "Documentation 200; unauthenticated GET and POST to the MCP endpoint returned 401 Missing Authorization.",
+      "limitations": "OAuth 2.1 or an API key is required. The AI intermediate report is not primary-source evidence; page filters can omit context; paper licences remain source-specific."
+    },
+    {
+      "id": "S7",
+      "status": "verified",
+      "title": "arXiv API Access and Terms of Use",
+      "author_or_institution": "arXiv",
+      "date": "Terms last modified 2026-08-13; checked 2026-08-17",
+      "urls": [
+        "https://export.arxiv.org/api/query?id_list=2408.07818",
+        "https://info.arxiv.org/help/api/index.html",
+        "https://info.arxiv.org/help/api/tou.html"
+      ],
+      "support": "The Atom response returns versioned arXiv identity, title, authors, abstract, dates, categories and canonical links. Descriptive metadata are CC0.",
+      "live_receipt": "The id_list request returned 200 with version v3 and canonical abstract and PDF links.",
+      "limitations": "The legacy API rate rule is one request per three seconds across the machine. Individual e-print licences differ, and a preprint is not automatically a peer-reviewed conclusion."
+    }
+  ],
+  "energy_kind_separation": [
+    "surface_reaction_dft",
+    "adsorption",
+    "relaxed_structure_energy",
+    "formation_energy_per_atom",
+    "energy_above_hull",
+    "equilibrium_hull_reaction_energy"
+  ],
+  "global_boundary": "These energy kinds must not be collapsed onto one ranking axis. @best orders matching records by retrieval relevance and data completeness only."
+}

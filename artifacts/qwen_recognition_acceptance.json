@@ -1,11 +1,11 @@
 {
-  "checked_at": "2026-08-17T03:52:17.705906+09:00",
+  "checked_at": "2026-08-17T12:43:27.535098+09:00",
   "status": "passed",
   "platform": "Windows-11-10.0.26200-SP0",
   "python": "3.14.2",
   "transport": "loopback panel plus loopback Ollama",
   "external_network_requests": 0,
-  "elapsed_seconds": 14.395,
+  "elapsed_seconds": 39.695,
   "model": "hf.co/mradermacher/Qwen3-8B-Jailbroken-GGUF:Q4_K_M",
   "model_digest": "ca6da952658c16e9eafcf68cb6a1719dbdc67891c89cff06f0394a722508a5d8",
   "model_size_bytes": 5027786509,
@@ -19,20 +19,14 @@
       "CH3CH2OHgas"
     ],
     "constraints": [],
-    "missing_fields": [
-      "temperature",
-      "pressure",
-      "candidate_space",
-      "objective_measurements",
-      "baseline"
-    ],
-    "confidence": 0.95,
+    "missing_fields": [],
+    "confidence": 1.0,
     "runtime": {
       "output_channel": "response",
       "done_reason": "stop",
-      "prompt_eval_count": 155,
-      "eval_count": 75,
-      "total_duration_ms": 14011.531
+      "prompt_eval_count": 179,
+      "eval_count": 57,
+      "total_duration_ms": 39330.983
     }
   },
   "gate": {
@@ -48,20 +42,103 @@
     "effect": "route metadata only; exact validators retain authority"
   },
   "exact_validation": {
-    "input_balance": "invalid",
-    "balanced_equation": "2 CO2(g) + 6 H2(g) -> C2H5OH(g) + 3 H2O(g)",
-    "stoichiometric_vector": [
-      -2,
-      -6,
-      1,
-      3
+    "reactants": [
+      {
+        "token": "CO2gas",
+        "formula": "CO2",
+        "phase": "gas",
+        "pubchem_cid": 280,
+        "smiles": "C(=O)=O"
+      },
+      {
+        "token": "H2gas",
+        "formula": "H2",
+        "phase": "gas",
+        "pubchem_cid": 783,
+        "smiles": "[HH]"
+      }
     ],
-    "element_conservation": [
-      0,
-      0,
-      0
+    "products": [
+      {
+        "token": "CH3CH2OHgas",
+        "formula": "C2H6O",
+        "phase": "gas",
+        "pubchem_cid": 702,
+        "smiles": "CCO"
+      }
     ],
-    "best_status": "abstain_until_conditions_candidate_space_and_measurements_are_fixed"
+    "reaction_energy": {
+      "value": null,
+      "unit": null,
+      "kind": null,
+      "status": "unknown_no_comparable_record",
+      "method": null,
+      "reference_state": null,
+      "source_record": null,
+      "rule": "never infer a number from the shorthand or from an LLM; compare only source records with explicit units, methods and reference states"
+    },
+    "sort": {
+      "requested": true,
+      "directive": "@best",
+      "key": "retrieval_match_and_data_coverage",
+      "formula": "50*reaction_match + 25*abstract_verified + 15*public_geometry_link + 10*comparable_energy_record",
+      "status": "applied",
+      "semantics": "sort_only",
+      "scientific_optimum_claim": false,
+      "changes_evidence_grade": false
+    },
+    "possibilities": {
+      "temperature": {
+        "value": null,
+        "status": "unspecified_optional",
+        "role": "optional_filter_or_future_sort_key"
+      },
+      "pressure": {
+        "value": null,
+        "status": "unspecified_optional",
+        "role": "optional_filter_or_future_sort_key"
+      },
+      "candidate_domain": {
+        "value": null,
+        "status": "unspecified_optional",
+        "role": "optional_query_expansion"
+      },
+      "metrics": {
+        "value": null,
+        "status": "unspecified_optional",
+        "role": "optional_future_comparison"
+      },
+      "baseline": {
+        "value": null,
+        "status": "unspecified_optional",
+        "role": "optional_future_comparison"
+      },
+      "blocking": false
+    },
+    "geometry": {
+      "record_id": "mp-19306",
+      "source_database": "Materials Project OPTIMADE",
+      "source_scope": "support_only",
+      "coordinate_status": "public_database_record_support_only"
+    },
+    "candidate_ids": [
+      "CAT1",
+      "CAT0",
+      "CAT2",
+      "CAT4",
+      "CAT3"
+    ],
+    "discovery_signal": {
+      "status": "observed",
+      "type": "source_coverage_gap_and_problem_definition_revision",
+      "scientific_discovery": false,
+      "observation": "返回五条可追溯文献候选；可比反应能量记录为零；仅取得一条 Fe3O4 体相支撑体几何，未取得活性位几何。",
+      "process_signal": "能量保持 null，几何范围保持 support_only；下一查询必须指定记录级能量类型，并寻找带来源的活性位坐标。",
+      "next_action": "向已授权的 Catalysis-Hub 记录接口提交类型化反应物／产物，保存能量类型、方法与参考态，再请求对应体系坐标；否则只检查预索引的 OC20 子集，不把它称为完整反应网络。",
+      "falsification": "若固定预算内反复查询仍不能把可比能量记录与带来源活性位几何联结，则拒绝或缩小当前反应切片，不推断性能。"
+    },
+    "database_mode": "verified_snapshot",
+    "database_external_requests": 0
   },
   "assertions": {
     "exact_model_selected": true,
@@ -71,11 +148,16 @@
     "recognition_gate_passed": true,
     "recognition_only": true,
     "one_model_call": true,
-    "unbalanced_input_detected": true,
-    "balanced_equation_exact": true,
-    "element_conservation": true,
-    "unconditional_ranking_rejected": true,
+    "core_entities_preserved": true,
+    "optional_fields_not_missing_requirements": true,
+    "reaction_energy_unknown": true,
+    "best_is_sort_only": true,
+    "possibilities_nonblocking": true,
+    "verified_snapshot_offline": true,
+    "support_geometry_scoped": true,
+    "five_source_candidates": true,
+    "discovery_is_process_signal": true,
     "no_scientific_answer_fields": true
   },
-  "scientific_boundary": "The local model only recognized target metadata. It did not rank catalysts, simulate activity, predict a relaxed structure, or prove a theorem."
+  "scientific_boundary": "The local model only recognized target metadata. The deterministic kernel ordered source records without changing evidence grades; it did not infer reaction energy, claim catalytic optimality, predict an active-site geometry, or prove a theorem."
 }

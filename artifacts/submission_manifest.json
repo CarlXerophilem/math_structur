@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-08-17T12:45:28.146966+09:00",
+  "generated_at": "2026-08-18T00:44:07.165881+09:00",
   "project": "Math Structurer — Convincing, reusable target-matching skills for AI research agents.",
   "claim_boundary": "@best is a deterministic retrieval-order directive only. The accepted run contains five traceable literature candidates, zero comparable reaction-energy records, one Fe3O4 bulk/support geometry and no active-site geometry; scientific_discovery is false. No catalyst performance ranking, new mechanism, universal algebra, automatic PDE reduction, or general iterative-root proof is claimed.",
   "validation": {
-    "python": "19 passed in 4.02s",
+    "python": "19 passed in 3.89s",
     "quick_check": "passed; loopback only; model calls 0; external requests 0",
     "browser": "passed; desktop and 390px; 2D/3D; model calls 0; external requests 0",
     "qwen_recognition": "passed; exact checkpoint and digest; one recognition-only call; @best remained sort-only; reaction energy remained null",
     "qwen_browser": "passed; isolated Chrome; provider qwen; browser external requests 0",
-    "public_databases": "snapshot passed with 0 external calls; live metadata/geometry checks passed; Catalysis-Hub record query and alphaXiv reading require authorization; 0 comparable reaction-energy records",
+    "public_databases": "snapshot passed with 0 external calls; live metadata/geometry checks passed; Materials Project authenticated HTTP 200 with mp-19306 resolved to mp-aaaabcoo, Fe3O4 and 14 bulk/support sites; alphaXiv authenticated initialization, 11-tool listing and full-text extraction returned HTTP 200; Catalysis-Hub record query still requires authorization; 0 comparable reaction-energy records",
     "word": "Microsoft Word 16.0; exactly 4 pages; 2 embedded screenshots",
     "platforms": {
       "Windows 11": "tested",
@@ -28,29 +28,39 @@
   },
   "entries": [
     {
+      "path": ".env.example",
+      "bytes": 98,
+      "sha256": "1c9dd9173baf4ac1e3c8c6c9b7d225cfe117b6a08b30c144782b36918c87f36a"
+    },
+    {
       "path": ".gitignore",
-      "bytes": 77,
-      "sha256": "bf66a738b14494492c13531bb63883bb05bd76d967b939c376388a9d0b713741"
+      "bytes": 82,
+      "sha256": "b307b35b38aac8b44e73e4c90e5b98a8c677b9cff240bb44af9d6e4649cfb5b1"
     },
     {
       "path": "03_GOAI_FOUR_PAGE_GUIDANCE_FINAL.md",
-      "bytes": 33414,
-      "sha256": "d0083a1b6900e703f4f80cdbc43174fc2dfed02b723f790613b3a891f54821ab"
+      "bytes": 33574,
+      "sha256": "364a9f5f202b5941e0479f06910d457ccf4d03ae095718c77714ec8b3ac3e731"
     },
     {
       "path": "GOAI_四页提交稿_Math_Structurer.docx",
-      "bytes": 423312,
-      "sha256": "081d61d21ff05de9cd087c2b26d9fbfe14d02dfc4d25e77d28cc62534a7856ed"
+      "bytes": 423268,
+      "sha256": "38312b26cc01edf338e96cf16ceccb7236b984ad3108f32e52c1636a04208c34"
     },
     {
       "path": "README.md",
-      "bytes": 7074,
-      "sha256": "7b5017afaa66329ed7972289f88397559bbb75238446b24f4bc5a8dd557235f6"
+      "bytes": 7719,
+      "sha256": "32ff3498e56cde8a3f09e88da4a99915566f262fbaef7ea4fcceaed04a336db4"
     },
     {
       "path": "README_SUBMISSION.md",
-      "bytes": 7074,
-      "sha256": "7b5017afaa66329ed7972289f88397559bbb75238446b24f4bc5a8dd557235f6"
+      "bytes": 7445,
+      "sha256": "f40a3382cb7c4086554880f5a343f40228c2af901ed1c237ec5fa9bbcd8219df"
+    },
+    {
+      "path": "artifacts/authenticated_connector_acceptance.json",
+      "bytes": 1933,
+      "sha256": "61f6ca646b8f63c07a627450c6a52df7aead17540f85ac2a1dc728ba2661fd5d"
     },
     {
       "path": "artifacts/panel/browser_acceptance.json",
@@ -85,7 +95,7 @@
     {
       "path": "artifacts/panel/pytest.txt",
       "bytes": 101,
-      "sha256": "49693a810287b08f5f49b152cbce06617d8ada3e0be4a8b8a48d6c366c91fbbc"
+      "sha256": "7a2451f7262a0c2dfe197e9254c60c78e3c8089816437c08b62967188287971b"
     },
     {
       "path": "artifacts/public_database_live_acceptance.json",
@@ -114,8 +124,8 @@
     },
     {
       "path": "artifacts/validation_summary.json",
-      "bytes": 1306,
-      "sha256": "624e3e0f1629b9b5739938e09347c2e6068d5292d6dcd2b9fc0cc62fe0ee7d66"
+      "bytes": 2061,
+      "sha256": "914e83468439c0df2c47842b1359fdd556436646f94dd037c545affd973e4c81"
     },
     {
       "path": "artifacts/visuals/page1_demo_slice.png",
@@ -139,18 +149,18 @@
     },
     {
       "path": "artifacts/word_validation.json",
-      "bytes": 723,
-      "sha256": "ba6a4f76dc5671d492607f9a9e98bb33f643482aaf094f54cb6516a3c82176aa"
+      "bytes": 1025,
+      "sha256": "566cd7ed891c62ab493d244dd957510938a80cfbcc035986b48fa5675bd8ce7c"
     },
     {
       "path": "build_bundle.py",
-      "bytes": 16823,
-      "sha256": "1a5cf26fa7f8b1e4ed4d2dfefc29ed2252ad3cf2721fe896e26dda4485f7ec70"
+      "bytes": 20078,
+      "sha256": "12982ecafdf62a102bc18d9a378cae5c1f1bdfed06d22a2e1b2143a62ebfba0f"
     },
     {
       "path": "build_word.py",
-      "bytes": 28317,
-      "sha256": "273191cfcd1c15bf9ef4d113a9ccb84b2d97098dd4c8917906ea4dcb49680712"
+      "bytes": 28279,
+      "sha256": "182f8764c0154ff5e2641a3077c8f5af37a41e699ad52e9f007a86b6ac676822"
     },
     {
       "path": "demo/generate_visuals.py",
@@ -224,13 +234,18 @@
     },
     {
       "path": "panel/README.md",
-      "bytes": 3112,
-      "sha256": "921cb98f6a6dcae88b7ed8692463eb32040c1d8f8f9f5c8bae1faa018da0ac13"
+      "bytes": 3596,
+      "sha256": "fde25e7401572c4e55e83ce7341b5ab6958e3d30cd9650816e4fa47566f363c0"
     },
     {
       "path": "panel/app.js",
       "bytes": 28263,
       "sha256": "16c64c3fa14ebcacba5f6e5e3d97353d70303cdf3c0ae483b91da606b899c577"
+    },
+    {
+      "path": "panel/authenticated_connector_smoke.py",
+      "bytes": 7336,
+      "sha256": "6c0af41cccd8ecd604c909f11f6d5d2e4a6c6e50799e96d04d63c882d2457901"
     },
     {
       "path": "panel/browser_smoke.cjs",

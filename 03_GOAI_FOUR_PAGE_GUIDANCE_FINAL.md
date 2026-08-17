@@ -3,7 +3,7 @@
 - **项目标题**：Math Structurer — Convincing, reusable target-matching skills for AI research agents.
 - **一句话研究问题**：科研代理能否把自然语言反应目标转换为反应物、产物、带来源反应能量、催化剂空间几何和文献／公共数据库记录，并利用空值、来源冲突和几何缺口改变下一轮检索与排序，而不把候选记录冒充科学发现？
 - **研究边界**：首版运行 **CO2gas+H2gas -- CH3CH2OHgas @best** 和独立的特定基算子调试；`@best` 只指定排序方式。温度、压力、候选范围、观测指标和基线均为可选 possibilities，缺失时不阻止文献或数据库查询。二维／三维图必须标注坐标来源状态；语言模型输出不充当证据。
-- **当前成熟度**：交互原型 v0.6；Windows 的单行启动、本地识别、结构检查与浏览器试跑均有通过收据，Linux／macOS 仍为设计适配、未实测。当前没有统一口径的反应能量数值，没有催化性能结论，也没有催化剂发现。
+- **当前成熟度**：交互原型 v0.6；Windows 的单行启动、本地识别、结构检查与浏览器试跑均有通过收据。2026-08-18 又完成 Materials Project 认证查询与 alphaXiv `fullText=true` 原文抽取；Linux／macOS 仍为设计适配、未实测。当前仍没有统一口径的反应能量数值、活性位几何、催化性能结论或催化剂发现。
 
 ---
 
@@ -75,7 +75,7 @@ E=(v,u,\rho,m,s,\sigma),
 
 `@best` 的固定含义是调用公开的排序键；它不新增科学主张。温度、压力、候选范围、观测指标和基线作为 possibilities 进入可选字段，用户不填写时仍执行文献与公共数据库查询。只有元数据的记录不得被提升为能量、活性、选择性或机理证据；公共接口不可用时返回“接口不可用”，不得写成“相关研究不存在”。
 
-各接口只承担其可核验职责。Catalysis-Hub 的 GraphQL 模式内省本轮返回 200，并显示反应物、产物、反应能量与原子系统字段；无密钥记录查询返回 401，因此当前没有取得记录级能量，且 `reaction_energy` 也可能是吸附能，跨论文不可直接排序（Winther et al., 2019）。OC20 提供初始／弛豫结构、能量、力、晶面和吸附位点，但不是完整反应网络（Chanussot et al., 2021）；Materials Project 的 `structure` 是最低能体相晶体，不是催化界面，其平衡反应能也不是任意用户反应。Crossref 与 OpenAlex 只负责书目信息和落地页。alphaXiv MCP 需要认证，默认读取结果是 AI 中间报告，只有 `fullText=true` 才请求原始抽取文本；失败时以 arXiv API 返回的规范元数据和版本链接回退。
+各接口只承担其可核验职责。Catalysis-Hub 的 GraphQL 模式内省返回 200，但无密钥记录查询仍返回 401，因此当前没有取得记录级能量；`reaction_energy` 也可能是吸附能，跨论文不可直接排序（Winther et al., 2019）。OC20 提供初始／弛豫结构、能量、力、晶面和吸附位点，但不是完整反应网络（Chanussot et al., 2021）。Materials Project 无密钥查询返回 401；认证查询返回 200，并将请求的 `mp-19306` 解析为返回标识 `mp-aaaabcoo`、Fe₃O₄ 和 14 个位点，但它仍是体相／支撑体对象。Crossref 与 OpenAlex 只负责书目信息和落地页。alphaXiv MCP 无认证时返回 401；认证初始化、11 个工具列表与 `fullText=true` 原文抽取均返回 200。默认 AI 中间报告仍不等于原文，失败时以 arXiv API 回退。
 
 ### 2.2 观察／行动／反馈
 
@@ -129,7 +129,7 @@ E=(v,u,\rho,m,s,\sigma),
 
 ### 3.3 最低成功与失败标准
 
-**环境技术通过**必须同时满足三关。第一关是穿透式文献核验：DOI 由 Crossref／OpenAlex 核对身份与落地页；alphaXiv 只有在认证且 `fullText=true` 时才记为原文读取，否则明确标为 AI 中间报告或 401，并以 arXiv API 的版本化元数据回退。第二关是本地无数值验证器：反应物和产物字段可读，`@best` 严格按 50／25／15／10 固定分只改变排序，可选条件为空时仍返回结果，未知能量保持 `null`，至少三条候选带来源层级，mp-19306 明确标为 `support-only`，且零无来源催化数值。第三关是人工终审链接、字段、公式和结论边界。三关全过且至少一次反馈改变下一连接器、检索词或几何对象范围，才算环境技术通过。
+**环境技术通过**必须同时满足三关。第一关是穿透式文献核验：DOI 由 Crossref／OpenAlex 核对；本轮 alphaXiv 已在认证且 `fullText=true` 下完成 arXiv:2408.07818 的原文抽取，收据只保存长度和 SHA-256，不保存全文；其他论文仍不得由 AI 中间报告升级。第二关是本地无数值验证器：反应物和产物字段可读，`@best` 严格按 50／25／15／10 固定分只改变排序，可选条件为空时仍返回结果，未知能量保持 `null`，mp-19306 明确标为 `support-only`，且零无来源催化数值。第三关是人工终审链接、字段、公式和结论边界。三关全过且反馈改变下一连接器或几何对象范围，才算环境技术通过。
 
 **科学发现通过**还要求出现超过非平凡基线的可复现几何—能量关系，或出现跨预注册查询与连接器稳定复现的数据覆盖负结果，并由专业工具或领域专家核验。排序首位、论文标题或漂亮构型均不能单独通过这一闸门。当前项目明确保持“科学发现未通过”。
 
@@ -292,7 +292,7 @@ B:\mathbb C\times\mathbb C^\times\to\mathbb C,\qquad B(u,v)=e^u-\operatorname{Lo
 - **作者／机构**：Materials Project。
 - **日期**：动态规范访问 2026-08-17。
 - **URL**：https://api.materialsproject.org/openapi.json；https://docs.materialsproject.org/downloading-data/using-the-api/getting-started
-- **原文支持点**：`SummaryDoc` 含 `material_id`、`structure`、形成能、凸包能和平衡反应能；结构模式含晶格及分数／笛卡尔坐标；OpenAPI 无密钥查询返回 401。
+- **原文支持点**：`SummaryDoc` 含 `material_id`、`structure`、形成能、凸包能和平衡反应能；无密钥查询返回 401。2026-08-18 认证查询返回 200：请求 `mp-19306` 得到返回标识 `mp-aaaabcoo`、Fe₃O₄ 和 14 个位点。
 - **局限**：`structure` 是最低能体相晶体，不是吸附界面；平衡反应能不是任意用户反应能；`decomposes_to` 不是用户查询中的产物。
 
 ### [S4｜Crossref] 已核验（待人工终审）
@@ -322,7 +322,7 @@ B:\mathbb C\times\mathbb C^\times\to\mathbb C,\qquad B(u,v)=e^u-\operatorname{Lo
 - **作者／机构**：alphaXiv。
 - **日期**：页面未标注；访问 2026-08-17。
 - **URL**：https://alphaxiv.org/docs/mcp；https://api.alphaxiv.org/mcp/v1
-- **原文支持点**：官方端点采用 OAuth 2.1／Bearer token；`get_paper_content` 默认返回 AI 中间报告，只有 `fullText=true` 才请求原始抽取文本；无认证请求本轮返回 401。
+- **原文支持点**：官方端点采用 OAuth 2.1／Bearer token；无认证请求返回 401。2026-08-18 认证初始化、11 个工具列表和 arXiv:2408.07818 的 `fullText=true` 抽取均返回 200；收据记录 705,976 字符及 SHA-256，不保存全文。
 - **局限**：AI 中间报告不是原文证据；页级过滤可能丢失上下文；浏览器直接集成受 CORS 限制，需要本地桥接。
 
 ### [S7｜arXiv API] 已核验（待人工终审）
@@ -369,8 +369,8 @@ B:\mathbb C\times\mathbb C^\times\to\mathbb C,\qquad B(u,v)=e^u-\operatorname{Lo
 
 - “多个领域需要共享类型化接口”是待检验研究假设，不是文献共识。
 - 当前催化剂条目来自可追溯记录，但没有按统一能量定义复算，不能产生性能结论。
-- Catalysis-Hub 模式内省本轮返回 200，但无密钥记录查询返回 401；Materials Project 常规无密钥数据查询也返回 401。OC20 不是实时轻量接口，也不是完整反应网络。当前演示不得把模式字段写成已取得记录级能量。
-- alphaXiv 默认结果是 AI 中间报告；只有认证且 `fullText=true` 的原始抽取，或人工打开的规范原文，才能升级正文层级。
+- Catalysis-Hub 模式内省返回 200，但无密钥记录查询仍返回 401。Materials Project 认证接口已返回 200，但只验证体相结构和标识解析。OC20 不是实时轻量接口，也不是完整反应网络。当前仍未取得记录级可比能量。
+- alphaXiv 的 `fullText=true` 原始抽取只对 arXiv:2408.07818 完成验收；这不能升级 ACS 催化论文的正文状态。
 - ACS 主文章页面本轮未打开；只核验 DOI、元数据、官方摘要和补充材料。
 - 当前二维／三维来自 mp-19306 的公共笛卡尔坐标，但仅代表 Fe₃O₄ 体相支撑体；显示边由非周期距离阈值生成，不能支持 Pd 活性位、界面机理或空间群结论。
 - Qwen3-8B-Jailbroken、Codex 与 DeepSeek 只能帮助识别、检索或反方检查；模型输出必须经过原始来源或专业工具核验。

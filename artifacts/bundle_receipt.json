@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-08-17T12:45:28.347511+09:00",
+  "generated_at": "2026-08-18T00:44:07.368486+09:00",
   "bundle": "AI4R_OPEN_team_id.zip",
-  "bytes": 4475438,
-  "sha256": "0ca4045c21a3e4a8fdab36a26052ee19afadd74abd6754495e5b3b4d0c096f94",
+  "bytes": 4481507,
+  "sha256": "cf9e9157abbf2c1192ea61fc2ced962cd1a4c3afc7f5ebda0d355c25ea9377d0",
   "zip_integrity": "passed",
-  "zip_members": 118,
+  "zip_members": 121,
   "pdf_members": 0,
   "nested_zip_members": 0,
   "unsafe_path_members": 0,
@@ -17,8 +17,8 @@
     "deprecated_balance_contract": 0,
     "deprecated_balance_claim_zh": 0
   },
-  "manifest_sha256": "4b273d43dc8d86c78905499b533cb1298e2dfab2ad6553c10e7f715019795095",
-  "word_sha256": "081d61d21ff05de9cd087c2b26d9fbfe14d02dfc4d25e77d28cc62534a7856ed",
+  "manifest_sha256": "efe01d3a1bd5e344d35a3e1955877a8f4371ada43a3528dc225afb38bdc0801f",
+  "word_sha256": "38312b26cc01edf338e96cf16ceccb7236b984ad3108f32e52c1636a04208c34",
   "word_pages": 4,
   "scientific_discovery": false
 }

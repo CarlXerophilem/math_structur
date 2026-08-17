@@ -49,6 +49,10 @@ B:\mathbb C\times\mathbb C^\times\to\mathbb C,\qquad B(u,v)=e^u-\operatorname{Lo
 - **DeepSeek**：仅在用户显式选择且本地接入条件齐备时调用。
 - **Lean 4**：核验明示的数学命题，不承担化学性能判断。
 
+## 认证连接器
+
+Materials Project 和 alphaXiv 分别从 `MP_API_KEY` 与 `ALPHAXIV_API_KEY` 环境变量读取凭据。运行 `python panel/authenticated_connector_smoke.py --full-text` 只保存 HTTP 状态、返回对象范围、原文长度和 SHA-256，不保存密钥或原文。当前实测观察到 `mp-19306 → mp-aaaabcoo`标识解析与 14 个 Fe₃O₄ 位点，以及 alphaXiv MCP／`fullText=true` HTTP 200；它们均不提供可比反应能或活性位证据。
+
 ## 验证边界
 
 Windows 本地收据覆盖双工作区、KaTeX、文献跳转、二维／三维切换、移动视口、特定算子反例和模型调用预算。最新计数以 `artifacts/` 中随提交包生成的收据为准。Linux 与 macOS 使用同一入口，但在真实平台或持续集成复跑前仅标为“设计适配、未实测”。

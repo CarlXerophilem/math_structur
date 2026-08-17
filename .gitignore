@@ -4,3 +4,4 @@ __pycache__/
 archive/
 *.pdf
 artifacts/word_preview/
+.env

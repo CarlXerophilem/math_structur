@@ -1,23 +1,26 @@
 {
-  "file": "GOAI_四页提交稿_Math_Structurer.docx",
-  "sha256": "081d61d21ff05de9cd087c2b26d9fbfe14d02dfc4d25e77d28cc62534a7856ed",
-  "pages_word_com": 4,
-  "section_start_pages": {
-    "Page 1": 1,
-    "Page 2": 2,
-    "Page 3": 3,
-    "Page 4": 4
-  },
-  "tables": 6,
-  "hyperlinks": 41,
-  "inline_shapes": 2,
-  "media_entries": [
-    "word/media/image1.png",
-    "word/media/image2.png"
-  ],
-  "forbidden_hits": [],
-  "manual_page_breaks": 3,
-  "validated_at": "2026-08-17T12:45:27.636592+09:00",
-  "note": "Word COM confirmed exactly four pages after embedding the v0.6 Page 1 and Page 4 screenshots.",
-  "verification_method": "independent Microsoft Word COM repagination; read-only open"
+    "file":  "GOAI_四页提交稿_Math_Structurer.docx",
+    "sha256":  "38312b26cc01edf338e96cf16ceccb7236b984ad3108f32e52c1636a04208c34",
+    "pages_word_com":  4,
+    "section_start_pages":  {
+                                "Page 1":  1,
+                                "Page 2":  2,
+                                "Page 3":  3,
+                                "Page 4":  4
+                            },
+    "tables":  6,
+    "hyperlinks":  40,
+    "inline_shapes":  2,
+    "media_entries":  [
+                          "word/media/image1.png",
+                          "word/media/image2.png"
+                      ],
+    "forbidden_hits":  [
+
+                       ],
+    "manual_page_breaks":  3,
+    "word_version":  "16.0",
+    "validated_at":  "2026-08-18T00:40:53.4124680+09:00",
+    "note":  "Word COM confirmed exactly four pages after embedding the v0.6 Page 1 and Page 4 screenshots.",
+    "verification_method":  "independent Microsoft Word COM repagination; read-only open"
 }

@@ -14,6 +14,7 @@ MANIFEST = ROOT / "artifacts" / "submission_manifest.json"
 RECEIPT = ROOT / "artifacts" / "bundle_receipt.json"
 
 TOP_LEVEL = [
+    ".env.example",
     ".gitignore",
     "03_GOAI_FOUR_PAGE_GUIDANCE_FINAL.md",
     "README.md",
@@ -35,6 +36,7 @@ PANEL_ARTIFACTS = [
 ]
 
 VALIDATION_ARTIFACTS = [
+    "authenticated_connector_acceptance.json",
     "quick_check.json",
     "qwen_recognition_acceptance.json",
     "qwen_recognition_browser_acceptance.json",
@@ -136,6 +138,9 @@ def build() -> None:
     )
     public_live = json.loads(
         (ROOT / "artifacts" / "public_database_live_acceptance.json").read_text("utf-8")
+    )
+    authenticated = json.loads(
+        (ROOT / "artifacts" / "authenticated_connector_acceptance.json").read_text("utf-8")
     )
     pytest_text = (ROOT / "artifacts" / "panel" / "pytest.txt").read_text("utf-8").strip()
     pytest_summary = next(
@@ -242,6 +247,36 @@ def build() -> None:
     )
     if public_live.get("status") != "passed" or failed_live:
         raise RuntimeError(f"public-database live acceptance failed: {failed_live}")
+    if authenticated.get("status") != "passed":
+        raise RuntimeError("authenticated connector acceptance did not pass")
+    materials_project = authenticated.get("materials_project", {})
+    if (
+        materials_project.get("status") != "passed"
+        or materials_project.get("http") != 200
+        or materials_project.get("requested_material_id") != "mp-19306"
+        or materials_project.get("returned_material_id") != "mp-aaaabcoo"
+        or materials_project.get("formula") != "Fe3O4"
+        or materials_project.get("site_count") != 14
+    ):
+        raise RuntimeError("authenticated Materials Project receipt changed scope")
+    alphaxiv = authenticated.get("alphaxiv", {})
+    alpha_full_text = alphaxiv.get("full_text", {})
+    if (
+        alphaxiv.get("status") != "passed"
+        or alphaxiv.get("initialize_http") != 200
+        or alphaxiv.get("tools_http") != 200
+        or alphaxiv.get("protocol") != "2025-03-26"
+        or alphaxiv.get("tool_count") != 11
+        or alphaxiv.get("raw_full_text_requested") is not True
+        or alpha_full_text.get("http") != 200
+        or alpha_full_text.get("characters") != 705976
+        or alpha_full_text.get("sha256")
+        != "74cf21885487d28c6a1c0474d200fc7de744aa1cd5f4c2846fbb3f5da2011a27"
+        or alpha_full_text.get("stored_locally") is not False
+    ):
+        raise RuntimeError("authenticated alphaXiv receipt changed scope")
+    if authenticated.get("scientific_discovery") is not False:
+        raise RuntimeError("authenticated connector receipt crossed the discovery boundary")
     discovery = qwen.get("exact_validation", {}).get("discovery_signal", {})
     if discovery.get("scientific_discovery") is not False:
         raise RuntimeError("scientific discovery boundary was not preserved")
@@ -273,6 +308,28 @@ def build() -> None:
             "alphaxiv_unauthenticated_http": public_live.get("alphaxiv_unauthenticated_http"),
             "comparable_reaction_energy_records": len(public_live.get("reaction_energy_records", [])),
             "geometry_scope": public_live.get("optimade_record", {}).get("scope"),
+        },
+        "authenticated_connectors": {
+            "materials_project": {
+                "status": materials_project.get("status"),
+                "http": materials_project.get("http"),
+                "requested_material_id": materials_project.get("requested_material_id"),
+                "returned_material_id": materials_project.get("returned_material_id"),
+                "formula": materials_project.get("formula"),
+                "site_count": materials_project.get("site_count"),
+                "scope": "bulk/support identifier-resolution signal only",
+            },
+            "alphaxiv": {
+                "status": alphaxiv.get("status"),
+                "initialize_http": alphaxiv.get("initialize_http"),
+                "tools_http": alphaxiv.get("tools_http"),
+                "tool_count": alphaxiv.get("tool_count"),
+                "full_text_http": alpha_full_text.get("http"),
+                "full_text_characters": alpha_full_text.get("characters"),
+                "full_text_sha256": alpha_full_text.get("sha256"),
+                "full_text_stored_locally": alpha_full_text.get("stored_locally"),
+            },
+            "catalysis_hub": "record query still unauthorized; no comparable energy record",
         },
         "word": {
             "pages": word_pages,
@@ -330,8 +387,10 @@ def build() -> None:
             "qwen_browser": "passed; isolated Chrome; provider qwen; browser external requests 0",
             "public_databases": (
                 "snapshot passed with 0 external calls; live metadata/geometry checks passed; "
-                "Catalysis-Hub record query and alphaXiv reading require authorization; "
-                "0 comparable reaction-energy records"
+                "Materials Project authenticated HTTP 200 with mp-19306 resolved to mp-aaaabcoo, "
+                "Fe3O4 and 14 bulk/support sites; alphaXiv authenticated initialization, 11-tool "
+                "listing and full-text extraction returned HTTP 200; Catalysis-Hub record query "
+                "still requires authorization; 0 comparable reaction-energy records"
             ),
             "word": "Microsoft Word 16.0; exactly 4 pages; 2 embedded screenshots",
             "platforms": {

@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-08-17T12:45:27.714944+09:00",
+  "generated_at": "2026-08-18T00:44:06.758658+09:00",
   "version": "v0.6",
   "status": "technical_environment_passed_scientific_discovery_not_established",
-  "python_tests": "19 passed in 4.02s",
+  "python_tests": "19 passed in 3.89s",
   "offline_check": {
     "status": "passed",
     "model_calls": 0,
@@ -26,9 +26,31 @@
     "comparable_reaction_energy_records": 0,
     "geometry_scope": "support_only"
   },
+  "authenticated_connectors": {
+    "materials_project": {
+      "status": "passed",
+      "http": 200,
+      "requested_material_id": "mp-19306",
+      "returned_material_id": "mp-aaaabcoo",
+      "formula": "Fe3O4",
+      "site_count": 14,
+      "scope": "bulk/support identifier-resolution signal only"
+    },
+    "alphaxiv": {
+      "status": "passed",
+      "initialize_http": 200,
+      "tools_http": 200,
+      "tool_count": 11,
+      "full_text_http": 200,
+      "full_text_characters": 705976,
+      "full_text_sha256": "74cf21885487d28c6a1c0474d200fc7de744aa1cd5f4c2846fbb3f5da2011a27",
+      "full_text_stored_locally": false
+    },
+    "catalysis_hub": "record query still unauthorized; no comparable energy record"
+  },
   "word": {
     "pages": 4,
-    "hyperlinks": 41,
+    "hyperlinks": 40,
     "screenshots": 2
   },
   "scientific_discovery": false,

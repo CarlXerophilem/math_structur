@@ -1,0 +1,55 @@
+{
+  "checked_at": "2026-08-18T00:43:06.485483+09:00",
+  "status": "passed",
+  "credentials": {
+    "MP_API_KEY": "present_not_recorded",
+    "ALPHAXIV_API_KEY": "present_not_recorded"
+  },
+  "materials_project": {
+    "status": "passed",
+    "http": 200,
+    "requested_material_id": "mp-19306",
+    "returned_material_id": "mp-aaaabcoo",
+    "formula": "Fe3O4",
+    "site_count": 14,
+    "interpretation": "The authenticated summary endpoint resolved the requested legacy identifier to the returned canonical identifier. The public OPTIMADE geometry remains scoped as a bulk/support record and is not an active-site structure."
+  },
+  "alphaxiv": {
+    "status": "passed",
+    "initialize_http": 200,
+    "tools_http": 200,
+    "protocol": "2025-03-26",
+    "server": {
+      "name": "alphaxiv-assistant",
+      "version": "1.0.0"
+    },
+    "tool_count": 11,
+    "tools": [
+      "answer_pdf_queries",
+      "create_folder",
+      "delete_folder",
+      "discover_papers",
+      "get_paper_content",
+      "list_library",
+      "move_papers_between_folders",
+      "read_files_from_github_repository",
+      "remove_papers_from_folder",
+      "rename_folder",
+      "save_papers_to_folder"
+    ],
+    "raw_full_text_requested": true,
+    "full_text": {
+      "http": 200,
+      "paper": "https://arxiv.org/abs/2408.07818",
+      "content_blocks": 1,
+      "characters": 705976,
+      "sha256": "74cf21885487d28c6a1c0474d200fc7de744aa1cd5f4c2846fbb3f5da2011a27",
+      "elapsed_seconds": 7.007,
+      "stored_locally": false
+    }
+  },
+  "catalysis_hub": "not_tested_no_CATALYSIS_HUB_API_KEY",
+  "deepseek": "not_tested_no_DEEPSEEK_API_KEY",
+  "scientific_discovery": false,
+  "boundary": "Authenticated access verifies interface availability and source retrieval only. It does not supply a comparable reaction-energy record, an active-site geometry, or a catalyst ranking."
+}

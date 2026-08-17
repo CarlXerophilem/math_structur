@@ -48,6 +48,16 @@ python run.py --check
 
 `--check` 只在回环地址临时启动服务，以零模型方式检查静态资源、接口字段、空值语义和收据格式；它不调用外网，也不把缺少能量或可选条件判为失败。任一结构检查失败都会返回非零退出码。符号分支调试才按需使用 SymPy。
 
+## 认证接口核验
+
+密钥只通过环境变量 `MP_API_KEY` 和 `ALPHAXIV_API_KEY` 读取，不进入源码、收据或提交包。可运行：
+
+~~~bash
+python3 panel/authenticated_connector_smoke.py --full-text
+~~~
+
+2026-08-18 实测中，Materials Project 认证查询返回 HTTP 200：请求 `mp-19306` 时返回规范标识 `mp-aaaabcoo`、Fe₃O₄ 和 14 个位点。这是标识解析信号，不把体相支撑体升级为活性位。alphaXiv MCP 认证初始化、11 个工具列表及 `fullText=true` 原文抽取均返回 HTTP 200；原文未在本地保存。Catalysis-Hub 和 DeepSeek 仍需各自的环境变量。
+
 ## 默认化学切片
 
 默认输入为 **CO2gas+H2gas -- CH3CH2OHgas @best**。其中 `@best` 仅指定候选排序方式：排序依据必须显示，且不得改写成“性能最佳”或“全局最优”。首屏分析限定为：
@@ -69,9 +79,9 @@ Wang 等关于 CO₂ 直接制乙醇的研究讨论了 Na–Fe@C、K–CuZnAl、
 |---|---|---|
 | [Catalysis-Hub](https://doi.org/10.1038/s41597-019-0081-y) | 反应物、产物、带类型的密度泛函能量、部分原子结构 | GraphQL 模式内省本轮返回 200；无密钥记录查询返回 401；`reaction_energy` 也可能是吸附能；不同论文不可直接按能量排序 |
 | [OC20](https://doi.org/10.1021/acscatal.0c04525) | 初始／弛豫结构、能量、力、`bulk_mpid`、Miller 指数、吸附位点 | 数据为 CC-BY-4.0，但不是完整反应网络；吸附能或弛豫能不是实验催化性能 |
-| [Materials Project](https://docs.materialsproject.org/downloading-data/using-the-api/getting-started) | 最低能体相晶体、形成能、凸包与平衡分解字段 | 无密钥数据查询本轮返回 401；体相结构不是催化界面，平衡反应能不是任意用户反应能 |
+| [Materials Project](https://docs.materialsproject.org/downloading-data/using-the-api/getting-started) | 最低能体相晶体、形成能、凸包与平衡分解字段 | 无密钥查询返回 401；认证查询返回 200 并观察到 `mp-19306 → mp-aaaabcoo`标识解析；体相结构仍不是催化界面 |
 | [Crossref](https://www.crossref.org/documentation/retrieve-metadata/rest-api/)／[OpenAlex](https://help.openalex.org/data/works/attributes.md) | DOI、题名、作者、日期、落地页、开放状态 | 只作身份核验与跳转；不提供反应能或几何；摘要索引不等于全文 |
-| [alphaXiv MCP](https://alphaxiv.org/docs/mcp)／[arXiv API](https://info.arxiv.org/help/api/index.html) | AI 阅读、原文抽取／规范元数据与版本链接 | alphaXiv 需要认证，默认结果是 AI 中间报告，只有 `fullText=true` 才请求原始抽取；无认证本轮返回 401，失败时回退 arXiv 元数据 |
+| [alphaXiv MCP](https://alphaxiv.org/docs/mcp)／[arXiv API](https://info.arxiv.org/help/api/index.html) | AI 阅读、原文抽取／规范元数据与版本链接 | 无认证返回 401；认证 MCP 和 `fullText=true` 原文抽取已返回 200。默认 AI 中间报告仍不是原文，失败时回退 arXiv 元数据 |
 
 所有能量记录必须写明 `kind`。表面反应密度泛函能、吸附能、弛豫结构能、每原子形成能、凸包能和平衡分解能不得折叠到同一数轴排名。`@best` 只按检索相关性、来源层级、字段完整度与几何可追溯性排序。
 

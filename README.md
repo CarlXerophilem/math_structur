@@ -50,6 +50,8 @@ python run.py --check
 
 ## 认证接口核验
 
+公网部署若启用任何模型/API provider，必须设置 `MATH_STRUCTURER_ACCESS_TOKEN`。浏览器只从本机 local/session storage 读取该值并作为 `X-Math-Structurer-Token` 发送；令牌不会打包进 `panel/app.js`。`provider=auto|qwen|codex|deepseek` 在令牌缺失或错误时会先被拒绝，`provider=local` 仍可无密钥运行。
+
 密钥只通过环境变量 `MP_API_KEY` 和 `ALPHAXIV_API_KEY` 读取，不进入源码、收据或提交包。可运行：
 
 ~~~bash

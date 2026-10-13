@@ -47,14 +47,22 @@ function renderMath(node, tex, displayMode = false) {
 async function api(path, body = null, timeout = 135000) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeout);
-  const options = body === null ? {} : {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
-  };
+  const token = window.localStorage?.getItem("math_structurer_access_token")
+    || window.sessionStorage?.getItem("math_structurer_access_token")
+    || "";
+  const headers = { "Content-Type": "application/json" };
+  if (body?.provider && body.provider !== "local" && token) headers["X-Math-Structurer-Token"] = token;
+  const options = body === null ? {} : { method: "POST", headers, body: JSON.stringify(body) };
   try {
     const response = await fetch(path, { ...options, signal: controller.signal });
     const payload = await response.json();
+    if (response.status === 401 && path === "/api/solver/run" && body?.provider && body.provider !== "local") {
+      const nextToken = window.prompt("Access token");
+      if (nextToken) {
+        window.sessionStorage?.setItem("math_structurer_access_token", nextToken);
+        return api(path, body, timeout);
+      }
+    }
     if (!response.ok) throw new Error(payload.error || `HTTP ${response.status}`);
     return payload;
   } finally {

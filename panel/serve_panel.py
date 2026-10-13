@@ -3,6 +3,7 @@ from __future__ import annotations
 import cmath
 from functools import lru_cache
 import hashlib
+import hmac
 from http import HTTPStatus
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 import json
@@ -53,6 +54,8 @@ MODEL_CALLS = 0
 
 QWEN_MODEL_ENV = "MATH_STRUCTURER_QWEN_MODEL"
 QWEN_JAILBROKEN_MODEL = "hf.co/mradermacher/Qwen3-8B-Jailbroken-GGUF:Q4_K_M"
+ACCESS_TOKEN_ENV = "MATH_STRUCTURER_ACCESS_TOKEN"
+MODEL_BACKED_PROVIDERS = {"auto", "qwen", "codex", "deepseek"}
 
 RECOGNITION_DOMAINS = {
     "reaction",
@@ -115,6 +118,14 @@ def _portable_payload(value: Any) -> Any:
     if isinstance(value, tuple):
         return [_portable_payload(item) for item in value]
     return _portable_text(value) if isinstance(value, (str, Path)) else value
+
+
+def _model_provider_requires_access_token(payload: dict[str, Any]) -> bool:
+    return str(payload.get("provider", "local")).strip().lower() in MODEL_BACKED_PROVIDERS
+
+
+def _configured_access_token() -> str:
+    return os.environ.get(ACCESS_TOKEN_ENV, "").strip()
 
 BASIS_OPERATOR_CONTRACT = {
     "signature": "B: C x C^times -> C",
@@ -1472,6 +1483,19 @@ class Handler(SimpleHTTPRequestHandler):
         raw = self.rfile.read(length)
         return json.loads(raw.decode("utf-8")) if raw else {}
 
+    def _model_access_allowed(self, body: dict[str, Any]) -> bool:
+        if not _model_provider_requires_access_token(body):
+            return True
+        expected = _configured_access_token()
+        if not expected:
+            self._json({"error": f"{ACCESS_TOKEN_ENV} is not configured"}, HTTPStatus.FORBIDDEN)
+            return False
+        provided = self.headers.get("X-Math-Structurer-Token", "").strip()
+        if not provided or not hmac.compare_digest(provided, expected):
+            self._json({"error": "access token required"}, HTTPStatus.UNAUTHORIZED)
+            return False
+        return True
+
     def do_GET(self) -> None:  # noqa: N802
         path = urlparse(self.path).path
         if path == "/api/health":
@@ -1490,6 +1514,8 @@ class Handler(SimpleHTTPRequestHandler):
         try:
             body = self._body()
             if path == "/api/solver/run":
+                if not self._model_access_allowed(body):
+                    return
                 self._json(solver_run(body))
             elif path == "/api/general/analyze":
                 self._json(analyze_general(body))

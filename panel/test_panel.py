@@ -14,16 +14,32 @@ import serve_panel
 PANEL = Path(__file__).resolve().parent
 
 
-def _post(url: str, payload: dict) -> dict:
+def _post(url: str, payload: dict, headers: dict[str, str] | None = None) -> dict:
     request = Request(
         url,
         data=json.dumps(payload).encode("utf-8"),
-        headers={"Content-Type": "application/json"},
+        headers={"Content-Type": "application/json", **(headers or {})},
         method="POST",
     )
     with urlopen(request, timeout=10) as response:
         assert response.status == 200
         return json.loads(response.read().decode("utf-8"))
+
+
+def _post_status(url: str, payload: dict, headers: dict[str, str] | None = None) -> tuple[int, dict]:
+    request = Request(
+        url,
+        data=json.dumps(payload).encode("utf-8"),
+        headers={"Content-Type": "application/json", **(headers or {})},
+        method="POST",
+    )
+    try:
+        with urlopen(request, timeout=10) as response:
+            return response.status, json.loads(response.read().decode("utf-8"))
+    except Exception as exc:
+        if hasattr(exc, "code") and hasattr(exc, "read"):
+            return exc.code, json.loads(exc.read().decode("utf-8"))
+        raise
 
 
 def test_static_delivery_has_exactly_two_panels_and_no_export_surface():
@@ -333,4 +349,33 @@ def test_http_server_serves_local_analysis_health_and_references():
     finally:
         server.shutdown()
         server.server_close()
+
+
+def test_http_server_requires_access_token_for_model_backed_solver(monkeypatch):
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "dummy-configured")
+    monkeypatch.setenv("MATH_STRUCTURER_ACCESS_TOKEN", "correct-token")
+    serve_panel.harness_status.cache_clear()
+    server = serve_panel.make_server("127.0.0.1", 0)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        base = f"http://127.0.0.1:{server.server_port}"
+        status, payload = _post_status(base + "/api/solver/run", {
+            "provider": "deepseek",
+            "problem": "CO2gas+H2gas -- CH3CH2OHgas @best",
+        })
+        assert status == 401
+        assert payload["error"] == "access token required"
+        assert serve_panel.MODEL_CALLS == 0
+
+        local = _post(base + "/api/solver/run", {
+            "provider": "local",
+            "problem": "CO2gas+H2gas -- CH3CH2OHgas @best",
+            "database_mode": "verified_snapshot",
+        })
+        assert local["model_receipt"]["calls"] == 0
+    finally:
+        server.shutdown()
+        server.server_close()
+        serve_panel.harness_status.cache_clear()
 
